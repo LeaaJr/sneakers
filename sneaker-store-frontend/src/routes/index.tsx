@@ -1,39 +1,19 @@
-import { createFileRoute } from '@tanstack/react-router'
-import logo from '../logo.svg'
+// src/routes/index.tsx
+import { createFileRoute } from '@tanstack/react-router';
+import * as React from 'react';
+import { HeaderFuturista } from '@/components/Header'; // Importa el Header (sección hero)
 
-export const Route = createFileRoute('/')({
-  component: App,
-})
-
-function App() {
+// Define el componente que se renderizará para la ruta raíz (/)
+function HomePageContent() {
   return (
-    <div className="text-center">
-      <header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
-        <img
-          src={logo}
-          className="h-[40vmin] pointer-events-none animate-[spin_20s_linear_infinite]"
-          alt="logo"
-        />
-        <p>
-          Edit <code>src/routes/index.tsx</code> and save to reload.
-        </p>
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <a
-          className="text-[#61dafb] hover:underline"
-          href="https://tanstack.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn TanStack
-        </a>
-      </header>
-    </div>
-  )
+    <>
+      {/* El HeaderFuturista (sección hero) se renderiza SOLO en la página de inicio */}
+      <HeaderFuturista />
+    </>
+  );
 }
+
+// Asigna el componente a la ruta
+export const Route = createFileRoute('/')({
+  component: HomePageContent,
+});

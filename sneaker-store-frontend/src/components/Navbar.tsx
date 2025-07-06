@@ -1,6 +1,7 @@
+// src/components/NavigationMenuDemo.tsx
 import * as React from "react";
-import { Link } from "@tanstack/react-router"
-import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router"; // Link de TanStack Router
+import { cn } from "@/lib/utils"; // Asegúrate de que este archivo exista y funcione
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,10 +12,9 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-// Install lucide-react if you haven't already: npm install lucide-react
+// Si usas iconos, asegúrate de tener lucide-react instalado: npm install lucide-react
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
 
-// Changed 'href' to 'to' in the components array
 const components: { title: string; to: string; description: string }[] = [
   {
     title: "Alert Dialog",
@@ -53,173 +53,109 @@ const components: { title: string; to: string; description: string }[] = [
   },
 ];
 
-export function NavigationMenuDemo() {
+export function NavigationMenuDemo({ className }: { className?: string }) { // Acepta className prop
   return (
-    <NavigationMenu viewport={false} className="mx-auto max-w-7xl"> {/* Added centering and max-width */}
-      <NavigationMenuList>
+    // Navbar con fondo transparente y texto blanco para que se "sumerja" en el Header
+    // cuando esté presente, y se vea bien sobre otros fondos.
+    <NavigationMenu viewport={false} className={cn("mx-auto max-w-7xl bg-transparent text-white pt-5", className)}>
+      <NavigationMenuList className="bg-transparent"> {/* Asegura que la lista también sea transparente */}
+        {/* Home Link */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Home</NavigationMenuTrigger>
+          <NavigationMenuLink asChild>
+            <Link to="/" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+              Home
+            </Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+
+        {/* Shop Link (con dropdown si es necesario) */}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className="bg-transparent text-white hover:bg-white/20">Shop</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid gap-2 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-popover text-popover-foreground"> {/* El contenido del dropdown mantiene su fondo predeterminado */}
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
-                  {/* Changed <a> to Link and href to to */}
                   <Link
-                    className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
-                    to="/" // Changed href to to
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    to="/shop"
                   >
-                    {/* You can add an icon or logo here */}
                     <div className="mb-2 mt-4 text-lg font-medium">
                       Sneaker Store
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      Beautifully designed components built with Tailwind CSS.
+                      Explora nuestra vasta colección de sneakers.
                     </p>
                   </Link>
                 </NavigationMenuLink>
               </li>
-              {/* Changed href to to for ListItem */}
-              <ListItem to="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
+              <ListItem to="/shop/brands" title="Brands">
+                Descubre sneakers por tus marcas favoritas.
               </ListItem>
-              <ListItem to="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
+              <ListItem to="/shop/categories" title="Categories">
+                Navega por deporte, estilo y más.
               </ListItem>
-              <ListItem to="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
+              <ListItem to="/shop/sale" title="On Sale">
+                Aprovecha nuestras ofertas.
               </ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
+
+        {/* About Link */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  to={component.to} // Changed href to to
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            {/* Changed href to to */}
-            <Link to="/docs">Docs</Link>
+          <NavigationMenuLink asChild>
+            <Link to="/about" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+              About Us
+            </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
+
+        {/* Contact Link */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>List</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[300px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#">
-                    <div className="font-medium">Components</div>
-                    <div className="text-muted-foreground">
-                      Browse all components in the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#">
-                    <div className="font-medium">Documentation</div>
-                    <div className="text-muted-foreground">
-                      Learn how to use the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#">
-                    <div className="font-medium">Blog</div>
-                    <div className="text-muted-foreground">
-                      Read our latest blog posts.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
+          <NavigationMenuLink asChild>
+            <Link to="/contact" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+              Contact
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
+
+        {/* Sign In Link */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Simple</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#">Components</Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#">Documentation</Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#">Blocks</Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
+          <NavigationMenuLink asChild>
+            <Link to="/signin" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+              Sign In
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
+
+        {/* Sign Up Link */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#" className="flex-row items-center gap-2">
-                    <CircleHelpIcon />
-                    Backlog
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#" className="flex-row items-center gap-2">
-                    <CircleIcon />
-                    To Do
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  {/* Changed href to to */}
-                  <Link to="#" className="flex-row items-center gap-2">
-                    <CircleCheckIcon />
-                    Done
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
+          <NavigationMenuLink asChild>
+            <Link to="/signup" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+              Sign Up
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
+
       </NavigationMenuList>
     </NavigationMenu>
   );
 }
 
-// Corrected ListItem component for TanStack Router
 const ListItem = React.forwardRef<
-  React.ElementRef<typeof Link>, // Type this as a Link component from TanStack Router
-  React.ComponentPropsWithoutRef<typeof Link> & { title: string } // Extend Link props, use 'to' instead of 'href'
->(({ className, title, children, to, ...props }, ref) => { // Destructure 'to' instead of 'href'
+  React.ElementRef<typeof Link>,
+  React.ComponentPropsWithoutRef<typeof Link> & { title: string }
+>(({ className, title, children, to, ...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
         <Link
           ref={ref}
-          className={cn( // cn utility is used here
+          className={cn(
             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
             className
           )}
-          to={to} // Pass 'to' prop to TanStack Router Link
+          to={to}
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
