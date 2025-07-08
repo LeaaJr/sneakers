@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from '../styles/Header.module.css';
-import CyberGlitchText from '@/components/Futuristic';
+/* import CyberGlitchText from '@/components/Futuristic'; */
+import ParticleText from '@/components/ParticleText';
 
 
 export function HeaderFuturista() {
@@ -9,10 +10,8 @@ export function HeaderFuturista() {
     <header className={styles.headerContainer}>
       {/* Título futurista */}
       <div className={styles.futuristicTitle}>
-        <CyberGlitchText 
-          text="SNEAKERS STORE" 
-          fontSize="4rem"
-          intensity={0.8}
+        <ParticleText 
+          text="SNEAKERS STORE"
         />
         <div className={styles.titleGlow}></div>
       </div>
