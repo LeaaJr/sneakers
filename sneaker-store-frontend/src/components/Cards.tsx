@@ -1,32 +1,28 @@
-import React from 'react'
-import {
-  Card as ShadcnCard,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from './ui/card'
-import { Badge } from './ui/badge'
+// src/components/Cards.tsx
+import React from 'react';
+import { Card as ShadcnCard, CardContent, CardFooter, CardHeader } from './ui/card';
+import { Badge } from './ui/badge';
+import { type Sneaker } from '@/services/sneakerService';
 
+interface CardProps extends Sneaker {
 
-interface CardProps {
-  id: string
-  title: string
-  description?: string
-  imageUrl: string
-  price: number
-  brand: string
-  size?: string
-  isNew?: boolean
 }
+
 export function Card({
   title,
   description,
-  imageUrl,
+  main_image_url, // Usar main_image_url directamente como viene del backend
   price,
-  brand,
-  size,
-  isNew,
+  brand, // Esto será el objeto Brand { id, name, logo_url }
+  sizes, // Array de objetos Size
+  is_new, // Usar is_new como viene del backend
 }: CardProps) {
+
+  // Accede al nombre de la marca desde el objeto 'brand'
+  const brandName = brand.name;
+  // Para la talla, puedes elegir mostrar la US_size de la primera talla disponible, si existe
+  const displaySize = sizes && sizes.length > 0 ? `US ${sizes[0].us_size}` : undefined;
+
   return (
     <ShadcnCard className="overflow-hidden">
       <CardHeader className="p-4">
@@ -37,7 +33,7 @@ export function Card({
               <p className="text-sm text-muted-foreground">{description}</p>
             )}
           </div>
-          {isNew && (
+          {is_new && ( // Usar is_new
             <Badge variant="secondary" className="bg-blue-100 text-blue-800">
               New
             </Badge>
@@ -46,15 +42,17 @@ export function Card({
       </CardHeader>
       <div className="relative h-64 overflow-hidden">
         <img
-          src={imageUrl}
+          src={main_image_url} // Usar main_image_url
           alt={title}
           className="w-full h-full object-cover"
+          onError={(e) => { e.currentTarget.src = 'https://placehold.co/400x300/E0E0E0/000000?text=No+Image'; }} // Fallback image
         />
       </div>
       <CardContent className="p-0">
         <div className="flex items-center justify-between p-4 bg-gray-50">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
+              {/* Icono de marca (ejemplo) */}
               <svg
                 width="16"
                 height="16"
@@ -78,10 +76,11 @@ export function Card({
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-sm">{brand}</span>
+              <span className="text-sm">{brandName}</span> {/* Usar brandName */}
             </div>
-            {size && (
+            {displaySize && ( // Usar displaySize
               <div className="flex items-center gap-1">
+                {/* Icono de talla (ejemplo) */}
                 <svg
                   width="16"
                   height="16"
@@ -98,7 +97,7 @@ export function Card({
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span className="text-sm">{size}</span>
+                <span className="text-sm">{displaySize}</span>
               </div>
             )}
           </div>
@@ -106,5 +105,5 @@ export function Card({
         </div>
       </CardContent>
     </ShadcnCard>
-  )
+  );
 }

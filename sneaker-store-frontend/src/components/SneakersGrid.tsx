@@ -1,20 +1,12 @@
-import React from 'react'
-import { Card } from './Cards'
+// src/components/SneakersGrid.tsx
+import React from 'react';
+import { Card } from './Cards'; // Asegúrate de que la ruta sea correcta
+import { type Sneaker } from '@/services/sneakerService';
 
-
-interface Sneaker {
-  id: string
-  title: string
-  description?: string
-  imageUrl: string
-  price: number
-  brand: string
-  size?: string
-  isNew?: boolean
-}
 interface SneakersGridProps {
-  sneakers: Sneaker[]
+  sneakers: Sneaker[];
 }
+
 export function SneakersGrid({ sneakers }: SneakersGridProps) {
   return (
     <div className="container mx-auto px-4 py-8">
@@ -25,14 +17,14 @@ export function SneakersGrid({ sneakers }: SneakersGridProps) {
             id={sneaker.id}
             title={sneaker.title}
             description={sneaker.description}
-            imageUrl={sneaker.imageUrl}
+            imageUrl={sneaker.main_image_url} // Usa main_image_url del backend
             price={sneaker.price}
-            brand={sneaker.brand}
-            size={sneaker.size}
-            isNew={sneaker.isNew}
+            brand={sneaker.brand.name} // Accede al nombre de la marca anidada
+            // size={sneaker.sizes[0]?.us_size ? `US ${sneaker.sizes[0].us_size}` : undefined} // Ejemplo: toma la primera talla disponible
+            isNew={sneaker.is_new} // Usa is_new del backend
           />
         ))}
       </div>
     </div>
-  )
+  );
 }

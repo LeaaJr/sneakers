@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from '../styles/Header.module.css';
-/* import CyberGlitchText from '@/components/Futuristic'; */
 import ParticleText from '@/components/ParticleText';
 
 
