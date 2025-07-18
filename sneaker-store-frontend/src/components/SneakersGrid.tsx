@@ -1,5 +1,4 @@
 // src/components/SneakersGrid.tsx
-import React from 'react';
 import { Card } from './Cards'; // Asegúrate de que la ruta sea correcta
 import { type Sneaker } from '@/services/sneakerService';
 
