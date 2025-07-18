@@ -3,34 +3,43 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import os # Importar el módulo os
 
 # Importar modelos y esquemas
 from src.database import models
 from src.schemas import sneaker as schemas
 from src.database.database import engine, get_db
 
+# Crear todas las tablas en la base de datos (solo para desarrollo/primer inicio)
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Sneaker Store API",
     description="API for managing sneakers, brands, sizes, and user interactions.",
     version="0.1.0",
-    # "https://your-sneaker-store.vercel.app", # Tengo que agregar el dominio cuando lo deploye
 )
 
 # Configurar CORS
 origins = [
-    "http://localhost:5173",  # ACA TENGO QUE COLOCAR DESPUES EL SV DE DESARROLLO
-    "http://localhost:3000",
+    "http://localhost:5173",  
+    "http://localhost:3000",  
+    # "https://your-sneaker-store.vercel.app", # Agrega el dominio de Vercel aca cuando se despliegue
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"], 
+    allow_methods=["*"], 
+    allow_headers=["*"],  
 )
+
+# --- DEBUGGING: Para imprimir variables de entorno al inicio de la aplicación ---
+@app.on_event("startup")
+async def startup_event():
+    print(f"DEBUG: Render's PORT env var: {os.environ.get('PORT')}")
+    print(f"DEBUG: Render's HOST env var: {os.environ.get('HOST')}")
+# --- FIN DEBUGGING ---
 
 @app.get("/")
 def read_root():
@@ -57,8 +66,7 @@ def test_db_connection(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database connection error: {e}")
 
-# --- Aquí es donde agregarás tus rutas CRUD para Sneakers, Brands, etc. ---
-# Por ejemplo, para crear una marca:
+
 @app.post("/api/brands/", response_model=schemas.Brand, status_code=status.HTTP_201_CREATED)
 def create_brand(brand: schemas.BrandCreate, db: Session = Depends(get_db)):
     """
@@ -145,4 +153,3 @@ def read_sneaker(sneaker_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Sneaker not found")
     return sneaker
 
-# Puedes añadir más endpoints para actualizar, eliminar, y para tallas/imágenes individualmente.
