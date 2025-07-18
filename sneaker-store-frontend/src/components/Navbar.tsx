@@ -1,7 +1,7 @@
 // src/components/NavigationMenuDemo.tsx
 import * as React from "react";
-import { Link } from "@tanstack/react-router"; // Link de TanStack Router
-import { cn } from "@/lib/utils"; // Asegúrate de que este archivo exista y funcione
+import { Link } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,
