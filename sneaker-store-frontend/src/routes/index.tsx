@@ -204,7 +204,6 @@ function HomePageContent() {
       {/* Contenedor principal de las cards */}
       <div ref={cardsRef}>
         <div className="container mx-auto py-40">
-          <h2 className="text-3xl font-bold mb-8 text-center">Nuestras Últimas Colecciones</h2>
           {loading ? (
             <div className="text-center text-lg text-gray-600">Cargando zapatillas...</div>
           ) : error ? (

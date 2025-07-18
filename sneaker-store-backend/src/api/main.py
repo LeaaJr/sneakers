@@ -15,12 +15,13 @@ app = FastAPI(
     title="Sneaker Store API",
     description="API for managing sneakers, brands, sizes, and user interactions.",
     version="0.1.0",
+    # "https://your-sneaker-store.vercel.app", # Tengo que agregar el dominio cuando lo deploye
 )
 
 # Configurar CORS
 origins = [
     "http://localhost:5173",  # ACA TENGO QUE COLOCAR DESPUES EL SV DE DESARROLLO
-    # "https://your-sneaker-store.vercel.app", # Cuando desplegue tengo que agregar el dominio de Vercel aca
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
