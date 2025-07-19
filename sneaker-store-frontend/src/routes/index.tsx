@@ -3,8 +3,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
 import { HeaderFuturista } from '@/components/Header';
 import { SneakersGrid } from '@/components/SneakersGrid';
-// Corrected import: Use 'type' keyword for Sneaker as it's a type
 import { fetchSneakers, type Sneaker } from '@/services/sneakerService'; 
+import RunningSection from '@/sections/running/RunningSection';
 
 // Define el componente que se renderizará para la ruta raíz (/)
 function HomePageContent() {
@@ -16,15 +16,17 @@ function HomePageContent() {
   const [error, setError] = React.useState<string | null>(null);
 
   // Referencias para los elementos DOM
-  const cardsRef = React.useRef<HTMLDivElement>(null);
   const headerRef = React.useRef<HTMLDivElement>(null);
+  const cardsRef = React.useRef<HTMLDivElement>(null);
+  const runningSectionRef = React.useRef<HTMLDivElement>(null); // Referencia para RunningSection (para definir el límite del snapping)
+  const bottomContentRef = React.useRef<HTMLDivElement>(null); // Referencia para el contenido inferior
 
   // Refs para la lógica de scroll
-  const isScrollingProgrammatically = React.useRef(false); // Bandera para controlar scrolls iniciados por código
-  const animationFrameRef = React.useRef<number | null>(null); // Para cancelar animaciones previas
-  const lastScrollTime = React.useRef(0); // Para calcular la velocidad
-  const lastScrollY = React.useRef(0); // Para detectar la dirección
-  const scrollVelocity = React.useRef(0); // Velocidad calculada del scroll del usuario
+  const isScrollingProgrammatically = React.useRef(false);
+  const animationFrameRef = React.useRef<number | null>(null);
+  const lastScrollTime = React.useRef(0);
+  const lastScrollY = React.useRef(0);
+  const scrollVelocity = React.useRef(0);
 
   // Función easeOutCubic para una animación más natural
   const easeOutCubic = (t: number) => {
@@ -33,148 +35,150 @@ function HomePageContent() {
 
   // Función para realizar el scroll suave a un objetivo (posición o elemento)
   const smoothScrollTo = React.useCallback((target: number | HTMLElement) => {
-    // Si ya hay una animación en curso, la cancelamos para iniciar una nueva
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
     }
 
-    const startPosition = window.scrollY; // Posición actual del scroll
+    const startPosition = window.scrollY;
     let targetPosition: number;
     
-    // Determina la posición final del scroll
     if (typeof target === 'number') {
-      targetPosition = target; // Si es un número, es la posición absoluta
+      targetPosition = target;
     } else {
-      // Si es un elemento, calcula su posición absoluta en el ventana
       const rect = target.getBoundingClientRect();
       targetPosition = rect.top + startPosition; 
     }
 
-    const distance = targetPosition - startPosition; // Distancia a recorrer
+    const distance = targetPosition - startPosition;
     
-    // Duración de la animación basada en la velocidad del scroll del usuario
-    const baseDuration = 700; // Duración base en milisegundos
-    // Factor de velocidad: entre 1 y 15, para que scrolls rápidos resulten en animaciones más cortas
+    const baseDuration = 700;
     const velocityFactor = Math.min(Math.max(Math.abs(scrollVelocity.current), 1), 15); 
-    // La duración final será inversamente proporcional a la velocidad, con un mínimo de 350ms
     const duration = Math.max(350, baseDuration / velocityFactor); 
     
-    let startTime: number | null = null; // Tiempo de inicio de la animación
+    let startTime: number | null = null;
 
-    // Función que se ejecuta en cada frame de la animación
     const animateScroll = (currentTime: number) => {
-      if (!startTime) startTime = currentTime; // Establece el tiempo de inicio en el primer frame
-      const timeElapsed = currentTime - startTime; // Tiempo transcurrido
-      const progress = Math.min(timeElapsed / duration, 1); // Progreso de la animación (0 a 1)
+      if (!startTime) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
       
-      // Calcula la nueva posición usando la función de easing
       window.scrollTo(0, startPosition + distance * easeOutCubic(progress));
       
-      // Si la animación no ha terminado, solicita el siguiente frame
       if (timeElapsed < duration) {
         animationFrameRef.current = requestAnimationFrame(animateScroll);
       } else {
-        // Cuando la animación termina, resetea la bandera para permitir nuevos scrolls del usuario
         isScrollingProgrammatically.current = false;
       }
     };
 
-    // Inicia la animación y activa la bandera de scroll programático
     isScrollingProgrammatically.current = true;
     animationFrameRef.current = requestAnimationFrame(animateScroll);
-  }, []); // Dependencias: ninguna, ya que usa refs y window.scrollY
+  }, []);
 
   // Manejador del evento 'wheel' (scroll con rueda del ratón)
   const handleWheel = React.useCallback((e: WheelEvent) => {
-    // Si hay un scroll programático en curso, ignoramos la entrada del usuario para evitar conflictos
     if (isScrollingProgrammatically.current) {
-      e.preventDefault(); // Bloquea el scroll nativo si estamos animando
+      e.preventDefault(); // Siempre prevenir si hay un scroll programático en curso
       return;
     }
     
-    e.preventDefault(); // Bloquea el scroll nativo para tomar el control total
-
     const now = Date.now();
     const currentScrollY = window.scrollY;
     
-    // Calcula la velocidad del scroll del usuario
     if (lastScrollTime.current) {
       const deltaTime = now - lastScrollTime.current;
-      // Usamos el deltaY absoluto y un factor de escala para calcular la velocidad
       scrollVelocity.current = Math.min(Math.abs(e.deltaY) / (deltaTime || 3) * 0.5, 25);
     }
     
     lastScrollTime.current = now;
     lastScrollY.current = currentScrollY;
 
-    // Determina la dirección del scroll
     const scrollDirection = e.deltaY > 1 ? 'down' : e.deltaY < -1 ? 'up' : 'none';
 
-    const headerHeight = headerRef.current?.offsetHeight || 0;
-    const cardsOffsetTop = cardsRef.current?.offsetTop || 0;
+    // Obtener posiciones de los elementos
+    const headerTop = 0; // La parte superior de la página
+    const cardsTop = cardsRef.current?.offsetTop || Infinity;
+    // El límite inferior de la zona de snapping es justo al inicio de RunningSection
+    const snapZoneBottomThreshold = runningSectionRef.current?.offsetTop || Infinity; 
 
-    // Lógica para scroll hacia ABAJO
-    // Si el usuario desplaza hacia abajo y no estamos ya en la sección de cards
-    if (scrollDirection === 'down' && currentScrollY < cardsOffsetTop) {
-      // Un pequeño umbral para evitar que se active si solo se mueve un pixel
-      if (e.deltaY > 5) { // Requiere un movimiento de rueda mínimo para activar
-        smoothScrollTo(cardsRef.current as HTMLElement); // Desplaza a la sección de cards
-      }
-    } 
-    // Lógica para scroll hacia ARRIBA
-    // Si el usuario desplaza hacia arriba y no estamos ya en la parte superior
-    else if (scrollDirection === 'up' && currentScrollY > 0) {
-      // Un pequeño umbral para evitar que se active si solo se mueve un pixel
-      if (e.deltaY < -5) { // Requiere un movimiento de rueda mínimo para activar
-        smoothScrollTo(0); // Desplaza a la parte superior de la página
+    // Determinar si el scroll actual está dentro de la zona donde queremos snapping
+    // Esto es: si estamos por encima del inicio de RunningSection
+    const isInSnappingZone = currentScrollY < snapZoneBottomThreshold; 
+
+    if (isInSnappingZone) {
+      e.preventDefault(); // Prevenir el scroll nativo SOLO si estamos en la zona de snapping
+
+      if (scrollDirection === 'down' && e.deltaY > 5) { // Umbral para activar scroll hacia abajo
+        // Si estamos en el header y nos desplazamos hacia abajo, ir a las cards
+        if (currentScrollY < cardsTop - (window.innerHeight * 0.1)) { // Un pequeño buffer para el snap
+          smoothScrollTo(cardsRef.current as HTMLElement);
+        }
+        // Si ya estamos en las cards o un poco más abajo, pero aún en la zona de snapping,
+        // y el usuario sigue desplazándose hacia abajo, permitimos que el scroll nativo tome el control
+        // para pasar a la siguiente sección (RunningSection), ya que esta es la última sección con snapping.
+        // No necesitamos un `smoothScrollTo` aquí, ya que el `preventDefault` no se llamará una vez que salgamos de la zona.
+      } else if (scrollDirection === 'up' && e.deltaY < -5) { // Umbral para activar scroll hacia arriba
+        // Si estamos en las cards y nos desplazamos hacia arriba, ir al header
+        if (currentScrollY > cardsTop + (window.innerHeight * 0.1)) { // Un pequeño buffer para el snap
+          smoothScrollTo(cardsRef.current as HTMLElement);
+        } else if (currentScrollY > headerTop) { // Si estamos en el header, ir a la parte superior
+          smoothScrollTo(headerTop);
+        }
       }
     }
-  }, [smoothScrollTo]); // Depende de smoothScrollTo
+    // Si `isInSnappingZone` es falso, `e.preventDefault()` no se llama,
+    // y el navegador gestiona el scroll de forma normal para el resto de la página.
+  }, [smoothScrollTo]);
 
   // Manejador del evento 'keydown' (teclas de flecha, espacio, etc.)
   const handleKeyDown = React.useCallback((e: KeyboardEvent) => {
-    // Si hay un scroll programático en curso, ignoramos la entrada del usuario
     if (isScrollingProgrammatically.current) {
-      e.preventDefault(); // Bloquea el scroll nativo si estamos animando
+      e.preventDefault();
       return;
     }
 
-    // Teclas que queremos interceptar para el scroll
     if (['Space', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(e.code)) {
-      e.preventDefault(); // Bloquea el scroll nativo para estas teclas
-      
       const currentScrollY = window.scrollY;
-      const cardsOffsetTop = cardsRef.current?.offsetTop || 0;
-      
-      // Establece una velocidad base para el scroll por teclado
-      scrollVelocity.current = 5; 
+      const cardsTop = cardsRef.current?.offsetTop || Infinity;
+      const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity; // Límite de la zona de snapping
 
-      // Lógica para scroll hacia ABAJO con teclado
-      if (['ArrowDown', 'PageDown', 'Space'].includes(e.code) && currentScrollY < cardsOffsetTop) {
-        if (cardsRef.current) {
-          smoothScrollTo(cardsRef.current);
+      const isInSnappingZone = currentScrollY < runningSectionTop;
+
+      if (isInSnappingZone) {
+        e.preventDefault(); // Prevenir el scroll nativo SOLO si estamos en la zona de snapping
+        scrollVelocity.current = 5; // Velocidad base para teclado
+
+        // Lógica para scroll hacia ABAJO con teclado
+        if (['ArrowDown', 'PageDown', 'Space'].includes(e.code)) {
+          if (currentScrollY < cardsTop - (window.innerHeight * 0.1)) {
+            smoothScrollTo(cardsRef.current as HTMLElement);
+          }
+        } 
+        // Lógica para scroll hacia ARRIBA con teclado
+        else if (['ArrowUp', 'PageUp'].includes(e.code)) {
+          if (currentScrollY > cardsTop + (window.innerHeight * 0.1)) {
+            smoothScrollTo(cardsRef.current as HTMLElement);
+          } else if (currentScrollY > 0) {
+            smoothScrollTo(0);
+          }
         }
-      } 
-      // Lógica para scroll hacia ARRIBA con teclado
-      else if (['ArrowUp', 'PageUp'].includes(e.code) && currentScrollY > 0) {
-        smoothScrollTo(0);
       }
+      // Si `isInSnappingZone` es falso, `e.preventDefault()` no se llama,
+      // y el navegador gestiona el scroll de forma normal para el resto de la página.
     }
-  }, [smoothScrollTo]); // Depende de smoothScrollTo
+  }, [smoothScrollTo]);
 
   // Efecto para añadir y limpiar los event listeners de scroll y teclado
   React.useEffect(() => {
-    window.addEventListener('wheel', handleWheel, { passive: false }); // 'passive: false' es necesario para preventDefault
-    window.addEventListener('keydown', handleKeyDown, { passive: false }); // 'passive: false' es necesario para preventDefault
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('keydown', handleKeyDown, { passive: false });
     
-    // Función de limpieza que se ejecuta cuando el componente se desmonta
     return () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
-      // Asegúrate de limpiar cualquier animación pendiente
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [handleWheel, handleKeyDown]); // Depende de handleWheel y handleKeyDown
+  }, [handleWheel, handleKeyDown]);
 
   // Lógica para cargar los datos de las zapatillas
   React.useEffect(() => {
@@ -203,7 +207,7 @@ function HomePageContent() {
       
       {/* Contenedor principal de las cards */}
       <div ref={cardsRef}>
-        <div className="container mx-auto py-40">
+        <div className="container mx-auto py-8"> 
           {loading ? (
             <div className="text-center text-lg text-gray-600">Cargando zapatillas...</div>
           ) : error ? (
@@ -216,10 +220,20 @@ function HomePageContent() {
         </div>
       </div>
 
-      {/* Añade más contenido debajo para permitir el scroll y probar el snap hacia arriba */}
-      <div className="h-[100vh] bg-gray-100 flex items-center justify-center text-gray-700">
-        <p className="text-2xl">Desliza hacia arriba para volver al inicio.</p>
-      </div>
+      {/* Renderiza RunningSection y el contenido adicional SOLO después de que las cards hayan cargado */}
+      {!loading && !error && sneakers.length > 0 && (
+        <>
+          {/* RunningSection con su referencia */}
+          <div ref={runningSectionRef} className="w-full min-h-screen bg-white">
+            <RunningSection />
+          </div>
+
+          {/* Contenido adicional con su referencia */}
+          <div ref={bottomContentRef} className="h-[100vh] bg-gray-100 flex items-center justify-center text-gray-700">
+            <p className="text-2xl">Desliza hacia arriba para volver al inicio.</p>
+          </div>
+        </>
+      )}
     </>
   );
 }
