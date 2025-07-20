@@ -1,4 +1,4 @@
-// src/routes/index.tsx
+  // src/routes/index.tsx
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
 import { HeaderFuturista } from '@/components/Header';
@@ -18,8 +18,7 @@ function HomePageContent() {
   // Referencias para los elementos DOM
   const headerRef = React.useRef<HTMLDivElement>(null);
   const cardsRef = React.useRef<HTMLDivElement>(null);
-  const runningSectionRef = React.useRef<HTMLDivElement>(null); // Referencia para RunningSection (para definir el límite del snapping)
-  const bottomContentRef = React.useRef<HTMLDivElement>(null); // Referencia para el contenido inferior
+  const runningSectionRef = React.useRef<HTMLDivElement>(null); // Referencia para RunningSection
 
   // Refs para la lógica de scroll
   const isScrollingProgrammatically = React.useRef(false);
@@ -27,6 +26,7 @@ function HomePageContent() {
   const lastScrollTime = React.useRef(0);
   const lastScrollY = React.useRef(0);
   const scrollVelocity = React.useRef(0);
+  const bottomContentRef = React.useRef<HTMLDivElement>(null); // Referencia para el contenido inferior
 
   // Función easeOutCubic para una animación más natural
   const easeOutCubic = (t: number) => {
@@ -96,38 +96,42 @@ function HomePageContent() {
     const scrollDirection = e.deltaY > 1 ? 'down' : e.deltaY < -1 ? 'up' : 'none';
 
     // Obtener posiciones de los elementos
-    const headerTop = 0; // La parte superior de la página
+    const headerTop = 0; 
     const cardsTop = cardsRef.current?.offsetTop || Infinity;
-    // El límite inferior de la zona de snapping es justo al inicio de RunningSection
-    const snapZoneBottomThreshold = runningSectionRef.current?.offsetTop || Infinity; 
+    const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity;
 
-    // Determinar si el scroll actual está dentro de la zona donde queremos snapping
-    // Esto es: si estamos por encima del inicio de RunningSection
-    const isInSnappingZone = currentScrollY < snapZoneBottomThreshold; 
+    // Definir un pequeño buffer para las zonas de "snap"
+    const snapBuffer = window.innerHeight * 0.1; // 10% de la altura de la ventana
 
-    if (isInSnappingZone) {
-      e.preventDefault(); // Prevenir el scroll nativo SOLO si estamos en la zona de snapping
-
-      if (scrollDirection === 'down' && e.deltaY > 5) { // Umbral para activar scroll hacia abajo
-        // Si estamos en el header y nos desplazamos hacia abajo, ir a las cards
-        if (currentScrollY < cardsTop - (window.innerHeight * 0.1)) { // Un pequeño buffer para el snap
-          smoothScrollTo(cardsRef.current as HTMLElement);
-        }
-        // Si ya estamos en las cards o un poco más abajo, pero aún en la zona de snapping,
-        // y el usuario sigue desplazándose hacia abajo, permitimos que el scroll nativo tome el control
-        // para pasar a la siguiente sección (RunningSection), ya que esta es la última sección con snapping.
-        // No necesitamos un `smoothScrollTo` aquí, ya que el `preventDefault` no se llamará una vez que salgamos de la zona.
-      } else if (scrollDirection === 'up' && e.deltaY < -5) { // Umbral para activar scroll hacia arriba
-        // Si estamos en las cards y nos desplazamos hacia arriba, ir al header
-        if (currentScrollY > cardsTop + (window.innerHeight * 0.1)) { // Un pequeño buffer para el snap
-          smoothScrollTo(cardsRef.current as HTMLElement);
-        } else if (currentScrollY > headerTop) { // Si estamos en el header, ir a la parte superior
-          smoothScrollTo(headerTop);
-        }
+    // Lógica para scroll hacia ABAJO
+    if (scrollDirection === 'down' && e.deltaY > 5) { // Umbral para activar scroll hacia abajo
+      // Si estamos en la parte superior (header) y nos desplazamos hacia abajo
+      if (currentScrollY < cardsTop - snapBuffer) {
+        e.preventDefault(); // Prevenir scroll nativo
+        smoothScrollTo(cardsRef.current as HTMLElement); // Snap a las cards
+      } else if (currentScrollY < runningSectionTop - snapBuffer) {
+        // Si estamos en la zona de las cards y nos desplazamos hacia abajo,
+        // pero aún no hemos llegado a la RunningSection, permitimos el scroll nativo.
+        // No llamamos a e.preventDefault() aquí.
+      } else {
+        // Si ya estamos en RunningSection o más abajo, permitimos el scroll nativo.
+      }
+    } 
+    // Lógica para scroll hacia ARRIBA
+    else if (scrollDirection === 'up' && e.deltaY < -5) { // Umbral para activar scroll hacia arriba
+      // Si estamos en la RunningSection o más abajo y nos desplazamos hacia arriba,
+      // y la parte superior de RunningSection está cerca del viewport,
+      // permitimos el scroll nativo hasta que lleguemos a la zona de las cards.
+      if (currentScrollY > cardsTop + snapBuffer) {
+        // Si estamos por debajo de las cards, y nos movemos hacia arriba, no hacemos snap,
+        // dejamos que el scroll nativo nos lleve hasta las cards.
+      } else if (currentScrollY > headerTop + snapBuffer) { // Si estamos en la zona de las cards y nos desplazamos hacia arriba
+        e.preventDefault(); // Prevenir scroll nativo
+        smoothScrollTo(headerTop); // Snap al header
+      } else {
+        // Si ya estamos en el header o más arriba, permitimos el scroll nativo.
       }
     }
-    // Si `isInSnappingZone` es falso, `e.preventDefault()` no se llama,
-    // y el navegador gestiona el scroll de forma normal para el resto de la página.
   }, [smoothScrollTo]);
 
   // Manejador del evento 'keydown' (teclas de flecha, espacio, etc.)
@@ -140,31 +144,39 @@ function HomePageContent() {
     if (['Space', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(e.code)) {
       const currentScrollY = window.scrollY;
       const cardsTop = cardsRef.current?.offsetTop || Infinity;
-      const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity; // Límite de la zona de snapping
+      const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity;
 
-      const isInSnappingZone = currentScrollY < runningSectionTop;
+      const snapBuffer = window.innerHeight * 0.1; // 10% de la altura de la ventana
+      scrollVelocity.current = 5; // Velocidad base para teclado
 
-      if (isInSnappingZone) {
-        e.preventDefault(); // Prevenir el scroll nativo SOLO si estamos en la zona de snapping
-        scrollVelocity.current = 5; // Velocidad base para teclado
-
-        // Lógica para scroll hacia ABAJO con teclado
-        if (['ArrowDown', 'PageDown', 'Space'].includes(e.code)) {
-          if (currentScrollY < cardsTop - (window.innerHeight * 0.1)) {
-            smoothScrollTo(cardsRef.current as HTMLElement);
-          }
-        } 
-        // Lógica para scroll hacia ARRIBA con teclado
-        else if (['ArrowUp', 'PageUp'].includes(e.code)) {
-          if (currentScrollY > cardsTop + (window.innerHeight * 0.1)) {
-            smoothScrollTo(cardsRef.current as HTMLElement);
-          } else if (currentScrollY > 0) {
-            smoothScrollTo(0);
-          }
+      // Lógica para scroll hacia ABAJO con teclado
+      if (['ArrowDown', 'PageDown', 'Space'].includes(e.code)) {
+        // Si estamos en la parte superior (header) y nos desplazamos hacia abajo
+        if (currentScrollY < cardsTop - snapBuffer) {
+          e.preventDefault(); // Prevenir scroll nativo
+          smoothScrollTo(cardsRef.current as HTMLElement); // Snap a las cards
+        } else if (currentScrollY < runningSectionTop - snapBuffer) {
+          // Si estamos en la zona de las cards y nos desplazamos hacia abajo,
+          // pero aún no hemos llegado a la RunningSection, permitimos el scroll nativo.
+        } else {
+          // Si ya estamos en RunningSection o más abajo, permitimos el scroll nativo.
+        }
+      } 
+      // Lógica para scroll hacia ARRIBA con teclado
+      else if (['ArrowUp', 'PageUp'].includes(e.code)) {
+        // Si estamos en la RunningSection o más abajo y nos desplazamos hacia arriba,
+        // y la parte superior de RunningSection está cerca del viewport,
+        // permitimos el scroll nativo hasta que lleguemos a la zona de las cards.
+        if (currentScrollY > cardsTop + snapBuffer) {
+          // Si estamos por debajo de las cards, y nos movemos hacia arriba, no hacemos snap,
+          // dejamos que el scroll nativo nos lleve hasta las cards.
+        } else if (currentScrollY > snapBuffer) { // Si estamos en la zona de las cards y nos desplazamos hacia arriba
+          e.preventDefault(); // Prevenir scroll nativo
+          smoothScrollTo(0); // Snap al header
+        } else {
+          // Si ya estamos en el header o más arriba, permitimos el scroll nativo.
         }
       }
-      // Si `isInSnappingZone` es falso, `e.preventDefault()` no se llama,
-      // y el navegador gestiona el scroll de forma normal para el resto de la página.
     }
   }, [smoothScrollTo]);
 

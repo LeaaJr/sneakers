@@ -11,6 +11,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { useEffect, useState } from "react";
 
 // Si usas iconos, asegúrate de tener lucide-react instalado: npm install lucide-react
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
@@ -51,18 +52,48 @@ const components: { title: string; to: string; description: string }[] = [
     description:
       "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
   },
+  
 ];
 
-export function NavigationMenuDemo({ className }: { className?: string }) { // Acepta className prop
+
+export function NavigationMenuDemo({ className }: { className?: string }) {
+  
+  const [scrolled, setScrolled] = useState(false);
+
+useEffect(() => {
+  const handleScroll = () => {
+    const offset = window.scrollY;
+    setScrolled(offset > 50); // Cambia a partir de 50px de scroll
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+
   return (
     // Navbar con fondo transparente y texto blanco para que se "sumerja" en el Header
     // cuando esté presente, y se vea bien sobre otros fondos.
-    <NavigationMenu viewport={false} className={cn("mx-auto max-w-7xl bg-transparent text-white pt-5", className)}>
+    <NavigationMenu
+      viewport={false}
+      className={cn(
+        "mx-auto max-w-7xl pt-5 transition-colors duration-300",
+        scrolled ? "bg-transparent text-black" : "bg-transparent text-black",
+        className
+      )}
+    >
       <NavigationMenuList className="bg-transparent"> {/* Asegura que la lista también sea transparente */}
         {/* Home Link */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link to="/" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+            <Link
+              to="/"
+              className={cn(
+                navigationMenuTriggerStyle(),
+                "bg-transparent hover:bg-black/10 transition-colors",
+                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+              )}
+            >
               Home
             </Link>
           </NavigationMenuLink>
@@ -70,7 +101,12 @@ export function NavigationMenuDemo({ className }: { className?: string }) { // A
 
         {/* Shop Link (con dropdown si es necesario) */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-transparent text-white hover:bg-white/20">Shop</NavigationMenuTrigger>
+          <NavigationMenuTrigger className={cn(
+                navigationMenuTriggerStyle(),
+                "bg-transparent hover:bg-black/10 transition-colors",
+                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+              )}
+            >Shop</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-popover text-popover-foreground"> {/* El contenido del dropdown mantiene su fondo predeterminado */}
               <li className="row-span-3">
@@ -104,7 +140,12 @@ export function NavigationMenuDemo({ className }: { className?: string }) { // A
         {/* About Link */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link to="/about" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+            <Link to="/about" className={cn(
+                navigationMenuTriggerStyle(),
+                "bg-transparent hover:bg-black/10 transition-colors",
+                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+              )}
+            >
               About Us
             </Link>
           </NavigationMenuLink>
@@ -113,7 +154,12 @@ export function NavigationMenuDemo({ className }: { className?: string }) { // A
         {/* Contact Link */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link to="/contact" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+            <Link to="/contact" className={cn(
+                navigationMenuTriggerStyle(),
+                "bg-transparent hover:bg-black/10 transition-colors",
+                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+              )}
+            >
               Contact
             </Link>
           </NavigationMenuLink>
@@ -122,7 +168,12 @@ export function NavigationMenuDemo({ className }: { className?: string }) { // A
         {/* Sign In Link */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link to="/signin" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+            <Link to="/signin" className={cn(
+                navigationMenuTriggerStyle(),
+                "bg-transparent hover:bg-black/10 transition-colors",
+                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+              )}
+            >
               Sign In
             </Link>
           </NavigationMenuLink>
@@ -131,7 +182,12 @@ export function NavigationMenuDemo({ className }: { className?: string }) { // A
         {/* Sign Up Link */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
-            <Link to="/signup" className={cn(navigationMenuTriggerStyle(), "bg-transparent text-white hover:bg-white/20")}>
+            <Link to="/signup" className={cn(
+                navigationMenuTriggerStyle(),
+                "bg-transparent hover:bg-black/10 transition-colors",
+                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+              )}
+            >
               Sign Up
             </Link>
           </NavigationMenuLink>
