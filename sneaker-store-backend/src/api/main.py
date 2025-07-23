@@ -2,8 +2,8 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from typing import List, Optional
-import os # Importar el módulo os
+from typing import List, Optional # Keep Optional for optional query parameters
+import os
 
 # Importar modelos y esquemas
 from src.database import models
@@ -21,8 +21,8 @@ app = FastAPI(
 
 # Configurar CORS
 origins = [
-    "http://localhost:5173",  
-    "http://localhost:3000",  
+    "http://localhost:5173",
+    "http://localhost:3000",
     # "https://your-sneaker-store.vercel.app", # Agrega el dominio de Vercel aca cuando se despliegue
 ]
 
@@ -30,8 +30,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], 
-    allow_headers=["*"],  
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- DEBUGGING: Para imprimir variables de entorno al inicio de la aplicación ---
@@ -75,7 +75,7 @@ def create_brand(brand: schemas.BrandCreate, db: Session = Depends(get_db)):
     db_brand = db.query(models.Brand).filter(models.Brand.name == brand.name).first()
     if db_brand:
         raise HTTPException(status_code=400, detail="Brand with this name already exists")
-    
+
     db_brand = models.Brand(**brand.model_dump()) # Use model_dump() for Pydantic v2
     db.add(db_brand)
     db.commit()
@@ -121,25 +121,36 @@ def create_sneaker(sneaker: schemas.SneakerCreate, db: Session = Depends(get_db)
     for size_data in sneaker.sizes:
         db_size = models.Size(**size_data.model_dump(), sneaker_id=db_sneaker.id)
         db.add(db_size)
-    
+
     # Add additional images
     for image_data in sneaker.images:
         db_image = models.SneakerImage(**image_data.model_dump(), sneaker_id=db_sneaker.id)
         db.add(db_image)
-    
+
     db.commit()
     db.refresh(db_sneaker) # Refresh again to load relationships
 
     return db_sneaker
 
-# Para obtener todas las sneakers:
+# MODIFIED: Endpoint to get sneakers with optional sport filter
 @app.get("/api/sneakers/", response_model=List[schemas.Sneaker])
-def read_sneakers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_sneakers(
+    sport: Optional[str] = None, # Make sport an optional query parameter
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
     """
-    Retrieve a list of all sneakers.
+    Retrieve a list of sneakers, optionally filtered by sport.
     Includes brand, sizes, and additional images.
     """
-    sneakers = db.query(models.Sneaker).offset(skip).limit(limit).all()
+    query = db.query(models.Sneaker)
+
+    if sport:
+        # If sport parameter is provided, filter by it
+        query = query.filter(models.Sneaker.sport == sport)
+
+    sneakers = query.offset(skip).limit(limit).all()
     return sneakers
 
 # Para obtener una sneaker por ID:
@@ -152,4 +163,3 @@ def read_sneaker(sneaker_id: str, db: Session = Depends(get_db)):
     if sneaker is None:
         raise HTTPException(status_code=404, detail="Sneaker not found")
     return sneaker
-

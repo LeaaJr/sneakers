@@ -5,6 +5,7 @@ import { HeaderFuturista } from '@/components/Header';
 import { SneakersGrid } from '@/components/SneakersGrid';
 import { fetchSneakers, type Sneaker } from '@/services/sneakerService'; 
 import RunningSection from '@/sections/running/RunningSection';
+import SportGridSection from '@/sections/grid/SportGridSection';
 
 // Define el componente que se renderizará para la ruta raíz (/)
 function HomePageContent() {
@@ -242,7 +243,9 @@ function HomePageContent() {
 
           {/* Contenido adicional con su referencia */}
           <div ref={bottomContentRef} className="h-[100vh] bg-gray-100 flex items-center justify-center text-gray-700">
-            <p className="text-2xl">Desliza hacia arriba para volver al inicio.</p>
+            <SportGridSection sportType="running" sectionTitle="Zapatillas de Running" />
+            <SportGridSection sportType="urban" sectionTitle="Zapatillas Urbanas" />
+            <SportGridSection sportType="futbol" sectionTitle="Zapatillas de Fútbol" />
           </div>
         </>
       )}
