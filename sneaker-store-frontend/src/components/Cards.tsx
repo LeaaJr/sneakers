@@ -13,15 +13,19 @@ export function Card({
   description,
   main_image_url, // Usar main_image_url directamente como viene del backend
   price,
-  brand, // Esto será el objeto Brand { id, name, logo_url }
-  sizes, // Array de objetos Size
-  is_new, // Usar is_new como viene del backend
+  brand,
+  sizes,
+  is_new,
 }: CardProps) {
 
-  // Accede al nombre de la marca desde el objeto 'brand'
-  const brandName = brand.name;
-  // Para la talla, puedes elegir mostrar la US_size de la primera talla disponible, si existe
+  // --- AGREGA ESTE CONSOLE.LOG AQUÍ ---
+  console.log('Valor de main_image_url en Card:', main_image_url);
+  // --- FIN CONSOLE.LOG ---
+
+  const brandName = brand?.name;
   const displaySize = sizes && sizes.length > 0 ? `US ${sizes[0].us_size}` : undefined;
+
+  const imageUrl = main_image_url || 'https://placehold.co/400x300/E0E0E0/000000?text=No+Image';
 
   return (
     <ShadcnCard className="overflow-hidden">
