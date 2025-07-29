@@ -2,25 +2,45 @@
 import React from 'react';
 import { Card as ShadcnCard, CardContent, CardFooter, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
-import { type Sneaker } from '@/services/sneakerService';
+import type { Sneaker } from '@/services/sneakerService'; // Importa el tipo Sneaker
+import { useNavigate } from '@tanstack/react-router'; // ¡Importa useNavigate de TanStack Router!
 
-interface CardProps extends Sneaker {
-
+interface CardProps {
+  // Asegúrate de pasar el objeto Sneaker completo,
+  // no solo sus propiedades desestructuradas.
+  // Esto hace más fácil acceder al 'id' para la navegación.
+  sneaker: Sneaker;
 }
 
-export function Card({
-  title,
-  description,
-  main_image_url, // Usar main_image_url directamente como viene del backend
-  price,
-  brand,
-  sizes,
-  is_new,
-}: CardProps) {
+// Cambiamos la desestructuración para recibir el objeto 'sneaker' completo
+export function Card({ sneaker }: CardProps) {
+  // Desestructuramos las propiedades que necesitamos del objeto sneaker
+  const {
+    id, // Necesitamos el ID para la navegación
+    title,
+    description,
+    main_image_url,
+    price,
+    brand,
+    sizes,
+    is_new,
+  } = sneaker;
 
-  // --- AGREGA ESTE CONSOLE.LOG AQUÍ ---
+  // --- CONSOLE.LOG (puedes eliminarlo después de verificar) ---
   console.log('Valor de main_image_url en Card:', main_image_url);
   // --- FIN CONSOLE.LOG ---
+
+  // Inicializa el hook de navegación de TanStack Router
+  const navigate = useNavigate();
+
+  // Función que se ejecuta al hacer clic en la tarjeta
+  const handleCardClick = () => {
+    // Usa la función navigate para ir a la ruta de detalle de la zapatilla
+    // `to` es la URL base de tu ruta con el parámetro `$sneakerId`
+    // `params` es un objeto donde mapeas el nombre del parámetro (sin `$`)
+    // con el valor real (el ID de la zapatilla actual).
+    navigate({ to: '/sneakers/$sneakerId', params: { sneakerId: id } });
+  };
 
   const brandName = brand?.name;
   const displaySize = sizes && sizes.length > 0 ? `US ${sizes[0].us_size}` : undefined;
@@ -28,7 +48,11 @@ export function Card({
   const imageUrl = main_image_url || 'https://placehold.co/400x300/E0E0E0/000000?text=No+Image';
 
   return (
-    <ShadcnCard className="overflow-hidden">
+    // Agregamos el evento onClick a la tarjeta de Shadcn
+    <ShadcnCard
+      className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      onClick={handleCardClick} // ¡Aquí asignamos la función de clic!
+    >
       <CardHeader className="p-4">
         <div className="flex justify-between items-start">
           <div>
@@ -37,7 +61,7 @@ export function Card({
               <p className="text-sm text-muted-foreground">{description}</p>
             )}
           </div>
-          {is_new && ( // Usar is_new
+          {is_new && (
             <Badge variant="secondary" className="bg-blue-100 text-blue-800">
               New
             </Badge>
@@ -46,10 +70,10 @@ export function Card({
       </CardHeader>
       <div className="relative h-64 overflow-hidden">
         <img
-          src={main_image_url} // Usar main_image_url
+          src={imageUrl} // Usar imageUrl que incluye el fallback
           alt={title}
           className="w-full h-full object-cover"
-          onError={(e) => { e.currentTarget.src = 'https://placehold.co/400x300/E0E0E0/000000?text=No+Image'; }} // Fallback image
+          onError={(e) => { e.currentTarget.src = 'https://placehold.co/400x300/E0E0E0/000000?text=No+Image'; }}
         />
       </div>
       <CardContent className="p-0">
@@ -80,9 +104,9 @@ export function Card({
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-sm">{brandName}</span> {/* Usar brandName */}
+              <span className="text-sm">{brandName}</span>
             </div>
-            {displaySize && ( // Usar displaySize
+            {displaySize && (
               <div className="flex items-center gap-1">
                 {/* Icono de talla (ejemplo) */}
                 <svg
