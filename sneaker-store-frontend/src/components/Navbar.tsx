@@ -12,6 +12,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { useEffect, useState } from "react";
+import { useRouter } from "@tanstack/react-router";
 
 // Si usas iconos, asegúrate de tener lucide-react instalado: npm install lucide-react
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
@@ -70,6 +71,7 @@ useEffect(() => {
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
 
+const isProductPage = location.pathname.startsWith("/sneakers/")
 
   return (
     // Navbar con fondo transparente y texto blanco para que se "sumerja" en el Header
@@ -78,7 +80,7 @@ useEffect(() => {
       viewport={false}
       className={cn(
         "mx-auto max-w-7xl pt-5 transition-colors duration-300",
-        scrolled ? "bg-transparent text-black" : "bg-transparent text-black",
+        isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
         className
       )}
     >
@@ -91,7 +93,7 @@ useEffect(() => {
               className={cn(
                 navigationMenuTriggerStyle(),
                 "bg-transparent hover:bg-black/10 transition-colors",
-                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
               )}
             >
               Home
@@ -104,7 +106,7 @@ useEffect(() => {
           <NavigationMenuTrigger className={cn(
                 navigationMenuTriggerStyle(),
                 "bg-transparent hover:bg-black/10 transition-colors",
-                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
               )}
             >Shop</NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -143,7 +145,7 @@ useEffect(() => {
             <Link to="/about" className={cn(
                 navigationMenuTriggerStyle(),
                 "bg-transparent hover:bg-black/10 transition-colors",
-                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
               )}
             >
               About Us
@@ -157,7 +159,7 @@ useEffect(() => {
             <Link to="/contact" className={cn(
                 navigationMenuTriggerStyle(),
                 "bg-transparent hover:bg-black/10 transition-colors",
-                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
               )}
             >
               Contact
@@ -171,7 +173,7 @@ useEffect(() => {
             <Link to="/signin" className={cn(
                 navigationMenuTriggerStyle(),
                 "bg-transparent hover:bg-black/10 transition-colors",
-                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
               )}
             >
               Sign In
@@ -185,7 +187,7 @@ useEffect(() => {
             <Link to="/signup" className={cn(
                 navigationMenuTriggerStyle(),
                 "bg-transparent hover:bg-black/10 transition-colors",
-                scrolled ? "text-black hover:text-black" : "text-white hover:text-white"
+                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
               )}
             >
               Sign Up
