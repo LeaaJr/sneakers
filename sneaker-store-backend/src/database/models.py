@@ -3,7 +3,8 @@ from sqlalchemy import Column, String, Integer, Float, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func # Keep this import for func
-from sqlalchemy.dialects.postgresql import UUID 
+from sqlalchemy.dialects.postgresql import UUID
+from src.database.database import Base 
 import uuid 
 
 
@@ -42,6 +43,11 @@ class Sneaker(Base):
     gender = Column(String, nullable=True)
     release_date = Column(DateTime, nullable=True)
     is_new = Column(Boolean, default=False)
+    
+    brand = relationship("Brand", back_populates="sneakers")
+    sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan")
+    images = relationship("SneakerImage", back_populates="sneaker", cascade="all, delete-orphan")
+    featured_details = relationship("SneakerFeaturedDetail", back_populates="sneaker", cascade="all, delete-orphan")
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
@@ -50,6 +56,8 @@ class Sneaker(Base):
     # CORRECTED TYPO HERE: back_popates changed to back_populates
     sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan") 
     images = relationship("SneakerImage", back_populates="sneaker", cascade="all, delete-orphan")
+    running_details = relationship("RunningSectionDetail", back_populates="sneaker", cascade="all, delete-orphan")
+    
 
     def __repr__(self):
         return f"<Sneaker(title='{self.title}', brand='{self.brand.name if self.brand else 'N/A'}')>"
@@ -89,3 +97,40 @@ class SneakerImage(Base):
 
     def __repr__(self):
         return f"<SneakerImage(sneaker_id='{self.sneaker_id}', url='{self.image_url}')>"
+
+
+#Nueva seccion de endopint Running
+
+class SneakerFeaturedDetail(Base):
+    """
+    SQLAlchemy model for featured details of a sneaker.
+    """
+    __tablename__ = "sneaker_featured_details"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
+    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id"), nullable=False)
+    title = Column(Text, nullable=False)
+    description = Column(Text, nullable=True)
+    image_url = Column(String, nullable=False)
+    display_order = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    sneaker = relationship("Sneaker", back_populates="featured_details")
+
+    def __repr__(self):
+        return f"<SneakerFeaturedDetail(title='{self.title}')>"
+
+# --- NUEVO MODELO PARA LOS DETALLES DE LA SECCIÓN DE RUNNING ---
+class RunningSectionDetail(Base):
+    __tablename__ = "running_section_details"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id", ondelete="CASCADE"), nullable=False)
+    
+    title = Column(String, nullable=False)
+    description = Column(String)
+    image_url = Column(String)
+    display_order = Column(Integer, default=0)
+
+    # Relación a la zapatilla, con el back_populates
+    sneaker = relationship("Sneaker", back_populates="running_details")

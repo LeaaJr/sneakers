@@ -77,6 +77,7 @@ function HomePageContent() {
       e.preventDefault();
       return;
     }
+    
 
     const now = Date.now();
     const currentScrollY = window.scrollY;
@@ -176,6 +177,7 @@ function HomePageContent() {
 
     getSneakers();
   }, []);
+  
 
   return (
     <>
@@ -194,7 +196,7 @@ function HomePageContent() {
           ) : (
             // ¡EL CAMBIO CRÍTICO ESTÁ AQUÍ!
             // Pasamos el array completo de sneakers a SneakersGrid
-            <SneakersGrid sneakers={sneakers} />
+            <SneakersGrid sneakers={sneakers.slice(0, 3)} />
           )}
         </div>
       </div>

@@ -3,6 +3,16 @@
 from pydantic import BaseModel, Field, HttpUrl, UUID4 
 from typing import List, Optional
 from datetime import datetime
+from uuid import UUID
+
+
+# Esta es para sectionRunning
+class SneakerFeaturedDetailCreate(BaseModel):
+    sneaker_id: UUID
+    title: str
+    description: Optional[str] = None
+    image_url: HttpUrl
+    display_order: int = Field(default=0, ge=0)
 
 # Base schemas for related entities
 class BrandBase(BaseModel):
@@ -59,24 +69,20 @@ class SneakerImage(SneakerImageBase):
 
 # Main Sneaker schemas
 class SneakerBase(BaseModel):
-    """Base schema for Sneaker."""
     title: str
     description: Optional[str] = None
-    price: float = Field(gt=0) 
+    price: float
     main_image_url: HttpUrl
-    # CHANGED: brand_id type to UUID4
-    brand_id: UUID4 
-
-    # Optional fields
-    sport: Optional[str] = None
-    gender: Optional[str] = None
-    release_date: Optional[datetime] = None
-    is_new: bool = False
+    sport: str
+    gender: str
+    release_date: datetime
+    is_new: bool
 
 class SneakerCreate(SneakerBase):
     """Schema for creating a Sneaker."""
     sizes: List[SizeCreate] = []
     images: List[SneakerImageCreate] = []
+    featured_details: List[SneakerFeaturedDetailCreate]
 
 class SneakerUpdate(SneakerBase):
     """Schema for updating a Sneaker."""
@@ -91,17 +97,31 @@ class SneakerUpdate(SneakerBase):
     release_date: Optional[datetime] = None
     is_new: Optional[bool] = None
 
-class Sneaker(SneakerBase):
-    """Schema for returning a Sneaker, including relationships."""
-    # CHANGED: id type to UUID4
-    id: UUID4
-    created_at: datetime
-    updated_at: Optional[datetime] = None
+    #agregamos el squema de running para la nueva seccion
+
+class SneakerFeaturedDetailBase(BaseModel):
+    """Base schema for a SneakerFeaturedDetail."""
+    title: str
+    description: Optional[str] = None
+    image_url: HttpUrl
+    display_order: int = Field(default=0, ge=0)
     
-    # Relationships
-    brand: Brand 
-    sizes: List[Size] = [] 
-    images: List[SneakerImage] = [] 
+class SneakerFeaturedDetail(SneakerFeaturedDetailBase):
+    """Schema for returning a SneakerFeaturedDetail."""
+    id: UUID4
+    sneaker_id: UUID4
+    created_at: datetime
 
     class Config:
         from_attributes = True
+
+class Sneaker(SneakerBase):
+    id: UUID
+    brand_id: UUID
+    sizes: List[Size] = []  # Asegúrate de que esto esté
+    images: List[SneakerImage] = [] # Y esto también
+    featured_details: List[SneakerFeaturedDetailCreate] = []
+
+    class Config:
+        from_attributes = True
+

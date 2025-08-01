@@ -41,6 +41,15 @@ export interface Sneaker {
   updated_at: string;
 }
 
+export type RunningSectionDetail = {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  display_order: number;
+  sneaker_id: string;
+};
+
 /**
  * Fetches a list of sneakers from the backend API.
  * @returns A promise that resolves to an array of Sneaker objects.
@@ -57,20 +66,42 @@ export const fetchSneakers = async (): Promise<Sneaker[]> => {
 };
 
 /**
+ * Fetches the featured details for a specific sneaker.
+ * @param sneakerId The ID of the sneaker.
+ * @returns A promise that resolves to an array of SneakerFeaturedDetail objects.
+ */
+export const fetchSneakerFeaturedDetails = async (sneakerId: string): Promise<SneakerFeaturedDetail[]> => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/sneakers/${sneakerId}/featured_details`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching featured details for sneaker ${sneakerId}:`, error);
+        throw error;
+    }
+};
+
+
+/**
  * Fetches a single sneaker by its ID from the backend API.
  * @param id The ID of the sneaker to fetch.
  * @returns A promise that resolves to a Sneaker object or null if not found.
  */
 export async function getSneakerById(id: string): Promise<Sneaker | null> {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/sneakers/${id}`);
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      console.warn(`Sneaker with ID ${id} not found.`);
-      return null; // Sneaker not found
-    }
-    console.error(`Error fetching sneaker with ID ${id}:`, error);
-    throw error; // Re-throw other errors for handling higher up
-  }
+  try {
+    // Agrega la barra diagonal al final
+    const response = await axios.get(`${API_BASE_URL}/sneakers/${id}/`); 
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      console.warn(`Sneaker with ID ${id} not found.`);
+      return null;
+    }
+    console.error(`Error fetching sneaker with ID ${id}:`, error);
+    throw error;
+  }
 }
+
+export const fetchHighlightedSneakers = async (): Promise<RunningSectionDetail[]> => {
+  const response = await axios.get<RunningSectionDetail[]>('http://localhost:8000/api/running_section/featured_details/');
+  return response.data;
+};
