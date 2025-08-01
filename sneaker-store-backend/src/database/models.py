@@ -2,8 +2,10 @@
 from sqlalchemy import Column, String, Integer, Float, Boolean, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql import func
-import uuid
+from sqlalchemy.sql import func # Keep this import for func
+from sqlalchemy.dialects.postgresql import UUID 
+import uuid 
+
 
 Base = declarative_base()
 
@@ -13,7 +15,8 @@ class Brand(Base):
     """
     __tablename__ = "brands"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    # CHANGE THIS LINE: from func.uuid_generate_v4() to func.gen_random_uuid()
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
     name = Column(String, unique=True, index=True, nullable=False)
     logo_url = Column(String, nullable=True)
 
@@ -28,17 +31,15 @@ class Sneaker(Base):
     """
     __tablename__ = "sneakers"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
     title = Column(String, index=True, nullable=False)
     description = Column(Text, nullable=True)
     price = Column(Float, nullable=False)
-    # Main image URL for the sneaker
     main_image_url = Column(String, nullable=False)
-    brand_id = Column(String, ForeignKey("brands.id"), nullable=False)
+    brand_id = Column(UUID(as_uuid=True), ForeignKey("brands.id"), nullable=False) 
     
-    # Optional fields
-    sport = Column(String, nullable=True) # e.g., "Basketball", "Running"
-    gender = Column(String, nullable=True) # e.g., "Men's", "Women's", "Unisex"
+    sport = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
     release_date = Column(DateTime, nullable=True)
     is_new = Column(Boolean, default=False)
 
@@ -46,7 +47,8 @@ class Sneaker(Base):
     updated_at = Column(DateTime, onupdate=func.now())
 
     brand = relationship("Brand", back_populates="sneakers")
-    sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan")
+    # CORRECTED TYPO HERE: back_popates changed to back_populates
+    sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan") 
     images = relationship("SneakerImage", back_populates="sneaker", cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -58,11 +60,12 @@ class Size(Base):
     """
     __tablename__ = "sizes"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    sneaker_id = Column(String, ForeignKey("sneakers.id"), nullable=False)
-    us_size = Column(Float, nullable=False) # e.g., 8.5, 10.0
-    eu_size = Column(Float, nullable=True) # e.g., 42, 44
-    uk_size = Column(Float, nullable=True) # e.g., 7.5, 9.5
+    # CHANGE THIS LINE
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
+    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id"), nullable=False)
+    us_size = Column(Float, nullable=False)
+    eu_size = Column(Float, nullable=True)
+    uk_size = Column(Float, nullable=True)
     quantity = Column(Integer, default=0, nullable=False)
 
     sneaker = relationship("Sneaker", back_populates="sizes")
@@ -76,10 +79,10 @@ class SneakerImage(Base):
     """
     __tablename__ = "sneaker_images"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    sneaker_id = Column(String, ForeignKey("sneakers.id"), nullable=False)
+    # CHANGE THIS LINE
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
+    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id"), nullable=False)
     image_url = Column(String, nullable=False)
-    # Optional: order for displaying images
     order = Column(Integer, default=0)
 
     sneaker = relationship("Sneaker", back_populates="images")

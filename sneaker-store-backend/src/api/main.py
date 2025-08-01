@@ -1,16 +1,14 @@
 # src/api/main.py
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload # Importar joinedload para cargar relaciones
 from typing import List, Optional
-import os # Importar el módulo os
+import os
 
-# Importar modelos y esquemas
 from src.database import models
 from src.schemas import sneaker as schemas
 from src.database.database import engine, get_db
 
-# Crear todas las tablas en la base de datos (solo para desarrollo/primer inicio)
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -19,42 +17,31 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Configurar CORS
 origins = [
-    "http://localhost:5173",  
-    "http://localhost:3000",  
-    # "https://your-sneaker-store.vercel.app", # Agrega el dominio de Vercel aca cuando se despliegue
+    "http://localhost:5173",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], 
-    allow_headers=["*"],  
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# --- DEBUGGING: Para imprimir variables de entorno al inicio de la aplicación ---
 @app.on_event("startup")
 async def startup_event():
     print(f"DEBUG: Render's PORT env var: {os.environ.get('PORT')}")
     print(f"DEBUG: Render's HOST env var: {os.environ.get('HOST')}")
-# --- FIN DEBUGGING ---
 
 @app.get("/")
 def read_root():
-    """
-    Root endpoint for the API.
-    """
     return {"message": "Welcome to the Sneaker Store API! Visit /docs for OpenAPI documentation."}
 
 @app.get("/api/test-db")
 def test_db_connection(db: Session = Depends(get_db)):
-    """
-    Tests the database connection and tries to fetch a brand.
-    """
     try:
-        # Intenta obtener la primera marca o crear una si no existe
         first_brand = db.query(models.Brand).first()
         if not first_brand:
             new_brand = models.Brand(name="Test Brand", logo_url="http://example.com/logo.png")
@@ -66,23 +53,22 @@ def test_db_connection(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database connection error: {e}")
 
-
 @app.post("/api/brands/", response_model=schemas.Brand, status_code=status.HTTP_201_CREATED)
 def create_brand(brand: schemas.BrandCreate, db: Session = Depends(get_db)):
-    """
-    Create a new brand.
-    """
     db_brand = db.query(models.Brand).filter(models.Brand.name == brand.name).first()
     if db_brand:
         raise HTTPException(status_code=400, detail="Brand with this name already exists")
-    
-    db_brand = models.Brand(**brand.model_dump()) # Use model_dump() for Pydantic v2
+
+    brand_data = brand.model_dump() 
+    if brand_data.get("logo_url"): 
+        brand_data["logo_url"] = str(brand_data["logo_url"])
+
+    db_brand = models.Brand(**brand_data) 
     db.add(db_brand)
     db.commit()
     db.refresh(db_brand)
     return db_brand
 
-# Para obtener todas las marcas:
 @app.get("/api/brands/", response_model=List[schemas.Brand])
 def read_brands(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
@@ -91,56 +77,68 @@ def read_brands(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     brands = db.query(models.Brand).offset(skip).limit(limit).all()
     return brands
 
-# Para crear una sneaker:
+# --- NUEVO ENDPOINT PARA OBTENER ZAPATILLAS (GET) ---
+@app.get("/api/sneakers/", response_model=List[schemas.Sneaker])
+def read_sneakers(
+    sport: Optional[str] = None, 
+    gender: Optional[str] = None, 
+    is_new: Optional[bool] = None,
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieve a list of sneakers, optionally filtered by sport, gender, or new status.
+    Includes brand, sizes, and additional images using eager loading.
+    """
+    query = db.query(models.Sneaker).options(
+        joinedload(models.Sneaker.brand),
+        joinedload(models.Sneaker.sizes),
+        joinedload(models.Sneaker.images)
+    )
+
+    if sport:
+        query = query.filter(models.Sneaker.sport == sport)
+    if gender:
+        query = query.filter(models.Sneaker.gender == gender)
+    if is_new is not None: # Check explicitly for True/False
+        query = query.filter(models.Sneaker.is_new == is_new)
+
+    sneakers = query.offset(skip).limit(limit).all()
+    return sneakers
+
+# --- TU ENDPOINT EXISTENTE PARA CREAR ZAPATILLAS (POST) ---
 @app.post("/api/sneakers/", response_model=schemas.Sneaker, status_code=status.HTTP_201_CREATED)
 def create_sneaker(sneaker: schemas.SneakerCreate, db: Session = Depends(get_db)):
     """
-    Create a new sneaker with associated sizes and images.
+    Create a new sneaker with optional sizes and images.
     """
-    # Check if brand_id exists
-    brand = db.query(models.Brand).filter(models.Brand.id == sneaker.brand_id).first()
-    if not brand:
-        raise HTTPException(status_code=404, detail="Brand not found")
+    sneaker_data = sneaker.model_dump()
 
-    db_sneaker = models.Sneaker(
-        title=sneaker.title,
-        description=sneaker.description,
-        price=sneaker.price,
-        main_image_url=sneaker.main_image_url,
-        brand_id=sneaker.brand_id,
-        sport=sneaker.sport,
-        gender=sneaker.gender,
-        release_date=sneaker.release_date,
-        is_new=sneaker.is_new
-    )
+    if "main_image_url" in sneaker_data:
+        sneaker_data["main_image_url"] = str(sneaker_data["main_image_url"])
+
+    sizes_data = sneaker_data.pop("sizes", [])
+    images_data = sneaker_data.pop("images", [])
+
+    db_sneaker = models.Sneaker(**sneaker_data)
     db.add(db_sneaker)
-    db.commit()
-    db.refresh(db_sneaker)
+    db.flush() 
 
-    # Add sizes
-    for size_data in sneaker.sizes:
-        db_size = models.Size(**size_data.model_dump(), sneaker_id=db_sneaker.id)
+    for size_item in sizes_data:
+        db_size = models.Size(**size_item, sneaker_id=db_sneaker.id)
         db.add(db_size)
-    
-    # Add additional images
-    for image_data in sneaker.images:
-        db_image = models.SneakerImage(**image_data.model_dump(), sneaker_id=db_sneaker.id)
+
+    for image_item in images_data:
+        if "image_url" in image_item:
+            image_item["image_url"] = str(image_item["image_url"])
+        db_image = models.SneakerImage(**image_item, sneaker_id=db_sneaker.id)
         db.add(db_image)
-    
+
     db.commit()
-    db.refresh(db_sneaker) # Refresh again to load relationships
-
+    db.refresh(db_sneaker) 
+    
     return db_sneaker
-
-# Para obtener todas las sneakers:
-@app.get("/api/sneakers/", response_model=List[schemas.Sneaker])
-def read_sneakers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """
-    Retrieve a list of all sneakers.
-    Includes brand, sizes, and additional images.
-    """
-    sneakers = db.query(models.Sneaker).offset(skip).limit(limit).all()
-    return sneakers
 
 # Para obtener una sneaker por ID:
 @app.get("/api/sneakers/{sneaker_id}", response_model=schemas.Sneaker)
@@ -148,8 +146,13 @@ def read_sneaker(sneaker_id: str, db: Session = Depends(get_db)):
     """
     Retrieve a single sneaker by its ID.
     """
-    sneaker = db.query(models.Sneaker).filter(models.Sneaker.id == sneaker_id).first()
+    # Usar joinedload para cargar también las relaciones anidadas
+    sneaker = db.query(models.Sneaker).options(
+        joinedload(models.Sneaker.brand),
+        joinedload(models.Sneaker.sizes),
+        joinedload(models.Sneaker.images)
+    ).filter(models.Sneaker.id == sneaker_id).first()
+    
     if sneaker is None:
         raise HTTPException(status_code=404, detail="Sneaker not found")
     return sneaker
-

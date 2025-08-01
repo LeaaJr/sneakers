@@ -1,27 +1,17 @@
 // src/components/SneakersGrid.tsx
-import { Card } from './Cards'; // Asegúrate de que la ruta sea correcta
-import { type Sneaker } from '@/services/sneakerService';
+import { Card } from './Cards'; // Asegúrate que 'Cards' sea el nombre correcto del archivo
+import type { Sneaker } from '@/services/sneakerService'; // Importa el tipo Sneaker
 
 interface SneakersGridProps {
-  sneakers: Sneaker[];
+  sneakers: Sneaker[]; // Espera un array de zapatillas
 }
 
 export function SneakersGrid({ sneakers }: SneakersGridProps) {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-32">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sneakers.map((sneaker) => (
-          <Card
-            key={sneaker.id}
-            id={sneaker.id}
-            title={sneaker.title}
-            description={sneaker.description}
-            imageUrl={sneaker.main_image_url} // Usa main_image_url del backend
-            price={sneaker.price}
-            brand={sneaker.brand.name} // Accede al nombre de la marca anidada
-            // size={sneaker.sizes[0]?.us_size ? `US ${sneaker.sizes[0].us_size}` : undefined} // Ejemplo: toma la primera talla disponible
-            isNew={sneaker.is_new} // Usa is_new del backend
-          />
+          <Card key={sneaker.id} sneaker={sneaker} />
         ))}
       </div>
     </div>
