@@ -74,8 +74,7 @@ useEffect(() => {
 const isProductPage = location.pathname.startsWith("/sneakers/")
 
   return (
-    // Navbar con fondo transparente y texto blanco para que se "sumerja" en el Header
-    // cuando esté presente, y se vea bien sobre otros fondos.
+
     <NavigationMenu
       viewport={false}
       className={cn(
@@ -84,7 +83,7 @@ const isProductPage = location.pathname.startsWith("/sneakers/")
         className
       )}
     >
-      <NavigationMenuList className="bg-transparent"> {/* Asegura que la lista también sea transparente */}
+      <NavigationMenuList className="bg-transparent">
         {/* Home Link */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild>
@@ -112,19 +111,17 @@ const isProductPage = location.pathname.startsWith("/sneakers/")
           <NavigationMenuContent>
             <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-popover text-popover-foreground"> {/* El contenido del dropdown mantiene su fondo predeterminado */}
               <li className="row-span-3">
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                    to="/shop"
-                  >
-                    <div className="mb-2 mt-4 text-lg font-medium">
-                      Sneaker Store
-                    </div>
-                    <p className="text-sm leading-tight text-muted-foreground">
-                      Explora nuestra vasta colección de sneakers.
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
+              <NavigationMenuLink asChild>
+                <Link
+                  to="/allProducts"
+                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                >
+                  <div className="mb-2 mt-4 text-lg font-medium">All Sneakers</div>
+                  <p className="text-sm leading-tight text-muted-foreground">
+                    Explora nuestra vasta colección de sneakers.
+                  </p>
+                </Link>
+              </NavigationMenuLink>
               </li>
               <ListItem to="/shop/brands" title="Brands">
                 Descubre sneakers por tus marcas favoritas.

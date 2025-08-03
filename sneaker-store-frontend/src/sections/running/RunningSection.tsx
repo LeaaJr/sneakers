@@ -5,7 +5,7 @@ import { ArrowRightIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 // Importa el nuevo tipo si es necesario
 import { fetchHighlightedSneakers, } from '@/services/sneakerService'; 
-import type { SneakerFeaturedDetail } from '@/services/sneakerService'; 
+import type { RunningSectionDetail } from '@/services/sneakerService';
 
 const RunningSection: React.FC = () => {
   // El tipo de los datos ahora es una lista de los detalles, no una lista de zapatillas
@@ -13,7 +13,7 @@ const RunningSection: React.FC = () => {
     data: featuredDetails, // Cambiamos el nombre de la variable para que sea más claro
     isLoading, 
     error 
-  } = useQuery<SneakerFeaturedDetail[], Error>({ // El tipo del genérico también cambia
+  } = useQuery<RunningSectionDetail[], Error>({ // El tipo del genérico también cambia
     queryKey: ['highlightedSneakers'],
     queryFn: fetchHighlightedSneakers, // Llamará a la función modificada
   });
@@ -26,7 +26,7 @@ const RunningSection: React.FC = () => {
   // Si quieres un título general, lo puedes poner aquí, o usar el título del primer detalle.
   // Pero el título "Learn more..." y el `href` ya no tienen un sneakerId al que apuntar.
   // Por ahora, eliminémos esa parte o hagámosla estática.
-  const mainTitle = "Running Section"; 
+  const mainTitle = "Nuova Nike Structure 26"; 
   
   return (
     <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
@@ -45,7 +45,6 @@ const RunningSection: React.FC = () => {
                 {featuredDetails.map((feature) => (
                     <CardRunning
                         key={feature.id}
-                        // Ahora pasamos el ID correcto
                         sneakerId={feature.sneaker_id} 
                         title={feature.title}
                         description={feature.description}

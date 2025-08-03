@@ -73,16 +73,17 @@ class SneakerBase(BaseModel):
     description: Optional[str] = None
     price: float
     main_image_url: HttpUrl
-    sport: str
-    gender: str
-    release_date: datetime
-    is_new: bool
+    brand_id: str
+    sport: str # <-- ¡Añade el campo aquí!
+    gender: Optional[str] = None
+    release_date: Optional[datetime] = None
+    is_new: bool = True
 
 class SneakerCreate(SneakerBase):
-    """Schema for creating a Sneaker."""
+    """Schema for creating a Sneaker, including nested relations."""
     sizes: List[SizeCreate] = []
     images: List[SneakerImageCreate] = []
-    featured_details: List[SneakerFeaturedDetailCreate]
+    featured_details: List[SneakerFeaturedDetailCreate] = []
 
 class SneakerUpdate(SneakerBase):
     """Schema for updating a Sneaker."""

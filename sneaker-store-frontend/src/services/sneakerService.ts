@@ -81,27 +81,54 @@ export const fetchSneakerFeaturedDetails = async (sneakerId: string): Promise<Sn
 };
 
 
-/**
- * Fetches a single sneaker by its ID from the backend API.
- * @param id The ID of the sneaker to fetch.
- * @returns A promise that resolves to a Sneaker object or null if not found.
- */
-export async function getSneakerById(id: string): Promise<Sneaker | null> {
-  try {
-    // Agrega la barra diagonal al final
-    const response = await axios.get(`${API_BASE_URL}/sneakers/${id}/`); 
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      console.warn(`Sneaker with ID ${id} not found.`);
-      return null;
-    }
-    console.error(`Error fetching sneaker with ID ${id}:`, error);
-    throw error;
-  }
-}
+
+export const fetchSneakerById = async (id: string) => {
+  if (isNaN(Number(id))) {
+    throw new Error(`Invalid ID: ${id}`);
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/sneakers/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching sneaker with ID ${id}:`, error);
+    throw error;
+  }
+};
+
 
 export const fetchHighlightedSneakers = async (): Promise<RunningSectionDetail[]> => {
   const response = await axios.get<RunningSectionDetail[]>('http://localhost:8000/api/running_section/featured_details/');
   return response.data;
+};
+
+
+//Funcion para categorias
+
+/**
+ * Fetches sneakers filtered by a specific sport.
+ * @param sport The sport type to filter by.
+ * @returns A promise that resolves to an array of Sneaker objects.
+ */
+export const fetchSneakersBySport = async (sport: string): Promise<Sneaker[]> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/sneakers/?sport=${sport}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching sneakers for sport ${sport}:`, error);
+    throw error;
+  }
+};
+
+
+//Para manejarlo por ID
+
+export const getSneakerById = async (id: string): Promise<Sneaker> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/sneakers/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching sneaker with ID ${id}:`, error);
+    throw error;
+  }
 };
