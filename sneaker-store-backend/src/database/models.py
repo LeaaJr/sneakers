@@ -52,11 +52,16 @@ class Sneaker(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
 
+    category_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=False)
+
     brand = relationship("Brand", back_populates="sneakers")
     # CORRECTED TYPO HERE: back_popates changed to back_populates
     sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan") 
     images = relationship("SneakerImage", back_populates="sneaker", cascade="all, delete-orphan")
     running_details = relationship("RunningSectionDetail", back_populates="sneaker", cascade="all, delete-orphan")
+    category = relationship("Category", back_populates="sneakers")
+
+    
     
 
     def __repr__(self):
@@ -134,3 +139,23 @@ class RunningSectionDetail(Base):
 
     # Relación a la zapatilla, con el back_populates
     sneaker = relationship("Sneaker", back_populates="running_details")
+
+    # Clase de categorias
+class Category(Base):
+    """
+    SQLAlchemy model for product categories.
+    """
+    __tablename__ = "categories"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
+    name = Column(String, unique=True, index=True, nullable=False)  # "Jordan"
+    slug = Column(String, unique=True, index=True, nullable=False)  # "jordan"
+    cover_image = Column(String, nullable=False)  # URL de imagen representativa
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+    sneakers = relationship("Sneaker", back_populates="category")
+
+    def __repr__(self):
+        return f"<Category(name='{self.name}')>"

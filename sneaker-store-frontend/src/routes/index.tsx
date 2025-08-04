@@ -6,6 +6,7 @@ import { SneakersGrid } from '@/components/SneakersGrid';
 import { fetchSneakers, type Sneaker } from '@/services/sneakerService';
 import RunningSection from '@/sections/running/RunningSection';
 import SportGridSection from '@/sections/grid/SportGridSection';
+import AllCategoriesSection from '../sections/AllCategoriesSection';
 
 // Define el componente que se renderizará para la ruta raíz (/)
 function HomePageContent() {
@@ -194,8 +195,6 @@ function HomePageContent() {
           ) : sneakers.length === 0 ? (
             <div className="text-center text-lg text-gray-600">No se encontraron zapatillas.</div>
           ) : (
-            // ¡EL CAMBIO CRÍTICO ESTÁ AQUÍ!
-            // Pasamos el array completo de sneakers a SneakersGrid
             <SneakersGrid sneakers={sneakers.slice(0, 3)} />
           )}
         </div>
@@ -208,10 +207,19 @@ function HomePageContent() {
           </div>
 
           <div ref={bottomContentRef} className="h-[100vh] bg-gray-100 flex items-center justify-center text-gray-700">
-            <SportGridSection sportType="running" sectionTitle="Zapatillas de Running" />
-            <SportGridSection sportType="urban" sectionTitle="Zapatillas Urbanas" />
-            <SportGridSection sportType="futbol" sectionTitle="Zapatillas de Fútbol" />
-          </div>
+{/*          
+          <SportGridSection sportType="running" sectionTitle="" />
+
+        
+          <SportGridSection sportType="urbano" sectionTitle="Zapatillas Urbanas" />
+
+         
+          <SportGridSection sportType="ordan" sectionTitle="Zapatillas Jordan" />
+
+           */}
+           <AllCategoriesSection />
+        </div>
+        
         </>
       )}
     </>

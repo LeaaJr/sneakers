@@ -67,10 +67,9 @@ const SportGridSection: React.FC<SportGridSectionProps> = ({
         <Link
           to="/category/$sport"
           params={{ sport: sportType }}
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
         >
-          Ver más {sectionTitle}
-          <ArrowRightIcon className="ml-2" size={20} />
+          {sectionTitle}
+          <ArrowRightIcon className="" size={20} />
         </Link>
       </div>
 

@@ -5,6 +5,8 @@ from typing import List, Optional
 from datetime import datetime
 from uuid import UUID
 
+from .category import Category
+
 
 # Esta es para sectionRunning
 class SneakerFeaturedDetailCreate(BaseModel):
@@ -73,8 +75,9 @@ class SneakerBase(BaseModel):
     description: Optional[str] = None
     price: float
     main_image_url: HttpUrl
-    brand_id: str
-    sport: str # <-- ¡Añade el campo aquí!
+    brand_id: UUID
+    category_id: UUID  # Nuevo campo para reemplazar sport
+    sport: Optional[str] = None  # Lo mantenemos como opcional por compatibilidad
     gender: Optional[str] = None
     release_date: Optional[datetime] = None
     is_new: bool = True
@@ -85,14 +88,14 @@ class SneakerCreate(SneakerBase):
     images: List[SneakerImageCreate] = []
     featured_details: List[SneakerFeaturedDetailCreate] = []
 
-class SneakerUpdate(SneakerBase):
+class SneakerUpdate(BaseModel):
     """Schema for updating a Sneaker."""
     title: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = Field(None, gt=0)
     main_image_url: Optional[HttpUrl] = None
-    # CHANGED: brand_id type to Optional[UUID4]
-    brand_id: Optional[UUID4] = None 
+    brand_id: Optional[UUID] = None 
+    category_id: Optional[UUID] = None  # Nuevo campo opcional
     sport: Optional[str] = None
     gender: Optional[str] = None
     release_date: Optional[datetime] = None
@@ -119,10 +122,13 @@ class SneakerFeaturedDetail(SneakerFeaturedDetailBase):
 class Sneaker(SneakerBase):
     id: UUID
     brand_id: UUID
-    sizes: List[Size] = []  # Asegúrate de que esto esté
-    images: List[SneakerImage] = [] # Y esto también
-    featured_details: List[SneakerFeaturedDetailCreate] = []
+    category: Category
+    sizes: List[Size] = []
+    images: List[SneakerImage] = []
+    featured_details: List[SneakerFeaturedDetail] = []
 
     class Config:
         from_attributes = True
+
+Sneaker.model_rebuild()
 

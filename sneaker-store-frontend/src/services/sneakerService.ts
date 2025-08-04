@@ -1,6 +1,26 @@
 // src/services/sneakerService.ts
 import axios from 'axios';
 
+// Configuración base de Axios
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
+  timeout: 10000, // 10 segundos
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+// Interceptor para manejar errores globalmente
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === 'ECONNABORTED') {
+      console.error('Timeout: La solicitud tardó demasiado');
+    }
+    return Promise.reject(error);
+  }
+);
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
 export interface Brand {
@@ -56,12 +76,11 @@ export type RunningSectionDetail = {
  */
 export const fetchSneakers = async (): Promise<Sneaker[]> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/sneakers/`);
+    const response = await apiClient.get('/sneakers/');
     return response.data;
   } catch (error) {
     console.error('Error fetching sneakers:', error);
-    // It's often good to rethrow errors so calling components can handle them
-    throw error;
+    throw new Error('No se pudo conectar con el servidor. Verifica tu conexión.');
   }
 };
 
@@ -82,24 +101,25 @@ export const fetchSneakerFeaturedDetails = async (sneakerId: string): Promise<Sn
 
 
 
-export const fetchSneakerById = async (id: string) => {
-  if (isNaN(Number(id))) {
-    throw new Error(`Invalid ID: ${id}`);
-  }
-
+export const fetchSneakerById = async (id: string): Promise<Sneaker> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/sneakers/${id}`);
+    const response = await apiClient.get(`/sneakers/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching sneaker with ID ${id}:`, error);
-    throw error;
+    throw new Error(`No se pudo obtener la zapatilla con ID ${id}`);
   }
 };
 
 
 export const fetchHighlightedSneakers = async (): Promise<RunningSectionDetail[]> => {
-  const response = await axios.get<RunningSectionDetail[]>('http://localhost:8000/api/running_section/featured_details/');
-  return response.data;
+  try {
+    const response = await apiClient.get('/running_section/featured_details/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching highlighted sneakers:', error);
+    throw new Error('Error al obtener destacados');
+  }
 };
 
 
@@ -112,11 +132,13 @@ export const fetchHighlightedSneakers = async (): Promise<RunningSectionDetail[]
  */
 export const fetchSneakersBySport = async (sport: string): Promise<Sneaker[]> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/sneakers/?sport=${sport}`);
+    const response = await apiClient.get('/sneakers/', {
+      params: { sport }
+    });
     return response.data;
   } catch (error) {
     console.error(`Error fetching sneakers for sport ${sport}:`, error);
-    throw error;
+    throw new Error(`Error al obtener zapatillas para ${sport}`);
   }
 };
 
