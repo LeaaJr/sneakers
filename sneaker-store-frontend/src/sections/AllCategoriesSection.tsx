@@ -39,7 +39,7 @@ const AllCategoriesSection: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-16">Cargando categorías...</div>;
+    return <div className="text-center py-16">Caricamento categorie...</div>;
   }
 
   if (error) {
@@ -47,12 +47,12 @@ const AllCategoriesSection: React.FC = () => {
   }
   
   if (categories.length === 0) {
-    return <div className="text-center py-16 text-gray-600">No hay categorías disponibles.</div>;
+    return <div className="text-center py-16 text-gray-600">Non ci sono categorie disponibili.</div>;
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
-      <h2 className="text-4xl font-bold mb-10 text-center">Explorar Categorías</h2>
+      <h2 className="text-4xl font-bold mb-10 text-center">Esplora le categorie</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {categories.map((category) => (
           // Usamos el componente CategoryCard modificado

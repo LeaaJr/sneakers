@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     """
     Application settings loaded from environment variables.
     """
-    DATABASE_URL: str = "postgresql://sneaker_store_db_user:WEPc5LnvxpLg8pVtAbprNG5fORs0r1GD@dpg-d1o0uh63jp1c73dakna0-a.oregon-postgres.render.com/sneaker_store_db"
+    DATABASE_URL: str = "postgresql://sneaker_store_db_utj9_user:G0jvFm2cNkRmh3PkZQhorvtuJU8mttkn@dpg-d2tgv93ipnbc73b9ehgg-a.oregon-postgres.render.com/sneaker_store_db_utj9"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

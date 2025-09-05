@@ -15,8 +15,8 @@ from src.schemas.sneaker import SneakerFeaturedDetailCreate
 from src.routers import categories
 from src.schemas import Category, CategoryCreate
 
-    # Asegúrate de que los modelos se importen y la tabla se cree
-models.Base.metadata.create_all(bind=engine)
+    
+""" models.Base.metadata.create_all(bind=engine) """
 
 app = FastAPI(
         title="Sneaker Store API",
@@ -235,3 +235,21 @@ def get_running_section_details(db: Session = Depends(get_db)):
         """
         return db.query(models.RunningSectionDetail).order_by(models.RunningSectionDetail.display_order).all()
 
+
+# FUNCION TEMPORAL
+
+#def recreate_tables():
+    #"""
+    #Function to drop all tables and then recreate them.
+    #USE WITH CAUTION: This will delete all data.
+    #"""
+    #print("Dropping all existing tables...")
+    #models.Base.metadata.drop_all(bind=engine)
+    #print("Tables dropped successfully.")
+    
+    #print("Creating all new tables...")
+    #models.Base.metadata.create_all(bind=engine)
+    #print("Tables created successfully.")
+
+
+#recreate_tables()
