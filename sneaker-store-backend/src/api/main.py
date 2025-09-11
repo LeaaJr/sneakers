@@ -116,17 +116,17 @@ def create_sneaker(sneaker: schemas.SneakerCreate, db: Session = Depends(get_db)
     # Endpoint para OBTENER solo los detalles destacados de una zapatilla
 @app.get("/api/sneakers/{sneaker_id}", response_model=schemas.Sneaker)
 def read_sneaker(sneaker_id: UUID, db: Session = Depends(get_db)):
-        db_sneaker = db.query(models.Sneaker).options(
-            joinedload(models.Sneaker.brand),
-            joinedload(models.Sneaker.sizes),
-            joinedload(models.Sneaker.images),
-            joinedload(models.Sneaker.featured_details) # Asegúrate de que esta línea esté si la usas
-        ).filter(models.Sneaker.id == sneaker_id).first()
+    db_sneaker = db.query(models.Sneaker).options(
+        joinedload(models.Sneaker.brand),
+        joinedload(models.Sneaker.sizes),
+        joinedload(models.Sneaker.images),
+        joinedload(models.Sneaker.featured_details) # Aquí ya estaba bien, pero revisa por si acaso
+    ).filter(models.Sneaker.id == sneaker_id).first()
 
-        if db_sneaker is None:
+    if db_sneaker is None:
             raise HTTPException(status_code=404, detail="Sneaker not found")
         
-        return db_sneaker
+    return db_sneaker
 
     # Endpoint para ACTUALIZAR una zapatilla
 @app.put("/api/sneakers/{sneaker_id}", response_model=schemas.Sneaker)
@@ -207,34 +207,33 @@ def read_brands(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     # --- NUEVOS ENDPOINTS PARA LA SECCIÓN DE RUNNING ---
 
 @app.post("/api/running_section/featured_details/", status_code=status.HTTP_201_CREATED)
-def create_running_section_details(details: List[SneakerFeaturedDetailCreate], db: Session = Depends(get_db)):
-        """
-        Crea los detalles destacados para la sección de running.
-        Esto reemplaza cualquier detalle existente.
-        """
-        db.query(models.RunningSectionDetail).delete()
-        db.commit()
-
-        for detail_item in details:
-            detail_data = detail_item.model_dump()
-            # Aquí es donde debemos asegurarnos de que el 'sneaker_id' esté presente
-            if "image_url" in detail_data:
-                detail_data["image_url"] = str(detail_data["image_url"])
+def create_running_section_details(details: List[schemas.SneakerFeaturedDetailCreate], db: Session = Depends(get_db)):
+    """
+    Crea los detalles destacados para la sección de running.
+    Esto reemplaza cualquier detalle existente.
+    """
+    db.query(models.SneakerFeaturedDetail).delete()
+    db.commit()
+    
+    for detail_item in details:
+        # Convertir HttpUrl a string antes de pasar los datos
+        detail_data = detail_item.model_dump()
+        if "image_url" in detail_data and detail_data["image_url"] is not None:
+            detail_data["image_url"] = str(detail_data["image_url"])
             
-            # Debemos asegurarnos de que el modelo reciba el sneaker_id
-            db_detail = models.RunningSectionDetail(**detail_data)
-            db.add(db_detail)
-        
-        db.commit()
-        return {"message": "Detalles destacados de running creados exitosamente."}
+        db.add(models.SneakerFeaturedDetail(**detail_data))
+    
+    db.commit()
+    return {"message": "Detalles destacados de running creados exitosamente."}
 
-@app.get("/api/running_section/featured_details/", response_model=List[SneakerFeaturedDetailCreate])
+
+@app.get("/api/running_section/featured_details/", response_model=List[schemas.SneakerFeaturedDetail])
 def get_running_section_details(db: Session = Depends(get_db)):
-        """
-        Obtiene los detalles destacados para la sección de running.
-        """
-        return db.query(models.RunningSectionDetail).order_by(models.RunningSectionDetail.display_order).all()
-
+    """
+    Obtiene los detalles destacados para la sección de running.
+    """
+    # El `response_model` debe ser `List[schemas.SneakerFeaturedDetail]`
+    return db.query(models.SneakerFeaturedDetail).order_by(models.SneakerFeaturedDetail.display_order).all()
 
 # FUNCION TEMPORAL
 

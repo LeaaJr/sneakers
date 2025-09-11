@@ -58,7 +58,6 @@ class Sneaker(Base):
     # CORRECTED TYPO HERE: back_popates changed to back_populates
     sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan") 
     images = relationship("SneakerImage", back_populates="sneaker", cascade="all, delete-orphan")
-    running_details = relationship("RunningSectionDetail", back_populates="sneaker", cascade="all, delete-orphan")
     category = relationship("Category", back_populates="sneakers")
 
     
@@ -126,19 +125,6 @@ class SneakerFeaturedDetail(Base):
         return f"<SneakerFeaturedDetail(title='{self.title}')>"
 
 # --- NUEVO MODELO PARA LOS DETALLES DE LA SECCIÓN DE RUNNING ---
-class RunningSectionDetail(Base):
-    __tablename__ = "running_section_details"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id", ondelete="CASCADE"), nullable=False)
-    
-    title = Column(String, nullable=False)
-    description = Column(String)
-    image_url = Column(String)
-    display_order = Column(Integer, default=0)
-
-    # Relación a la zapatilla, con el back_populates
-    sneaker = relationship("Sneaker", back_populates="running_details")
 
     # Clase de categorias
 class Category(Base):
