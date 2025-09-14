@@ -18,7 +18,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ id, name, slug, cover_image
       params={{ sport: slug }}
       className="block"
     >
-      <div className="rounded-lg overflow-hidden shadow-lg transition-transform hover:shadow-xl cursor-pointer">
+      <div className="rounded-lg overflow-hidden transition-transform hover:shadow-xl cursor-pointer">
         <div className="h-96 overflow-hidden">
           <img
             src={cover_image}

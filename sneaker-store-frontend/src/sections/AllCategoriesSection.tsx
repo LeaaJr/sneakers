@@ -1,7 +1,7 @@
-// src/components/sections/AllCategoriesSection.tsx
 import React, { useEffect, useState } from 'react';
 import CategoryCard from '../sections/grid/CategoryCard';
-import { Link } from '@tanstack/react-router';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCoverflow, Pagination } from 'swiper/modules';
 
 interface Category {
   id: string;
@@ -51,22 +51,22 @@ const AllCategoriesSection: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16">
-      <h2 className="text-4xl font-bold mb-10 text-center">Esplora le categorie</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {categories.map((category) => (
-          // Usamos el componente CategoryCard modificado
-          <CategoryCard 
-            key={category.id} 
-            id={category.id} 
-            name={category.name} 
-            slug={category.slug} 
-            cover_image={category.cover_image} 
-            description={category.description} 
-          />
-        ))}
+<div className="w-full max-w-7xl mx-auto px-4 py-16">
+  <h2 className="text-4xl font-bold mb-10 text-center">Esplora le categorie</h2>
+
+  <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing">
+    {categories.map((category) => (
+      <div key={category.id} className="snap-center shrink-0 w-[300px]">
+        <CategoryCard
+          id={category.id}
+          name={category.name}
+          slug={category.slug}
+          cover_image={category.cover_image}
+        />
       </div>
-    </div>
+    ))}
+  </div>
+</div>
   );
 };
 

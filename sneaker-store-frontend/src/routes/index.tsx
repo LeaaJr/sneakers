@@ -4,7 +4,7 @@ import * as React from 'react';
 import { HeaderFuturista } from '@/components/Header';
 import { SneakersGrid } from '@/components/SneakersGrid';
 import { fetchSneakers, type Sneaker } from '@/services/sneakerService';
-import RunningSection from '@/sections/running/RunningSection';
+import RunningSection from '@/sections/featured/RunningSection';
 import SportGridSection from '@/sections/grid/SportGridSection';
 import AllCategoriesSection from '../sections/AllCategoriesSection';
 
@@ -206,17 +206,7 @@ function HomePageContent() {
             <RunningSection />
           </div>
 
-          <div ref={bottomContentRef} className="h-[100vh] bg-gray-100 flex items-center justify-center text-gray-700">
-{/*          
-          <SportGridSection sportType="running" sectionTitle="" />
-
-        
-          <SportGridSection sportType="urbano" sectionTitle="Zapatillas Urbanas" />
-
-         
-          <SportGridSection sportType="ordan" sectionTitle="Zapatillas Jordan" />
-
-           */}
+          <div ref={bottomContentRef} className="h-[100vh] bg-white-100 flex items-center justify-center text-gray-700">
            <AllCategoriesSection />
         </div>
         

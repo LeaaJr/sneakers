@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from '@tanstack/react-router';
 
 interface CardSportProps {
-  id: string; // Añadido para el key
+  id: string;
   title: string;
   description: string;
   image: string;
@@ -16,10 +16,10 @@ const CardSport: React.FC<CardSportProps> = ({
   description,
   image,
   sportType,
-  linkTo = true, // Valor por defecto true
+  linkTo = true,
 }) => {
   const content = (
-    <div className="rounded-lg overflow-hidden shadow-lg transition-transform hover:shadow-xl cursor-pointer">
+    <div className="rounded-lg overflow-hidden transition-transform hover:shadow-xl cursor-pointer">
       <div className="h-96 overflow-hidden">
         <img
           src={image}
