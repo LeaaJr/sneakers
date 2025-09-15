@@ -1,6 +1,7 @@
+// src/components/HeaderFuturista.tsx
 import React from 'react';
 import styles from '../styles/Header.module.css';
-import ParticleText from '@/components/ParticleText';
+import AnimatedGlowText from '@/components/AnimatedGlowText';
 
 
 export function HeaderFuturista() {
@@ -9,7 +10,7 @@ export function HeaderFuturista() {
     <header className={styles.headerContainer}>
       {/* Título futurista */}
       <div className={styles.futuristicTitle}>
-        <ParticleText 
+        <AnimatedGlowText 
           text="SNEAKERS STORE"
         />
         <div className={styles.titleGlow}></div>

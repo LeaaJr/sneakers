@@ -52,7 +52,7 @@ const AllCategoriesSection: React.FC = () => {
 
   return (
 <div className="w-full max-w-7xl mx-auto px-4 py-16">
-  <h2 className="text-4xl font-bold mb-10 text-center">Esplora le categorie</h2>
+  <h2 className="text-4xl font-bold mb-10 text-center text-gray">Esplora le categorie</h2>
 
   <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-grab active:cursor-grabbing">
     {categories.map((category) => (
