@@ -7,6 +7,7 @@
 @import 'swiper/css/pagination';
 
 
+
 @custom-variant dark (&:is(.dark *));
 
 
