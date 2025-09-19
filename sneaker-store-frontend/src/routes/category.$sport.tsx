@@ -24,7 +24,7 @@ export const Route = createFileRoute('/category/$sport')({
   ),
   pendingComponent: () => (
     <div className="container mx-auto py-16 text-center">
-      <p>Cargando zapatillas...</p>
+      <p>Caricamento scarpe da ginnastica...</p>
     </div>
   ),
   component: SneakersPage,

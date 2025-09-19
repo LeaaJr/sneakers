@@ -189,11 +189,11 @@ function HomePageContent() {
       <div ref={cardsRef}>
         <div className="container mx-auto py-8">
           {loading ? (
-            <div className="text-center text-lg text-gray-600">Cargando zapatillas...</div>
+            <div className="text-center text-lg text-gray-600">Caricamento scarpe da ginnastica...</div>
           ) : error ? (
             <div className="text-center text-lg text-red-600">{error}</div>
           ) : sneakers.length === 0 ? (
-            <div className="text-center text-lg text-gray-600">No se encontraron zapatillas.</div>
+            <div className="text-center text-lg text-gray-600">Nessuna scarpa da ginnastica trovata.</div>
           ) : (
             <SneakersGrid sneakers={sneakers.slice(0, 3)} />
           )}
