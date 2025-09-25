@@ -10,15 +10,29 @@ const apiClient = axios.create({
   }
 });
 
-// Interceptor para manejar errores globalmente
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 segundo
+
+// Interceptor para manejar errores globalmente y reintentar en caso de timeout
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.code === 'ECONNABORTED') {
-      console.error('Timeout: La solicitud tardó demasiado');
-    }
-    return Promise.reject(error);
-  }
+  (response) => response,
+  (error) => {
+    const originalRequest = error.config;
+    
+    // Si el error es de timeout y no hemos superado el límite de reintentos
+    if (error.code === 'ECONNABORTED' && originalRequest.retryCount < MAX_RETRIES) {
+      originalRequest.retryCount = originalRequest.retryCount || 0;
+      originalRequest.retryCount += 1;
+      
+      console.warn(`Timeout: reintentando solicitud (intento ${originalRequest.retryCount})`);
+      
+      // Retorna una promesa que espera y luego re-ejecuta la solicitud
+      return new Promise(resolve => setTimeout(resolve, RETRY_DELAY)).then(() => apiClient(originalRequest));
+    }
+
+    console.error('Error fetching sneakers:', error);
+    return Promise.reject(new Error('No se pudo conectar con el servidor. Verifica tu conexión.'));
+  }
 );
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
@@ -90,13 +104,8 @@ export const fetchSneakers = async (): Promise<Sneaker[]> => {
  * @returns A promise that resolves to an array of SneakerFeaturedDetail objects.
  */
 export const fetchSneakerFeaturedDetails = async (sneakerId: string): Promise<SneakerFeaturedDetail[]> => {
-    try {
-        const response = await axios.get(`${API_BASE_URL}/sneakers/${sneakerId}/featured_details`);
-        return response.data;
-    } catch (error) {
-        console.error(`Error fetching featured details for sneaker ${sneakerId}:`, error);
-        throw error;
-    }
+    const response = await apiClient.get(`/sneakers/${sneakerId}/featured_details`);
+    return response.data;
 };
 
 

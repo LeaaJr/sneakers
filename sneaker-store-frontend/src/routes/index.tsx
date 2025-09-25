@@ -7,6 +7,7 @@ import { fetchSneakers, type Sneaker } from '@/services/sneakerService';
 import RunningSection from '@/sections/featured/RunningSection';
 import SportGridSection from '@/sections/grid/SportGridSection';
 import AllCategoriesSection from '../sections/AllCategoriesSection';
+import { Footer } from '@/components/Footer';
 
 // Define el componente que se renderizará para la ruta raíz (/)
 function HomePageContent() {
@@ -208,6 +209,9 @@ function HomePageContent() {
 
           <div ref={bottomContentRef} className="h-[100vh] bg-white-100 flex items-center justify-center text-gray-700">
            <AllCategoriesSection />
+        </div>
+        <div>
+          <Footer />
         </div>
         
         </>
