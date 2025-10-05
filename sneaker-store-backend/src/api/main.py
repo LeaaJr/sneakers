@@ -1,7 +1,7 @@
     # src/api/main.py
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session, joinedload 
+from sqlalchemy.orm import Session, joinedload, selectinload
 from typing import List, Optional
 from uuid import UUID
 import os
@@ -54,28 +54,28 @@ def test_db_connection(db: Session = Depends(get_db)):
     # Endpoint para OBTENER TODAS las zapatillas
 @app.get("/api/sneakers/", response_model=List[schemas.Sneaker])
 def read_all_sneakers(
-        sport: Optional[str] = None, 
-        gender: Optional[str] = None, 
-        is_new: Optional[bool] = None,
-        skip: int = 0, 
-        limit: int = 100, 
-        db: Session = Depends(get_db)
-    ):
-        query = db.query(models.Sneaker).options(
-            joinedload(models.Sneaker.brand),
-            joinedload(models.Sneaker.sizes),
-            joinedload(models.Sneaker.images)
-        )
-
-        if sport:
-            query = query.filter(models.Sneaker.sport == sport)
-        if gender:
-            query = query.filter(models.Sneaker.gender == gender)
-        if is_new is not None:
-            query = query.filter(models.Sneaker.is_new == is_new)
-
-        sneakers = query.offset(skip).limit(limit).all()
-        return sneakers
+    sport: Optional[str] = None, 
+    gender: Optional[str] = None, 
+    is_new: Optional[bool] = None,
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db)
+):
+    # Usar `selectinload` o `subqueryload` es a menudo más eficiente 
+    # que `joinedload` para colecciones (to-many relationships)
+    query = db.query(models.Sneaker).options(
+        joinedload(models.Sneaker.brand),
+        # Usar selectinload para las relaciones uno-a-muchos (sizes, images, details)
+        selectinload(models.Sneaker.sizes),
+        selectinload(models.Sneaker.images),
+        selectinload(models.Sneaker.featured_details) # ¡AGREGAR ESTO!
+    )
+    # ... [tu código de filtros] ...
+    
+    # Reducir el límite por defecto, 100 es mucho para cargar todas las subrelaciones.
+    # Considera limit: int = 20 o 50
+    sneakers = query.offset(skip).limit(limit).all()
+    return sneakers
 
     # Endpoint para CREAR una zapatilla
 @app.post("/api/sneakers/", response_model=schemas.Sneaker, status_code=status.HTTP_201_CREATED)
