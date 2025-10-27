@@ -13,20 +13,20 @@ const apiClient = axios.create({
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 segundo
 
-// Interceptor para manejar errores globalmente y reintentar en caso de timeout
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const originalRequest = error.config;
     
-    // Si el error es de timeout y no hemos superado el límite de reintentos
+    
     if (error.code === 'ECONNABORTED' && originalRequest.retryCount < MAX_RETRIES) {
       originalRequest.retryCount = originalRequest.retryCount || 0;
       originalRequest.retryCount += 1;
       
       console.warn(`Timeout: reintentando solicitud (intento ${originalRequest.retryCount})`);
       
-      // Retorna una promesa que espera y luego re-ejecuta la solicitud
+      
       return new Promise(resolve => setTimeout(resolve, RETRY_DELAY)).then(() => apiClient(originalRequest));
     }
 
@@ -85,8 +85,8 @@ export type RunningSectionDetail = {
 };
 
 /**
- * Fetches a list of sneakers from the backend API.
- * @returns A promise that resolves to an array of Sneaker objects.
+ *
+ * @returns
  */
 export const fetchSneakers = async (): Promise<Sneaker[]> => {
   try {
@@ -99,9 +99,9 @@ export const fetchSneakers = async (): Promise<Sneaker[]> => {
 };
 
 /**
- * Fetches the featured details for a specific sneaker.
+ * 
  * @param sneakerId The ID of the sneaker.
- * @returns A promise that resolves to an array of SneakerFeaturedDetail objects.
+ * @returns
  */
 export const fetchSneakerFeaturedDetails = async (sneakerId: string): Promise<SneakerFeaturedDetail[]> => {
     const response = await apiClient.get(`/sneakers/${sneakerId}/featured_details`);
@@ -135,20 +135,25 @@ export const fetchHighlightedSneakers = async (): Promise<RunningSectionDetail[]
 //Funcion para categorias
 
 /**
- * Fetches sneakers filtered by a specific sport.
+ * 
  * @param sport The sport type to filter by.
- * @returns A promise that resolves to an array of Sneaker objects.
+ * @returns
  */
-export const fetchSneakersBySport = async (sport: string): Promise<Sneaker[]> => {
-  try {
-    const response = await apiClient.get('/sneakers/', {
-      params: { sport }
-    });
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching sneakers for sport ${sport}:`, error);
-    throw new Error(`Error al obtener zapatillas para ${sport}`);
-  }
+export const fetchSneakersBySport = async (categorySlug: string) => {
+    // LLAMA AL NUEVO ENDPOINT DEL BACKEND
+    const response = await fetch(`http://localhost:8000/api/categories/slug/${categorySlug}/sneakers`);
+    
+    
+    if (response.status === 404) {
+         return []; 
+    }
+    
+    if (!response.ok) {
+        // Manejar otros errores HTTP (500, etc.)
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return response.json();
 };
 
 
@@ -162,4 +167,16 @@ export const getSneakerById = async (id: string): Promise<Sneaker> => {
     console.error(`Error fetching sneaker with ID ${id}:`, error);
     throw error;
   }
+};
+
+export const fetchSneakersByCategorySlug = async (categorySlug: string): Promise<Sneaker[]> => {
+  try {
+    // CAMBIAR: Usamos el nuevo endpoint /api/categories/slug/{slug}/sneakers
+    const response = await apiClient.get(`/categories/slug/${categorySlug}/sneakers`); 
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching sneakers for slug ${categorySlug}:`, error);
+    // Asegúrate de rechazar con un error que el frontend pueda manejar
+    throw new Error(`Error al obtener zapatillas para la categoría ${categorySlug}.`);
+  }
 };

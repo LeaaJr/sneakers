@@ -16,7 +16,6 @@ const AllCategoriesSection: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // Nuevo estado para la diapositiva activa
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
   useEffect(() => {
@@ -73,12 +72,12 @@ const AllCategoriesSection: React.FC = () => {
         pagination={{ clickable: true }}
         modules={[EffectCoverflow, Pagination]}
         className="mySwiper"
-        // Escucha el cambio de diapositiva y actualiza el estado
+       
         onSlideChange={(swiper) => setActiveSlideIndex(swiper.realIndex)}
       >
         {categories.map((category, index) => (
           <SwiperSlide key={category.id}>
-            {/* Pasa el estado y el índice de cada tarjeta al componente CategoryCard */}
+           
             <CategoryCard
               id={category.id}
               name={category.name}

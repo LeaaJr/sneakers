@@ -113,6 +113,7 @@ def create_sneaker(sneaker: schemas.SneakerCreate, db: Session = Depends(get_db)
         
         return db_sneaker
 
+
     # Endpoint para OBTENER solo los detalles destacados de una zapatilla
 @app.get("/api/sneakers/{sneaker_id}", response_model=schemas.Sneaker)
 def read_sneaker(sneaker_id: UUID, db: Session = Depends(get_db)):

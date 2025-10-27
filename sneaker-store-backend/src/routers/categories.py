@@ -1,6 +1,5 @@
 # src/routers/categories.py
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session, joinedload
 from typing import List
 from uuid import UUID
 
@@ -8,6 +7,7 @@ from src.database.database import get_db
 from src.schemas.category import Category, CategoryCreate, CategoryUpdate
 from src.database import models
 from src.schemas import sneaker as schemas
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 # Create a FastAPI router with a prefix and tags
 router = APIRouter(prefix="/api/categories", tags=["Categories"])
@@ -116,6 +116,47 @@ def get_sneakers_by_category(
          raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
             detail="No sneakers found for this category"
+        )
+
+    return sneakers
+
+@router.get("/slug/{category_slug}/sneakers", response_model=List[schemas.Sneaker])
+def get_sneakers_by_slug(
+    category_slug: str,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    """Obtiene todas las zapatillas de una categoría específica buscando por SLUG."""
+    
+    # 1. Buscar la categoría por su SLUG
+    db_category = db.query(models.Category).filter(
+        models.Category.slug == category_slug
+    ).first()
+    
+    if not db_category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=f"Category with slug '{category_slug}' not found"
+        )
+        
+    category_id = db_category.id # Obtiene el ID
+
+    # 2. Usar el ID para obtener las zapatillas
+    # Nota: También aprovecha y usa selectinload aquí para optimización
+    sneakers = db.query(models.Sneaker).options(
+        joinedload(models.Sneaker.brand),
+        selectinload(models.Sneaker.sizes), # Usar selectinload para rendimiento
+        selectinload(models.Sneaker.images), # Usar selectinload para rendimiento
+        # Asegúrate de importar selectinload en categories.py!
+    ).filter(
+        models.Sneaker.category_id == category_id
+    ).offset(skip).limit(limit).all()
+    
+    if not sneakers:
+         raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=f"No sneakers found for category '{category_slug}'"
         )
 
     return sneakers
