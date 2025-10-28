@@ -3,7 +3,6 @@ import React from 'react';
 import CardRunning from './CardRunning';
 import { ArrowRightIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-// Importa el nuevo tipo si es necesario
 import { fetchHighlightedSneakers, } from '@/services/sneakerService'; 
 import type { RunningSectionDetail } from '@/services/sneakerService';
 
@@ -26,7 +25,7 @@ const RunningSection: React.FC = () => {
   // Si quieres un título general, lo puedes poner aquí, o usar el título del primer detalle.
   // Pero el título "Learn more..." y el `href` ya no tienen un sneakerId al que apuntar.
   // Por ahora, eliminémos esa parte o hagámosla estática.
-  const mainTitle = "Nuova Nike Structure 26"; 
+  const mainTitle = "Air Jordan 1"; 
   
   return (
     <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
@@ -35,8 +34,8 @@ const RunningSection: React.FC = () => {
           {mainTitle} 
         </h2>
         {/* Este enlace ya no tiene a dónde ir sin un ID de zapatilla */}
-        <span className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
-          Aprende más sobre nuestros productos
+        <span className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
+          Vedere più prodotti
           <ArrowRightIcon className="ml-2 h-4 w-4" />
         </span>
       </div>

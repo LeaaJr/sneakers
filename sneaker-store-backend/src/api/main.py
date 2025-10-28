@@ -205,37 +205,60 @@ def read_brands(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
         brands = db.query(models.Brand).offset(skip).limit(limit).all()
         return brands
 
-    # --- NUEVOS ENDPOINTS PARA LA SECCIÓN DE RUNNING ---
 
-@app.post("/api/running_section/featured_details/", status_code=status.HTTP_201_CREATED)
-def create_running_section_details(details: List[schemas.SneakerFeaturedDetailCreate], db: Session = Depends(get_db)):
-    """
-    Crea los detalles destacados para la sección de running.
-    Esto reemplaza cualquier detalle existente.
-    """
-    db.query(models.SneakerFeaturedDetail).delete()
-    db.commit()
-    
-    for detail_item in details:
-        # Convertir HttpUrl a string antes de pasar los datos
-        detail_data = detail_item.model_dump()
-        if "image_url" in detail_data and detail_data["image_url"] is not None:
-            detail_data["image_url"] = str(detail_data["image_url"])
-            
-        db.add(models.SneakerFeaturedDetail(**detail_data))
-    
-    db.commit()
-    return {"message": "Detalles destacados de running creados exitosamente."}
-
-
+# 1. ENDPOINT PARA OBTENER TODAS las cards (GET)
 @app.get("/api/running_section/featured_details/", response_model=List[schemas.SneakerFeaturedDetail])
 def get_running_section_details(db: Session = Depends(get_db)):
     """
-    Obtiene los detalles destacados para la sección de running.
+    Obtiene todos los detalles destacados para la sección de running (fetch).
     """
-    # El `response_model` debe ser `List[schemas.SneakerFeaturedDetail]`
     return db.query(models.SneakerFeaturedDetail).order_by(models.SneakerFeaturedDetail.display_order).all()
 
+
+# 2. ENDPOINT PARA REEMPLAZAR TODAS las cards (POST - el que borra todo)
+@app.post("/api/running_section/featured_details/", status_code=status.HTTP_201_CREATED)
+def create_running_section_details(details: List[schemas.SneakerFeaturedDetailCreate], db: Session = Depends(get_db)):
+    """
+    Crea los detalles destacados para la sección de running. ESTO REEMPLAZA CUALQUIER DETALLE EXISTENTE.
+    """
+    # ⬅️ Borramos todos los registros anteriores
+    db.query(models.SneakerFeaturedDetail).delete()
+    db.commit()
+
+    # ⬅️ Aquí empieza el bloque de inserción
+    for detail_item in details:
+        detail_data = detail_item.model_dump()
+
+        image_url = detail_data.get("image_url")
+        if image_url is not None:
+            detail_data["image_url"] = str(image_url)
+
+        db.add(models.SneakerFeaturedDetail(**detail_data))
+
+    db.commit()
+    return {"message": "Detalles destacados de running creados exitosamente."}
+
+# 3. ENDPOINT PARA AGREGAR UNA SOLA card (POST - el que no borra)
+# URL: /api/running_section/featured_detail/ (Ruta SINGULAR)
+@app.post("/api/running_section/featured_detail/", response_model=schemas.SneakerFeaturedDetail, status_code=status.HTTP_201_CREATED)
+def add_running_section_detail(detail_item: schemas.SneakerFeaturedDetailCreate, db: Session = Depends(get_db)):
+    """
+    Agrega un nuevo detalle destacado a la sección de running sin borrar los existentes.
+    """
+    # 1. Convertir HttpUrl a string si es necesario
+    detail_data = detail_item.model_dump()
+    if "image_url" in detail_data and detail_data["image_url"] is not None:
+        detail_data["image_url"] = str(detail_data["image_url"])
+            
+    # 2. Crear y agregar el nuevo modelo
+    db_detail = models.SneakerFeaturedDetail(**detail_data)
+    db.add(db_detail)
+    
+    # 3. Guardar y devolver
+    db.commit()
+    db.refresh(db_detail)
+    
+    return db_detail
 # FUNCION TEMPORAL
 
 #def recreate_tables():
