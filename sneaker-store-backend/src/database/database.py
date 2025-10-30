@@ -1,4 +1,3 @@
-# src/database/database.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,9 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Define settings using pydantic-settings to load from .env
 class Settings(BaseSettings):
-    """
-    Application settings loaded from environment variables.
-    """
+
     DATABASE_URL: str = "postgresql://sneaker_store_db_dyx8_user:8GxLppRWbPk48OJsjXvaH8KUDcuKaguP@dpg-d3h9p2r3fgac739kjk50-a.oregon-postgres.render.com/sneaker_store_db_dyx8"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -26,7 +23,7 @@ print(f"Attempting to connect to DATABASE_URL: {SQLALCHEMY_DATABASE_URL}")
 # Create the SQLAlchemy engine
 # 'pool_pre_ping=True' helps with connection stability, especially in cloud environments
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, pool_pre_ping=True
+ SQLALCHEMY_DATABASE_URL, pool_pre_ping=True
 )
 
 # Create a SessionLocal class to get a database session
@@ -34,6 +31,18 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base class for SQLAlchemy models
 Base = declarative_base()
+
+# ----------------------------------------------------------------------
+# FUNCIÓN CRÍTICA: Creación de tablas (FIX)
+# ----------------------------------------------------------------------
+def create_db_tables():
+    """
+    Crea las tablas de la base de datos si no existen. 
+    Es seguro llamarla varias veces.
+    """
+    # Base.metadata contiene las definiciones de TODAS las clases de modelos
+    # que heredan de Base (p. ej., Sneaker, TrendingProduct, etc.)
+    Base.metadata.create_all(bind=engine)
 
 def get_db():
     """

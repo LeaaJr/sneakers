@@ -2,7 +2,7 @@
 import React from 'react';
 import { useRouter } from '@tanstack/react-router';
 
-interface CardRunngingProps {
+interface jordanProps {
   sneakerId: string;
   title: string;
   description: string;
@@ -10,7 +10,7 @@ interface CardRunngingProps {
   featureId?: string; // Añade esto para el key único
 }
 
-const CardRunnging: React.FC<CardRunngingProps> = ({ 
+const jordan: React.FC<jordanProps> = ({ 
   sneakerId, // Usar sneakerId en lugar de id
   title, 
   description, 
@@ -47,4 +47,4 @@ const CardRunnging: React.FC<CardRunngingProps> = ({
   );
 };
 
-export default CardRunnging;
+export default jordan;

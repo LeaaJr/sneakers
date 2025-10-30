@@ -145,3 +145,20 @@ class Category(Base):
 
     def __repr__(self):
         return f"<Category(name='{self.name}')>"
+
+
+# Trending
+
+from sqlalchemy import Column, Integer, String
+
+class TrendingProduct(Base):
+    __tablename__ = "trending_products"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True) 
+    
+    # Campos que coinciden con el frontend:
+    image = Column(String, index=True)      # URL de la imagen
+    label = Column(String)                  # 'Novità', 'Air Max DN Roam', etc.
+    title = Column(String)                  # Título principal de la tarjeta
+    subtitle = Column(String)               # Texto del botón, ej. 'Acquista'
+    

@@ -1,6 +1,6 @@
 // src/sections/running/RunningSection.tsx
 import React from 'react';
-import CardRunning from './CardRunning';
+import CardJordan from './CardJordan';
 import { ArrowRightIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchHighlightedSneakers, } from '@/services/sneakerService'; 
@@ -42,7 +42,7 @@ const RunningSection: React.FC = () => {
       
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-4">
                 {featuredDetails.map((feature) => (
-                    <CardRunning
+                    <CardJordan
                         key={feature.id}
                         sneakerId={feature.sneaker_id} 
                         title={feature.title}

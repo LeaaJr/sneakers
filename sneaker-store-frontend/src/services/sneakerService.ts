@@ -74,7 +74,7 @@ export interface Sneaker {
   created_at: string;
   updated_at: string;
 }
-
+//ESTA ES LA SECCION DE JORDAN
 export type RunningSectionDetail = {
   id: string;
   title: string;
@@ -83,6 +83,15 @@ export type RunningSectionDetail = {
   display_order: number;
   sneaker_id: string;
 };
+
+//ESTA ES LA SECCION DE TRENDING
+export interface TrendingProduct {
+    id: number;
+    image: string;
+    label: string;
+    title: string;
+    subtitle: string;
+}
 
 /**
  *
@@ -135,38 +144,42 @@ export const fetchHighlightedSneakers = async (): Promise<RunningSectionDetail[]
 //Funcion para categorias
 
 /**
- * 
- * @param sport The sport type to filter by.
+ * * @param sport The sport type to filter by.
  * @returns
  */
 export const fetchSneakersBySport = async (categorySlug: string) => {
-    // LLAMA AL NUEVO ENDPOINT DEL BACKEND
-    const response = await fetch(`http://localhost:8000/api/categories/slug/${categorySlug}/sneakers`);
-    
-    
-    if (response.status === 404) {
-         return []; 
+    try {
+        // Usar apiClient.get con la ruta relativa. apiClient ya añade la base URL.
+        const response = await apiClient.get(`/categories/slug/${categorySlug}/sneakers`);
+
+        // Si el backend responde con datos, devolverlos.
+        return response.data;
+    } catch (error) {
+        // El interceptor de Axios (apiClient) ya maneja los errores y los reintentos.
+        // Aquí solo necesitas decidir qué hacer si hay un 404/500 final.
+
+        // Si el error es de Axios y el estado es 404 (Not Found), devolvemos un array vacío
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+            return [];
+        }
+
+        // Para cualquier otro error (red, timeout, 500), lanzar el error original.
+        throw error; 
     }
-    
-    if (!response.ok) {
-        // Manejar otros errores HTTP (500, etc.)
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return response.json();
 };
 
 
 //Para manejarlo por ID
 
 export const getSneakerById = async (id: string): Promise<Sneaker> => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/sneakers/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching sneaker with ID ${id}:`, error);
-    throw error;
-  }
+  try {
+    // CAMBIAR: Usar apiClient en lugar de axios.get con URL absoluta
+    const response = await apiClient.get(`/sneakers/${id}`); 
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching sneaker with ID ${id}:`, error);
+    throw error; // Dejar que el error sea manejado por el interceptor o el llamador
+  }
 };
 
 export const fetchSneakersByCategorySlug = async (categorySlug: string): Promise<Sneaker[]> => {
@@ -179,4 +192,17 @@ export const fetchSneakersByCategorySlug = async (categorySlug: string): Promise
     // Asegúrate de rechazar con un error que el frontend pueda manejar
     throw new Error(`Error al obtener zapatillas para la categoría ${categorySlug}.`);
   }
+};
+
+//Trending
+
+export const fetchTrendingProducts = async (): Promise<TrendingProduct[]> => {
+    try {
+        const response = await apiClient.get<TrendingProduct[]>('/trending/products/');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching trending products:', error);
+        // Si no se encuentran (ej. 404/500), devolvemos un array vacío para no romper la UI.
+        return []; 
+    }
 };

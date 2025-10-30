@@ -1,22 +1,28 @@
-    # src/api/main.py
-from fastapi import FastAPI, Depends, HTTPException, status
+# src/api/main.py
+from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session, joinedload, selectinload
 from typing import List, Optional
 from uuid import UUID
+from src import schemas
 import os
 
+from src.crud import trending as trending_crud
+
 from src.database import models
-from src.schemas import sneaker as schemas
-from src.database.database import engine, get_db
 
-from src.schemas.sneaker import SneakerFeaturedDetailCreate
+from src.database.database import engine, get_db, create_db_tables, SessionLocal, Base
 
+from src.schemas.sneaker import SneakerFeaturedDetailCreate, TrendingProductSchema
+from src.schemas.category import Category, CategoryCreate
 from src.routers import categories
-from src.schemas import Category, CategoryCreate
 
+
+create_db_tables()
     
 """ models.Base.metadata.create_all(bind=engine) """
+
+
 
 app = FastAPI(
         title="Sneaker Store API",
@@ -27,6 +33,7 @@ app = FastAPI(
 origins = [
      "http://localhost:5173",
         "http://localhost:3000",
+        "http://127.0.0.1:3000"
     ]
 
 app.add_middleware(
@@ -38,12 +45,20 @@ app.add_middleware(
     )
 
 app.include_router(categories.router)
+# ----------------------------------------------------------------
+
+router = APIRouter(
+    prefix="/trending",
+    tags=["Trending Products"],
+)
+
+app.include_router(router, prefix="/api")
 
 @app.get("/")
 def read_root():
         return {"message": "Welcome to the Sneaker Store API! Visit /docs for OpenAPI documentation."}
 
-@app.get("/api/test-db")
+@router.get("/test-db")
 def test_db_connection(db: Session = Depends(get_db)):
         try:
             first_brand = db.query(models.Brand).first()
@@ -259,6 +274,51 @@ def add_running_section_detail(detail_item: schemas.SneakerFeaturedDetailCreate,
     db.refresh(db_detail)
     
     return db_detail
+
+# --------------------------------------------------------------------------
+# Endpoint: GET /api/trending/products/ 
+# --------------------------------------------------------------------------
+@router.get(
+    "/products/", 
+    response_model=List[TrendingProductSchema], 
+    summary="Get a list of currently trending products."
+)
+def read_trending_products(db: Session = Depends(get_db)):
+    """
+    Recupera una lista de productos marcados como tendencia.
+    """
+    try:
+        trending_products = trending_crud.get_trending_products(db=db)
+        return trending_products
+    except Exception as e:
+        print(f"Error al obtener productos de tendencia: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Error interno del servidor al acceder a los datos de tendencia."
+        )
+
+# --- ENDPOINTS PARA LA SECCIÓN TRENDING ---
+
+
+def create_db_tables():
+    """
+    Crea las tablas de la base de datos si no existen. 
+    Es seguro llamarla varias veces.
+    """
+    # Base.metadata contiene las definiciones de TODAS las clases de modelos
+    # que heredan de Base (p. ej., Sneaker, TrendingProduct, etc.)
+    Base.metadata.create_all(bind=engine)
+
+def get_db():
+
+    db = SessionLocal()
+    try:
+            yield db
+    finally:
+         db.close()
+
+
+
 # FUNCION TEMPORAL
 
 #def recreate_tables():

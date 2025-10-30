@@ -132,3 +132,32 @@ class Sneaker(SneakerBase):
 
 Sneaker.model_rebuild()
 
+# Schema base para Trending Product
+class TrendingProductBase(BaseModel):
+    image: HttpUrl # Usamos HttpUrl para forzar una URL válida
+    label: str
+    title: str
+    subtitle: str
+
+# Schema para la creación (POST)
+class TrendingProductCreate(TrendingProductBase):
+    pass
+
+# Schema para la respuesta (GET)
+class TrendingProduct(TrendingProductBase):
+    id: int # El ID generado por la base de datos
+    
+    class Config:
+        from_attributes = True
+
+class TrendingProductSchema(BaseModel):
+    id: int
+    image: str
+    label: Optional[str] = None
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
