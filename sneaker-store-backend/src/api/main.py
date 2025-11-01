@@ -8,34 +8,31 @@ from src import schemas
 import os
 
 from src.crud import trending as trending_crud
-
 from src.database import models
+# Importar funciones desde el archivo de la base de datos, no redefinirlas
+from src.database.database import get_db, create_db_tables 
 
-from src.database.database import engine, get_db, create_db_tables, SessionLocal, Base
-
-from src.schemas.sneaker import SneakerFeaturedDetailCreate, TrendingProductSchema
+from src.schemas.sneaker import SneakerFeaturedDetailCreate 
 from src.schemas.category import Category, CategoryCreate
 from src.routers import categories
 
 
-create_db_tables()
-    
-""" models.Base.metadata.create_all(bind=engine) """
-
-
+# --- INICIALIZACIÓN ---
+# Ejecutar la creación de tablas (Asegura que TrendingProduct exista)
+create_db_tables() 
 
 app = FastAPI(
-        title="Sneaker Store API",
-        description="API for managing sneakers, brands, sizes, and user interactions.",
-        version="0.1.0",
-    )
+    title="Sneaker Store API",
+    description="API for managing sneakers, brands, sizes, and user interactions.",
+    version="0.1.0",
+)
 
+# Configuración CORS
 origins = [
      "http://localhost:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000"
-    ]
-
+     "http://localhost:3000",
+     "http://127.0.0.1:3000"
+]
 app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
@@ -44,27 +41,77 @@ app.add_middleware(
         allow_headers=["*"],
     )
 
-app.include_router(categories.router)
-# ----------------------------------------------------------------
+# --- DEFINICIÓN DE ROUTERS ---
 
-router = APIRouter(
+# Las rutas dentro serán /, /sneakers/, /brands/, etc.
+general_router = APIRouter(
+    prefix="/api",
+    tags=["General Endpoints (Sneakers, Brands, Test)"],
+)
+
+
+# Lo definimos con solo /trending, y la inclusión le dará el /api.
+trending_router = APIRouter(
     prefix="/trending",
     tags=["Trending Products"],
 )
 
-app.include_router(router, prefix="/api")
+
+# --- INCLUSIÓN DE ROUTERS UNIFICADA ---
+
+app.include_router(categories.router) 
+
+# --------------------------------------------------------------------------
+# Endpoint: GET /api/trending/products/ 
+# --------------------------------------------------------------------------
+@trending_router.get(
+    "/products/", 
+    response_model=List[schemas.TrendingProductSchema], 
+    summary="Get a list of currently trending products."
+)
+def read_trending_products(db: Session = Depends(get_db)):
+    """ Recupera una lista de productos marcados como tendencia. """
+    try:
+        trending_products = trending_crud.get_trending_products(db=db)
+        return trending_products
+    except Exception as e:
+        print(f"Error al obtener productos de tendencia: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Error interno del servidor al acceder a los datos de tendencia."
+        )
+    
+@trending_router.post(
+    "/products/",
+    response_model=schemas.TrendingProduct,
+    status_code=201,
+    summary="Crear un producto en tendencia"
+)
+def create_trending_product_endpoint(
+    product: schemas.TrendingProductCreate,
+    db: Session = Depends(get_db)
+):
+    return trending_crud.create_trending_product(db, product.dict())
+
+
+# Esto hace que las rutas de abajo sean /api/sneakers, /api/brands, /api/test-db
+app.include_router(trending_router, prefix="/api")
+
+
 
 @app.get("/")
 def read_root():
-        return {"message": "Welcome to the Sneaker Store API! Visit /docs for OpenAPI documentation."}
+    return {"message": "Welcome to the Sneaker Store API! Visit /docs for OpenAPI documentation."}
 
-@router.get("/test-db")
+# Endpoint de PRUEBA (Ahora la ruta es /api/test-db)
+@general_router.get("/test-db") 
 def test_db_connection(db: Session = Depends(get_db)):
-        try:
-            first_brand = db.query(models.Brand).first()
-            return {"message": "Database connected successfully!"}
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database connection error: {e}")
+    try:
+        first_brand = db.query(models.Brand).first()
+        return {"message": "Database connected successfully!"}
+    except Exception as e:
+        # El error 500
+        raise HTTPException(status_code=500, detail=f"Database connection error: {e}")
 
     # Endpoint para OBTENER TODAS las zapatillas
 @app.get("/api/sneakers/", response_model=List[schemas.Sneaker])
@@ -275,29 +322,9 @@ def add_running_section_detail(detail_item: schemas.SneakerFeaturedDetailCreate,
     
     return db_detail
 
-# --------------------------------------------------------------------------
-# Endpoint: GET /api/trending/products/ 
-# --------------------------------------------------------------------------
-@router.get(
-    "/products/", 
-    response_model=List[TrendingProductSchema], 
-    summary="Get a list of currently trending products."
-)
-def read_trending_products(db: Session = Depends(get_db)):
-    """
-    Recupera una lista de productos marcados como tendencia.
-    """
-    try:
-        trending_products = trending_crud.get_trending_products(db=db)
-        return trending_products
-    except Exception as e:
-        print(f"Error al obtener productos de tendencia: {e}")
-        raise HTTPException(
-            status_code=500, 
-            detail="Error interno del servidor al acceder a los datos de tendencia."
-        )
 
 # --- ENDPOINTS PARA LA SECCIÓN TRENDING ---
+
 
 
 def create_db_tables():
@@ -317,6 +344,11 @@ def get_db():
     finally:
          db.close()
 
+
+
+@app.get("/status")
+def check_status():
+    return {"status": "ok", "app_running": True}
 
 
 # FUNCION TEMPORAL

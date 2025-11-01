@@ -134,7 +134,7 @@ Sneaker.model_rebuild()
 
 # Schema base para Trending Product
 class TrendingProductBase(BaseModel):
-    image: HttpUrl # Usamos HttpUrl para forzar una URL válida
+    image: str
     label: str
     title: str
     subtitle: str
@@ -159,5 +159,6 @@ class TrendingProductSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 

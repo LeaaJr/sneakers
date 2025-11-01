@@ -8,8 +8,6 @@ from src.database.database import Base
 import uuid 
 
 
-Base = declarative_base()
-
 class Brand(Base):
     """
     SQLAlchemy model for sneaker brands.
@@ -145,6 +143,7 @@ class Category(Base):
 
     def __repr__(self):
         return f"<Category(name='{self.name}')>"
+    
 
 
 # Trending
@@ -161,4 +160,5 @@ class TrendingProduct(Base):
     label = Column(String)                  # 'Novità', 'Air Max DN Roam', etc.
     title = Column(String)                  # Título principal de la tarjeta
     subtitle = Column(String)               # Texto del botón, ej. 'Acquista'
-    
+
+

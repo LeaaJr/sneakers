@@ -1,56 +1,50 @@
 // src/routes/index.tsx
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { HeaderFuturista } from '@/components/Header';
 import { SneakersGrid } from '@/components/SneakersGrid';
 import { fetchSneakers, type Sneaker } from '@/services/sneakerService';
-import JordanSection from '@/sections/jordan/JordanSection'
+import JordanSection from '@/sections/jordan/JordanSection';
 import SportGridSection from '@/sections/grid/SportGridSection';
-import AllCategoriesSection from '../sections/AllCategoriesSection';
+import AllCategoriesSection from '@/sections/AllCategoriesSection';
 import { Footer } from '@/components/Footer';
 import { TrendingSection } from '@/sections/trending/TrendingSection';
 
-// Define el componente que se renderizará para la ruta raíz (/)
+// Componente principal de la página de inicio
 function HomePageContent() {
-  // Estado para almacenar los datos de las zapatillas
-  const [sneakers, setSneakers] = React.useState<Sneaker[]>([]);
-  // Estado para manejar el estado de carga
-  const [loading, setLoading] = React.useState(true);
-  // Estado para manejar errores
-  const [error, setError] = React.useState<string | null>(null);
+  // ✅ React Query se encarga de loading, error y data
+  const {
+    data: sneakers = [],
+    isLoading,
+    error,
+  } = useQuery<Sneaker[], Error>({
+    queryKey: ['allSneakers'],
+    queryFn: fetchSneakers,
+  });
 
-  // ... (todo tu código de refs y scroll permanece igual) ...
+  // --- Scroll y animaciones ---
   const headerRef = React.useRef<HTMLDivElement>(null);
   const cardsRef = React.useRef<HTMLDivElement>(null);
   const runningSectionRef = React.useRef<HTMLDivElement>(null);
   const isScrollingProgrammatically = React.useRef(false);
   const animationFrameRef = React.useRef<number | null>(null);
   const lastScrollTime = React.useRef(0);
-  const lastScrollY = React.useRef(0);
   const scrollVelocity = React.useRef(0);
   const bottomContentRef = React.useRef<HTMLDivElement>(null);
 
-  const easeOutCubic = (t: number) => {
-    return 1 - Math.pow(1 - t, 3);
-  };
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
   const smoothScrollTo = React.useCallback((target: number | HTMLElement) => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
 
     const startPosition = window.scrollY;
-    let targetPosition: number;
-
-    if (typeof target === 'number') {
-      targetPosition = target;
-    } else {
-      const rect = target.getBoundingClientRect();
-      targetPosition = rect.top + startPosition;
-    }
+    const targetPosition =
+      typeof target === 'number'
+        ? target
+        : target.getBoundingClientRect().top + startPosition;
 
     const distance = targetPosition - startPosition;
-
     const baseDuration = 700;
     const velocityFactor = Math.min(Math.max(Math.abs(scrollVelocity.current), 1), 15);
     const duration = Math.max(350, baseDuration / velocityFactor);
@@ -61,7 +55,6 @@ function HomePageContent() {
       if (!startTime) startTime = currentTime;
       const timeElapsed = currentTime - startTime;
       const progress = Math.min(timeElapsed / duration, 1);
-
       window.scrollTo(0, startPosition + distance * easeOutCubic(progress));
 
       if (timeElapsed < duration) {
@@ -75,82 +68,75 @@ function HomePageContent() {
     animationFrameRef.current = requestAnimationFrame(animateScroll);
   }, []);
 
-  const handleWheel = React.useCallback((e: WheelEvent) => {
-    if (isScrollingProgrammatically.current) {
-      e.preventDefault();
-      return;
-    }
-    
-
-    const now = Date.now();
-    const currentScrollY = window.scrollY;
-
-    if (lastScrollTime.current) {
-      const deltaTime = now - lastScrollTime.current;
-      scrollVelocity.current = Math.min(Math.abs(e.deltaY) / (deltaTime || 3) * 0.5, 25);
-    }
-
-    lastScrollTime.current = now;
-    lastScrollY.current = currentScrollY;
-
-    const scrollDirection = e.deltaY > 1 ? 'down' : e.deltaY < -1 ? 'up' : 'none';
-
-    const headerTop = 0;
-    const cardsTop = cardsRef.current?.offsetTop || Infinity;
-    const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity;
-
-    const snapBuffer = window.innerHeight * 0.1;
-
-    if (scrollDirection === 'down' && e.deltaY > 5) {
-      if (currentScrollY < cardsTop - snapBuffer) {
+  const handleWheel = React.useCallback(
+    (e: WheelEvent) => {
+      if (isScrollingProgrammatically.current) {
         e.preventDefault();
-        smoothScrollTo(cardsRef.current as HTMLElement);
-      } else if (currentScrollY < runningSectionTop - snapBuffer) {
-      } else {
+        return;
       }
-    }
-    else if (scrollDirection === 'up' && e.deltaY < -5) {
-      if (currentScrollY > cardsTop + snapBuffer) {
-      } else if (currentScrollY > headerTop + snapBuffer) {
-        e.preventDefault();
-        smoothScrollTo(headerTop);
-      } else {
-      }
-    }
-  }, [smoothScrollTo]);
 
-  const handleKeyDown = React.useCallback((e: KeyboardEvent) => {
-    if (isScrollingProgrammatically.current) {
-      e.preventDefault();
-      return;
-    }
-
-    if (['Space', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(e.code)) {
+      const now = Date.now();
       const currentScrollY = window.scrollY;
+
+      if (lastScrollTime.current) {
+        const deltaTime = now - lastScrollTime.current;
+        scrollVelocity.current = Math.min(
+          Math.abs(e.deltaY) / (deltaTime || 3) * 0.5,
+          25
+        );
+      }
+
+      lastScrollTime.current = now;
+      const scrollDirection = e.deltaY > 1 ? 'down' : e.deltaY < -1 ? 'up' : 'none';
+      const headerTop = 0;
       const cardsTop = cardsRef.current?.offsetTop || Infinity;
       const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity;
-
       const snapBuffer = window.innerHeight * 0.1;
-      scrollVelocity.current = 5;
 
-      if (['ArrowDown', 'PageDown', 'Space'].includes(e.code)) {
+      if (scrollDirection === 'down' && e.deltaY > 5) {
         if (currentScrollY < cardsTop - snapBuffer) {
           e.preventDefault();
           smoothScrollTo(cardsRef.current as HTMLElement);
-        } else if (currentScrollY < runningSectionTop - snapBuffer) {
-        } else {
         }
-      }
-      else if (['ArrowUp', 'PageUp'].includes(e.code)) {
-        if (currentScrollY > cardsTop + snapBuffer) {
-        } else if (currentScrollY > snapBuffer) {
+      } else if (scrollDirection === 'up' && e.deltaY < -5) {
+        if (currentScrollY > headerTop + snapBuffer) {
           e.preventDefault();
-          smoothScrollTo(0);
-        } else {
+          smoothScrollTo(headerTop);
         }
       }
-    }
-  }, [smoothScrollTo]);
+    },
+    [smoothScrollTo]
+  );
+
+  const handleKeyDown = React.useCallback(
+    (e: KeyboardEvent) => {
+      if (isScrollingProgrammatically.current) {
+        e.preventDefault();
+        return;
+      }
+
+      if (['Space', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(e.code)) {
+        const currentScrollY = window.scrollY;
+        const cardsTop = cardsRef.current?.offsetTop || Infinity;
+        const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity;
+        const snapBuffer = window.innerHeight * 0.1;
+        scrollVelocity.current = 5;
+
+        if (['ArrowDown', 'PageDown', 'Space'].includes(e.code)) {
+          if (currentScrollY < cardsTop - snapBuffer) {
+            e.preventDefault();
+            smoothScrollTo(cardsRef.current as HTMLElement);
+          }
+        } else if (['ArrowUp', 'PageUp'].includes(e.code)) {
+          if (currentScrollY > snapBuffer) {
+            e.preventDefault();
+            smoothScrollTo(0);
+          }
+        }
+      }
+    },
+    [smoothScrollTo]
+  );
 
   React.useEffect(() => {
     window.addEventListener('wheel', handleWheel, { passive: false });
@@ -163,25 +149,7 @@ function HomePageContent() {
     };
   }, [handleWheel, handleKeyDown]);
 
-  // Lógica para cargar los datos de las zapatillas
-  React.useEffect(() => {
-    const getSneakers = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchSneakers();
-        setSneakers(data);
-      } catch (err) {
-        setError('Failed to fetch sneakers. Please try again later.');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getSneakers();
-  }, []);
-  
-
+  // --- Render ---
   return (
     <>
       <div ref={headerRef}>
@@ -190,39 +158,47 @@ function HomePageContent() {
 
       <div ref={cardsRef}>
         <div className="container mx-auto py-8">
-          {loading ? (
-            <div className="text-center text-lg text-gray-600">Caricamento scarpe da ginnastica...</div>
+          {isLoading ? (
+            <div className="text-center text-lg text-gray-600">
+              Cargando zapatillas...
+            </div>
           ) : error ? (
-            <div className="text-center text-lg text-red-600">{error}</div>
+            <div className="text-center text-lg text-red-600">
+              Error: {error.message}
+            </div>
           ) : sneakers.length === 0 ? (
-            <div className="text-center text-lg text-gray-600">Nessuna scarpa da ginnastica trovata.</div>
+            <div className="text-center text-lg text-gray-600">
+              No se encontraron zapatillas.
+            </div>
           ) : (
             <SneakersGrid sneakers={sneakers.slice(0, 3)} />
           )}
         </div>
       </div>
 
-      {!loading && !error && sneakers.length > 0 && (
+      {!isLoading && !error && sneakers.length > 0 && (
         <>
           <div ref={runningSectionRef} className="w-full min-h-screen bg-white">
             <JordanSection />
           </div>
 
-          <div ref={bottomContentRef} className="h-[100vh] bg-white-100 flex items-center justify-center text-gray-700">
-           <AllCategoriesSection />
-        </div>
-        <div>
-
           <TrendingSection />
+
+          <div
+            ref={bottomContentRef}
+            className="h-[100vh] bg-white flex items-center justify-center text-gray-700"
+          >
+            <AllCategoriesSection />
+          </div>
+
           <Footer />
-        </div>
-        
         </>
       )}
     </>
   );
 }
 
+// Registrar la ruta con TanStack Router
 export const Route = createFileRoute('/')({
   component: HomePageContent,
 });
