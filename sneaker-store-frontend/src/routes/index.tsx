@@ -93,20 +93,41 @@ function HomePageContent() {
       const runningSectionTop = runningSectionRef.current?.offsetTop || Infinity;
       const snapBuffer = window.innerHeight * 0.1;
 
-      if (scrollDirection === 'down' && e.deltaY > 5) {
-        if (currentScrollY < cardsTop - snapBuffer) {
-          e.preventDefault();
-          smoothScrollTo(cardsRef.current as HTMLElement);
-        }
-      } else if (scrollDirection === 'up' && e.deltaY < -5) {
-        if (currentScrollY > headerTop + snapBuffer) {
+      // === LÓGICA DE SNAP MODIFICADA ===
+
+      if (scrollDirection === 'down' && e.deltaY > 5) {
+        // Snap hacia abajo: Si estamos ANTES del punto de snap de las tarjetas
+        if (currentScrollY < cardsTop - snapBuffer) {
+          e.preventDefault();
+          smoothScrollTo(cardsRef.current as HTMLElement);
+        }
+        // IMPORTANTE: Una vez que estamos en las tarjetas o más abajo, el scroll sigue normal.
+      } else if (scrollDirection === 'up' && e.deltaY < -5) {
+        // Snap hacia arriba: Si estamos JUSTO EN las tarjetas o un poco después
+        // y queremos volver a la parte superior (0).
+        if (currentScrollY >= cardsTop - snapBuffer && currentScrollY < cardsTop + snapBuffer * 2) {
+          e.preventDefault();
+          smoothScrollTo(headerTop);
+        } else if (currentScrollY > headerTop + snapBuffer) {
+             // Si el scroll está MÁS ALLÁ del área de snap, lo permitimos
+             // a menos que estemos en el rango cardsTop para ir a headerTop
+             // Esta parte asegura que desde el resto de la página el scroll funcione
+             // o se podría quitar el `else if` y solo dejar la condición del snap de cardsTop a headerTop
+             // si se quiere deshabilitar por completo el snap hacia arriba desde el resto de la página.
+             // Pero para scroll normal después, *no* queremos prevenir el default fuera del rango.
+        }
+      }
+      // Snap hacia arriba: Solo aplica si estamos cerca o en la posición de las tarjetas.
+      const isNearCards = currentScrollY > cardsTop - snapBuffer && currentScrollY < cardsTop + window.innerHeight * 0.5;
+
+      if (scrollDirection === 'up' && e.deltaY < -5 && isNearCards) {
           e.preventDefault();
           smoothScrollTo(headerTop);
-        }
       }
-    },
-    [smoothScrollTo]
-  );
+      
+    },
+    [smoothScrollTo]
+  );
 
   const handleKeyDown = React.useCallback(
     (e: KeyboardEvent) => {
