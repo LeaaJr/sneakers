@@ -1,3 +1,4 @@
+#//crud/trending.py
 from sqlalchemy.orm import Session
 from src.database import models
 
@@ -18,7 +19,8 @@ def create_trending_product(db: Session, data: dict):
         image=data.get("image"),
         label=data.get("label"),
         title=data.get("title"),
-        subtitle=data.get("subtitle")
+        subtitle=data.get("subtitle"),
+        sneaker_id=data.get("sneaker_id")
     )
     db.add(new_trending)
     db.commit()
@@ -34,3 +36,18 @@ def delete_trending_product(db: Session, trending_id: int):
         db.commit()
         return True
     return False
+
+def update_trending_product(db: Session, trending_id: int, update_data: dict):
+    """Editar un producto de tendencia"""
+    trending = db.query(models.TrendingProduct).filter(models.TrendingProduct.id == trending_id).first()
+    if not trending:
+        return None
+
+    for key, value in update_data.items():
+        if value is not None:
+            setattr(trending, key, value)
+
+    db.commit()
+    db.refresh(trending)
+    return trending
+

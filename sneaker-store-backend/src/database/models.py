@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func # Keep this import for func
 from sqlalchemy.dialects.postgresql import UUID
 from src.database.database import Base 
+from sqlalchemy.dialects.postgresql import UUID
 import uuid 
 
 
@@ -148,17 +149,22 @@ class Category(Base):
 
 # Trending
 
-from sqlalchemy import Column, Integer, String
-
 class TrendingProduct(Base):
     __tablename__ = "trending_products"
-    
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True) 
-    
-    # Campos que coinciden con el frontend:
-    image = Column(String, index=True)      # URL de la imagen
-    label = Column(String)                  # 'Novità', 'Air Max DN Roam', etc.
-    title = Column(String)                  # Título principal de la tarjeta
-    subtitle = Column(String)               # Texto del botón, ej. 'Acquista'
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    image = Column(String, index=True)
+    label = Column(String)
+    title = Column(String)
+    subtitle = Column(String)
+
+    # 👇 Nuevo campo para vincular con una sneaker
+    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id"), nullable=False)
+
+    # 👇 Relación opcional si querés acceder a la sneaker desde el trending
+    sneaker = relationship("Sneaker")
+
+
+
 
 

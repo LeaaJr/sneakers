@@ -93,6 +93,22 @@ def create_trending_product_endpoint(
 ):
     return trending_crud.create_trending_product(db, product.dict())
 
+@trending_router.put(
+    "/products/{trending_id}",
+    response_model=schemas.TrendingProduct,
+    summary="Actualizar un producto en tendencia"
+)
+def update_trending_product_endpoint(
+    trending_id: int,
+    update: schemas.TrendingProductUpdate,
+    db: Session = Depends(get_db)
+):
+    updated = trending_crud.update_trending_product(db, trending_id, update.dict(exclude_unset=True))
+    if not updated:
+        raise HTTPException(status_code=404, detail="Producto en tendencia no encontrado")
+    return updated
+
+
 
 # Esto hace que las rutas de abajo sean /api/sneakers, /api/brands, /api/test-db
 app.include_router(trending_router, prefix="/api")
@@ -324,6 +340,7 @@ def add_running_section_detail(detail_item: schemas.SneakerFeaturedDetailCreate,
 
 
 # --- ENDPOINTS PARA LA SECCIÓN TRENDING ---
+
 
 
 

@@ -138,6 +138,7 @@ class TrendingProductBase(BaseModel):
     label: str
     title: str
     subtitle: str
+    sneaker_id: UUID
 
 # Schema para la creación (POST)
 class TrendingProductCreate(TrendingProductBase):
@@ -156,9 +157,22 @@ class TrendingProductSchema(BaseModel):
     label: Optional[str] = None
     title: Optional[str] = None
     subtitle: Optional[str] = None
+    sneaker_id: Optional[UUID] = None
 
     class Config:
         from_attributes = True
 
+# Schema para el edit (PUT)
+# 
+class TrendingProductUpdate(BaseModel):
+    image: Optional[str] = None
+    label: Optional[str] = None
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    sneaker_id: Optional[UUID] = None
+
+    class Config:
+        from_attributes = True
+ 
 
 
