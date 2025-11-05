@@ -8,6 +8,8 @@ from src.schemas.category import Category, CategoryCreate, CategoryUpdate
 from src.database import models
 from src.schemas import sneaker as schemas
 from sqlalchemy.orm import Session, joinedload, selectinload
+from typing import Optional
+from pydantic import BaseModel
 
 # Create a FastAPI router with a prefix and tags
 router = APIRouter(prefix="/api/categories", tags=["Categories"])
@@ -160,3 +162,4 @@ def get_sneakers_by_slug(
         )
 
     return sneakers
+

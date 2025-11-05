@@ -1,3 +1,4 @@
+#/src/database/database.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # Define settings using pydantic-settings to load from .env
 class Settings(BaseSettings):
 
-    DATABASE_URL: str = "postgresql://sneaker_store_db_dyx8_user:8GxLppRWbPk48OJsjXvaH8KUDcuKaguP@dpg-d3h9p2r3fgac739kjk50-a.oregon-postgres.render.com/sneaker_store_db_dyx8"
+    DATABASE_URL: str = "postgresql://db_new_sneakers_user:zIsoSAubHrfr10gopBCnNhcboKuBL7am@dpg-d45j0j3uibrs73f6p300-a.oregon-postgres.render.com/db_new_sneakers"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
