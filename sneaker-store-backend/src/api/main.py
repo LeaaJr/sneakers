@@ -314,7 +314,7 @@ def create_running_section_details(details: List[schemas.SneakerFeaturedDetailCr
         db.add(models.SneakerFeaturedDetail(**detail_data))
 
     db.commit()
-    return {"message": "Detalles destacados de running creados exitosamente."}
+    return {"message": "Detalles destacados de jordan creados exitosamente."}
 
 # 3. ENDPOINT PARA AGREGAR UNA SOLA card (POST - el que no borra)
 # URL: /api/running_section/featured_detail/ (Ruta SINGULAR)
