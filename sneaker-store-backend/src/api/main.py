@@ -368,6 +368,30 @@ def check_status():
     return {"status": "ok", "app_running": True}
 
 
+# ENDPOINTS PARA OBTENER TODAS LAS SNEAKERS
+
+@app.get("/api/sneakers/", response_model=List[schemas.Sneaker])
+def read_all_sneakers(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Obtiene una lista paginada de todas las zapatillas (sneakers) disponibles.
+    Utiliza eager loading para incluir marcas y la imagen principal.
+    """
+    
+    # Consulta la base de datos para obtener las sneakers, aplicando paginación.
+    # Usamos joinedload para incluir la marca y evitar consultas N+1,
+    # lo cual es crucial para la eficiencia.
+    sneakers = db.query(models.Sneaker).options(
+        joinedload(models.Sneaker.brand) 
+        # Si la lista principal solo necesita datos esenciales, puedes omitir
+        # la carga de sizes, images y featured_details aquí para mayor rendimiento.
+    ).offset(skip).limit(limit).all()
+
+    # Si necesitas una lista más ligera para las cards, considera crear un
+    # 'schemas.SneakerCard' que solo incluya id, title, price, main_image_url y brand.
+    
+    return sneakers
+
+
 # FUNCION TEMPORAL
 
 #def recreate_tables():

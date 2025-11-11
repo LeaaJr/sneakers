@@ -139,7 +139,7 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
                 {/* Sign In Link (sin cambios) */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                        <Link to="/signin" className={cn(
+                        <Link to="/auth/signin" className={cn(
                             navigationMenuTriggerStyle(),
                             "bg-transparent hover:bg-black/10 transition-colors",
                             isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
@@ -153,7 +153,7 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
                 {/* Sign Up Link (sin cambios) */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                        <Link to="/signup" className={cn(
+                        <Link to="/auth/signup" className={cn(
                             navigationMenuTriggerStyle(),
                             "bg-transparent hover:bg-black/10 transition-colors",
                             isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
