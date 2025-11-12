@@ -15,8 +15,14 @@ import { useEffect, useState } from "react";
 // Importaciones de iconos (Lucide)
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
 
+interface NavigationMenuDemoProps {
+    className?: string;
+    // Nueva prop: indica si el color por defecto (sin scroll) debe ser blanco
+    defaultWhite?: boolean; 
+}
 
-export function NavigationMenuDemo({ className }: { className?: string }) {
+
+export function NavigationMenuDemo({ className, defaultWhite = false }: NavigationMenuDemoProps) {
 
     const [scrolled, setScrolled] = useState(false);
 
@@ -32,16 +38,36 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
 
     const isProductPage = location.pathname.startsWith("/sneakers/")
 
+    // 💡 LÓGICA DE COLOR MODIFICADA 💡
+    let isBlackText: boolean;
+
+    if (defaultWhite) {
+        // Caso: Estamos en la página principal donde HeaderFuturista está visible
+        // Será negro si: hay scroll
+        isBlackText = scrolled || isProductPage;
+    } else {
+        // Caso: Estamos en cualquier otra página (por defecto es negro)
+        isBlackText = true;
+    }
+    
+    // Si quieres que las product pages SIEMPRE sean negras, 
+    // puedes simplificar a:
+    // isBlackText = isProductPage || (defaultWhite ? scrolled : true);
+
+    const textColorClass = isBlackText ? "text-black" : "text-white";
+
     return (
 
-        <NavigationMenu
-            viewport={false}
-            className={cn(
-                "mx-auto max-w-7xl pt-5 transition-colors duration-300",
-                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
-                className
-            )}
-        >
+            <NavigationMenu
+                        viewport={false}
+                        className={cn(
+                            "mx-auto max-w-7xl pt-5 transition-colors duration-300",
+                            "bg-transparent", // Fondo transparente
+                            textColorClass, // Aplica el color del texto
+                            className
+                        )}
+                    >
+            
             <NavigationMenuList className="bg-transparent">
                 {/* Home Link */}
                 <NavigationMenuItem>
@@ -51,7 +77,8 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
                             className={cn(
                                 navigationMenuTriggerStyle(),
                                 "bg-transparent hover:bg-black/10 transition-colors",
-                                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
+                                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
+                                textColorClass
                             )}
                         >
                             Home
@@ -64,7 +91,8 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
                     <NavigationMenuTrigger className={cn(
                         navigationMenuTriggerStyle(),
                         "bg-transparent hover:bg-black/10 transition-colors",
-                        isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
+                        isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
+                        textColorClass
                     )}
                     >Shop</NavigationMenuTrigger>
                     <NavigationMenuContent>
@@ -114,7 +142,8 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
                         <Link to="/about" className={cn(
                             navigationMenuTriggerStyle(),
                             "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
+                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
+                            textColorClass
                         )}
                         >
                             About Us
@@ -128,7 +157,8 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
                         <Link to="/contact" className={cn(
                             navigationMenuTriggerStyle(),
                             "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
+                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
+                            textColorClass
                         )}
                         >
                             Contact
@@ -136,31 +166,30 @@ export function NavigationMenuDemo({ className }: { className?: string }) {
                     </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                {/* Sign In Link (sin cambios) */}
+                
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                        <Link to="/auth/signin" className={cn(
+                        <Link to="/auth" search={{ mode: 'signin' }} className={cn(
                             navigationMenuTriggerStyle(),
                             "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
+                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
+                            textColorClass
                         )}
                         >
-                            Sign In
-                        </Link>
+                        Sign In</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 {/* Sign Up Link (sin cambios) */}
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                        <Link to="/auth/signup" className={cn(
+                        <Link to="/auth" search={{ mode: 'signup' }} className={cn(
                             navigationMenuTriggerStyle(),
                             "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white"
+                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
+                            textColorClass
                         )}
-                        >
-                            Sign Up
-                        </Link>
+                        >Sign Up</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
 

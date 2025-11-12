@@ -19,7 +19,7 @@ const SignInForm: React.FC = () => (
     <input type="email" placeholder="Email" className="bg-gray-200 p-3 my-2 w-full" />
     <input type="password" placeholder="Password" className="bg-gray-200 p-3 my-2 w-full" />
     <a href="#" className="text-sm my-2 text-gray-600">Forgot your password?</a>
-    <button type="submit" className="rounded-full border border-[#FF4B2B] bg-[#FF4B2B] text-white text-xs font-bold px-10 py-3 uppercase mt-4">
+    <button type="submit" className="rounded-full border border-[#d3d7e3] bg-[#8b95b6] text-white text-xs font-bold px-10 py-3 uppercase mt-4">
       Sign In
     </button>
   </form>

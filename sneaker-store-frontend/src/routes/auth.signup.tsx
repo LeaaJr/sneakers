@@ -3,10 +3,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import AuthContainer from '@/components/features/AuthContainer'; // Ajusta la ruta
 
 export const Route = createFileRoute('/auth/signup')({
-    component: SignupPage,
+    component: SignupComponent,
 });
 
-function SignupPage() {
-    // Renderiza el contenedor, inicializando en modo Sign Up
+function SignupComponent() {
+    // La ruta actual es /auth/signup
     return <AuthContainer initialMode="signup" />;
 }
