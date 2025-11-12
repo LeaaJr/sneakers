@@ -1,0 +1,51 @@
+/* src/styles/AnimatedGlowText.module.css */
+
+.textContainer {
+  /* Asegúrate de que el contenedor no tenga un background-color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.animatedText {
+  font-family: 'Poppins', sans-serif; /* O una fuente de tu elección */
+  font-size: 6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  
+  /* El corazón del efecto: Degradado animado */
+  background: linear-gradient(
+    120deg,
+    #b3c0d6,     /* Un azul-gris claro */
+    #eef1f6,     /* Un tono casi blanco para el brillo */
+    #acb4cb,     /* El color exacto de tu fondo */
+    #eef1f6      /* Repetimos el tono claro para el bucle */
+  );
+  background-size: 300% 300%;
+  
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Efecto de resplandor para que combine con el fondo */
+  text-shadow: 0 0 10px rgba(172, 180, 203, 0.7),
+               0 0 20px rgba(238, 241, 246, 0.5);
+
+
+  /* Animación del degradado */
+  animation: glow-flow 8s ease-in-out infinite;
+}
+
+@keyframes glow-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

@@ -29,19 +29,19 @@
   text-align: center;
 }
 
-.futuristicTitle h1 {
+/* .futuristicTitle h1 {
   font-size: 5rem;
   font-weight: 900;
   color: transparent;
-  background: linear-gradient(90deg, #ffffff, #8ac7ed);
+  background: linear-gradient(90deg, #968686, #020f18);
   -webkit-background-clip: text;
   background-clip: text;
-  text-shadow: 0 0 10px rgba(138, 199, 237, 0.3);
+  text-shadow: 0 0 10px rgb(108, 77, 124);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin: 0;
   animation: titleGlow 3s ease-in-out infinite alternate;
-}
+} */
 
 .titleGlow {
   position: absolute;
@@ -60,7 +60,7 @@
     text-shadow: 0 0 10px rgba(138, 199, 237, 0.3);
   }
   100% {
-    text-shadow: 0 0 20px rgba(138, 199, 237, 0.6), 0 0 30px rgba(138, 199, 237, 0.4);
+    text-shadow: 0 0 20px rgba(120, 76, 143, 0.6), 0 0 30px rgba(90, 53, 102, 0.4);
   }
 }
 

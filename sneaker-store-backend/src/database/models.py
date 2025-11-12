@@ -3,11 +3,11 @@ from sqlalchemy import Column, String, Integer, Float, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func # Keep this import for func
-from sqlalchemy.dialects.postgresql import UUID 
+from sqlalchemy.dialects.postgresql import UUID
+from src.database.database import Base 
+from sqlalchemy.dialects.postgresql import UUID
 import uuid 
 
-
-Base = declarative_base()
 
 class Brand(Base):
     """
@@ -42,14 +42,25 @@ class Sneaker(Base):
     gender = Column(String, nullable=True)
     release_date = Column(DateTime, nullable=True)
     is_new = Column(Boolean, default=False)
+    
+    brand = relationship("Brand", back_populates="sneakers")
+    sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan")
+    images = relationship("SneakerImage", back_populates="sneaker", cascade="all, delete-orphan")
+    featured_details = relationship("SneakerFeaturedDetail", back_populates="sneaker", cascade="all, delete-orphan")
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
+
+    category_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=False)
 
     brand = relationship("Brand", back_populates="sneakers")
     # CORRECTED TYPO HERE: back_popates changed to back_populates
     sizes = relationship("Size", back_populates="sneaker", cascade="all, delete-orphan") 
     images = relationship("SneakerImage", back_populates="sneaker", cascade="all, delete-orphan")
+    category = relationship("Category", back_populates="sneakers")
+
+    
+    
 
     def __repr__(self):
         return f"<Sneaker(title='{self.title}', brand='{self.brand.name if self.brand else 'N/A'}')>"
@@ -89,3 +100,71 @@ class SneakerImage(Base):
 
     def __repr__(self):
         return f"<SneakerImage(sneaker_id='{self.sneaker_id}', url='{self.image_url}')>"
+
+
+#Nueva seccion de endopint Running
+
+class SneakerFeaturedDetail(Base):
+    """
+    SQLAlchemy model for featured details of a sneaker.
+    """
+    __tablename__ = "sneaker_featured_details"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
+    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id"), nullable=False)
+    title = Column(Text, nullable=False)
+    description = Column(Text, nullable=True)
+    image_url = Column(String, nullable=False)
+    display_order = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    sneaker = relationship("Sneaker", back_populates="featured_details")
+
+    def __repr__(self):
+        return f"<SneakerFeaturedDetail(title='{self.title}')>"
+
+# --- NUEVO MODELO PARA LOS DETALLES DE LA SECCIÓN DE RUNNING ---
+
+    # Clase de categorias
+class Category(Base):
+    """
+    SQLAlchemy model for product categories.
+    """
+    __tablename__ = "categories"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=func.gen_random_uuid())
+    name = Column(String, unique=True, index=True, nullable=False)  # "Jordan"
+    slug = Column(String, unique=True, index=True, nullable=False)  # "jordan"
+    cover_image = Column(String, nullable=False)  # URL de imagen representativa
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
+
+    sneakers = relationship("Sneaker", back_populates="category")
+
+    def __repr__(self):
+        return f"<Category(name='{self.name}')>"
+    
+
+
+# Trending
+
+class TrendingProduct(Base):
+    __tablename__ = "trending_products"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    image = Column(String, index=True)
+    label = Column(String)
+    title = Column(String)
+    subtitle = Column(String)
+
+    # 👇 Nuevo campo para vincular con una sneaker
+    sneaker_id = Column(UUID(as_uuid=True), ForeignKey("sneakers.id"), nullable=False)
+
+    # 👇 Relación opcional si querés acceder a la sneaker desde el trending
+    sneaker = relationship("Sneaker")
+
+
+
+
+

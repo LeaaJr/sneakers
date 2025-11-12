@@ -9,48 +9,151 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SneakersRouteImport } from './routes/sneakers'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AllProductsRouteImport } from './routes/all-products'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SneakersSneakerIdRouteImport } from './routes/sneakers.$sneakerId'
+import { Route as CategorySportRouteImport } from './routes/category.$sport'
+import { Route as AuthSignupRouteImport } from './routes/auth.signup'
+import { Route as AuthSigninRouteImport } from './routes/auth.signin'
 
+const SneakersRoute = SneakersRouteImport.update({
+  id: '/sneakers',
+  path: '/sneakers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AllProductsRoute = AllProductsRouteImport.update({
+  id: '/all-products',
+  path: '/all-products',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SneakersSneakerIdRoute = SneakersSneakerIdRouteImport.update({
-  id: '/sneakers/$sneakerId',
-  path: '/sneakers/$sneakerId',
+  id: '/$sneakerId',
+  path: '/$sneakerId',
+  getParentRoute: () => SneakersRoute,
+} as any)
+const CategorySportRoute = CategorySportRouteImport.update({
+  id: '/category/$sport',
+  path: '/category/$sport',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSigninRoute = AuthSigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/all-products': typeof AllProductsRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/sneakers': typeof SneakersRouteWithChildren
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/category/$sport': typeof CategorySportRoute
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/all-products': typeof AllProductsRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/sneakers': typeof SneakersRouteWithChildren
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/category/$sport': typeof CategorySportRoute
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/all-products': typeof AllProductsRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/sneakers': typeof SneakersRouteWithChildren
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/category/$sport': typeof CategorySportRoute
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sneakers/$sneakerId'
+  fullPaths:
+    | '/'
+    | '/all-products'
+    | '/auth'
+    | '/sneakers'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/category/$sport'
+    | '/sneakers/$sneakerId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sneakers/$sneakerId'
-  id: '__root__' | '/' | '/sneakers/$sneakerId'
+  to:
+    | '/'
+    | '/all-products'
+    | '/auth'
+    | '/sneakers'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/category/$sport'
+    | '/sneakers/$sneakerId'
+  id:
+    | '__root__'
+    | '/'
+    | '/all-products'
+    | '/auth'
+    | '/sneakers'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/category/$sport'
+    | '/sneakers/$sneakerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SneakersSneakerIdRoute: typeof SneakersSneakerIdRoute
+  AllProductsRoute: typeof AllProductsRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  SneakersRoute: typeof SneakersRouteWithChildren
+  CategorySportRoute: typeof CategorySportRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sneakers': {
+      id: '/sneakers'
+      path: '/sneakers'
+      fullPath: '/sneakers'
+      preLoaderRoute: typeof SneakersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/all-products': {
+      id: '/all-products'
+      path: '/all-products'
+      fullPath: '/all-products'
+      preLoaderRoute: typeof AllProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -60,17 +163,65 @@ declare module '@tanstack/react-router' {
     }
     '/sneakers/$sneakerId': {
       id: '/sneakers/$sneakerId'
-      path: '/sneakers/$sneakerId'
+      path: '/$sneakerId'
       fullPath: '/sneakers/$sneakerId'
       preLoaderRoute: typeof SneakersSneakerIdRouteImport
+      parentRoute: typeof SneakersRoute
+    }
+    '/category/$sport': {
+      id: '/category/$sport'
+      path: '/category/$sport'
+      fullPath: '/category/$sport'
+      preLoaderRoute: typeof CategorySportRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/signin': {
+      id: '/auth/signin'
+      path: '/signin'
+      fullPath: '/auth/signin'
+      preLoaderRoute: typeof AuthSigninRouteImport
+      parentRoute: typeof AuthRoute
     }
   }
 }
 
+interface AuthRouteChildren {
+  AuthSigninRoute: typeof AuthSigninRoute
+  AuthSignupRoute: typeof AuthSignupRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthSigninRoute: AuthSigninRoute,
+  AuthSignupRoute: AuthSignupRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface SneakersRouteChildren {
+  SneakersSneakerIdRoute: typeof SneakersSneakerIdRoute
+}
+
+const SneakersRouteChildren: SneakersRouteChildren = {
+  SneakersSneakerIdRoute: SneakersSneakerIdRoute,
+}
+
+const SneakersRouteWithChildren = SneakersRoute._addFileChildren(
+  SneakersRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SneakersSneakerIdRoute: SneakersSneakerIdRoute,
+  AllProductsRoute: AllProductsRoute,
+  AuthRoute: AuthRouteWithChildren,
+  SneakersRoute: SneakersRouteWithChildren,
+  CategorySportRoute: CategorySportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

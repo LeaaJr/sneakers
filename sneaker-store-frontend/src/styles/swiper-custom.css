@@ -1,0 +1,47 @@
+/* src/styles/swiper-custom.css */
+
+.swiper {
+  width: 100%;
+  padding-top: 50px; /* Ajusta si necesitas más espacio arriba/abajo para el efecto */
+  padding-bottom: 50px;
+}
+
+.swiper-slide {
+  width: 300px; /* Ancho deseado para las tarjetas */
+  height: 450px; /* Altura deseada para las tarjetas. Ajusta para tus imágenes */
+  background-position: center;
+  background-size: cover;
+}
+
+/* Opcional: Estilos para el overlay de texto y la superposición de gradiente 
+   para lograr el efecto de la primera imagen */
+.swiper-slide .card-content-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+  color: white;
+  text-align: left;
+}
+
+.swiper-slide .card-content-overlay h3 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.swiper-slide .card-content-overlay p {
+  font-size: 1rem;
+}
+
+/* Opcional: Estilo para las paginaciones (los puntos inferiores) */
+.swiper-pagination-bullet {
+  background: #bbb !important; /* Color de los puntos inactivos */
+  opacity: 1 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #337ab7 !important; /* Color del punto activo (azul de ejemplo) */
+}
