@@ -1,6 +1,7 @@
 # src/schemas/__init__.py
 from .sneaker import *
 from .category import *
+from .auth import *
 
 # Resuelve las referencias adelantadas después de que ambos están definidos
 from pydantic import model_validator
