@@ -51,7 +51,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     # Buscar si el email ya existe
     db_user = db.query(models.User).filter(models.User.email == user_in.email).first()
-    if db_user:
+    if db_user: 
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El correo electrónico ya está registrado."
@@ -64,7 +64,7 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
     db_user = models.User(
         name=user_in.name,
         email=user_in.email,
-        password_hash=hashed_password
+        password_hash=hashed_password,
     )
 
     # Guardar en la base de datos
@@ -79,26 +79,36 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
 # ----------------------------------------------------
 @auth_router.post("/login", response_model=Token)
 def login_for_access_token(user_in: UserLogin, db: Session = Depends(get_db)):
-    # 1. Buscar el usuario por email
-    db_user = db.query(models.User).filter(models.User.email == user_in.email).first()
+    try:
+        # 1. Buscar el usuario por email
+        db_user = db.query(models.User).filter(models.User.email == user_in.email).first()
 
-    if not db_user or not verify_password(user_in.password, db_user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Credenciales inválidas",
-            headers={"WWW-Authenticate": "Bearer"},
+        if not db_user or not verify_password(user_in.password, db_user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Credenciales inválidas",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        # 2. Generar el token JWT
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": str(db_user.id), "email": db_user.email},
+            expires_delta=access_token_expires
+        )
+        
+        # 3. Devolver el token y los datos del usuario
+        return Token(
+            access_token=access_token,
+            token_type="bearer",
+            user=db_user
         )
 
-    # 2. Generar el token JWT
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": str(db_user.id), "email": db_user.email}, # 'sub' es la convención para el sujeto (ID)
-        expires_delta=access_token_expires
-    )
-    
-    # 3. Devolver el token y los datos del usuario
-    return schemas.Token(
-        access_token=access_token, 
-        token_type="bearer",
-        user=db_user # Pydantic mapeará automáticamente los campos del modelo
-    )
+    except Exception as e:
+        # 🚨 Imprime el error completo en la consola del backend (Uvicorn)
+        print(f"ERROR CRÍTICO DURANTE EL LOGIN: {e}") 
+        
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno del servidor al procesar el login."
+        )

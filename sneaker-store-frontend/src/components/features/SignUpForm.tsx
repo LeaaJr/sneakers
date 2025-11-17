@@ -1,7 +1,8 @@
 // components/featured/SignUpForm.tsx
 import React, { useState } from 'react';
-// Si usas TanStack Router, puedes importar useNavigate aquí si deseas redirigir tras el éxito
 // import { useNavigate } from '@tanstack/react-router'; 
+
+const BASE_URL = 'http://127.0.0.1:8000';
 
 const SignUpForm: React.FC = () => {
   const [name, setName] = useState('');
@@ -27,20 +28,29 @@ const SignUpForm: React.FC = () => {
     
     // Llamada al backend
     try {
-      const response = await fetch('/api/signup', { // **Ajusta esta URL si tu backend no corre en el mismo host/puerto**
+    const response = await fetch(`${BASE_URL}/api/auth/register`, { // 🔑 CORREGIDO
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name, email, password }),
-      });
+    });
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Manejo de errores 409 (Conflicto), 400 (Bad Request), etc.
-        throw new Error(data.message || 'Error en el registro.');
-      }
+    // 🔑 MEJORA DE MANEJO DE ERRORES: Intenta leer el JSON de error
+    let errorData;
+    try {
+        errorData = await response.json();
+    } catch (e) {
+        // Si no es JSON (ej. si el body está vacío), usa el texto plano
+        errorData = { detail: response.statusText || 'Error desconocido' };
+    }
+    
+    // Lanza el error con el detalle del backend
+    throw new Error(errorData.detail || 'Error al iniciar sesión. Verifica tus credenciales.');
+}
 
       setSuccess('¡Registro exitoso! Ya puedes iniciar sesión.');
       setName(''); setEmail(''); setPassword('');

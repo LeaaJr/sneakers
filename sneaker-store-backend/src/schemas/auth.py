@@ -7,6 +7,7 @@ from datetime import datetime
 class UserBase(BaseModel):
     email: EmailStr
     name: str
+    is_admin: bool = False
 
 class User(UserBase):
     id: UUID

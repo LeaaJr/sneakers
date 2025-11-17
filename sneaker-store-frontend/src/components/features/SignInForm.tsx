@@ -7,6 +7,8 @@ const storeToken = (token: string) => {
   localStorage.setItem('authToken', token);
 };
 
+const BASE_URL = 'http://127.0.0.1:8000';
+
 const SignInForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,19 +28,29 @@ const SignInForm: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/signin', { // **Ajusta esta URL**
+    const response = await fetch(`${BASE_URL}/api/auth/login`, { // 🔑 CORREGIDO
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-      });
+    });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error al iniciar sesión. Verifica tus credenciales.');
-      }
+    // 🔑 MEJORA DE MANEJO DE ERRORES: Intenta leer el JSON de error
+    let errorData;
+    try {
+        errorData = await response.json();
+    } catch (e) {
+        // Si no es JSON (ej. si el body está vacío), usa el texto plano
+        errorData = { detail: response.statusText || 'Error desconocido' };
+    }
+    
+    // Lanza el error con el detalle del backend
+    throw new Error(errorData.detail || 'Error al iniciar sesión. Verifica tus credenciales.');
+}
 
       // 1. Almacenar el token JWT
       storeToken(data.token);

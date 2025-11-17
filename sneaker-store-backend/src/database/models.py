@@ -175,6 +175,10 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
+    
+    # 🆕 NUEVA COLUMNA: Es un booleano, por defecto es FALSO
+    is_admin = Column(Boolean, default=False, nullable=False) 
+    
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
