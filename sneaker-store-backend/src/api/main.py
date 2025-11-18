@@ -16,6 +16,8 @@ from src.schemas.sneaker import SneakerFeaturedDetailCreate
 from src.schemas.category import Category, CategoryCreate
 from src.routers import categories
 
+from src.auth.auth import auth_router
+
 
 # --- INICIALIZACIÓN ---
 # Ejecutar la creación de tablas (Asegura que TrendingProduct exista)
@@ -60,6 +62,8 @@ trending_router = APIRouter(
 # --- INCLUSIÓN DE ROUTERS UNIFICADA ---
 
 app.include_router(categories.router) 
+
+app.include_router(auth_router)
 
 # --------------------------------------------------------------------------
 # Endpoint: GET /api/trending/products/ 
