@@ -2,208 +2,29 @@
 import * as React from "react";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
+import { 
+    NavigationMenu, 
+    NavigationMenuContent, 
+    NavigationMenuItem, 
+    NavigationMenuLink, 
+    NavigationMenuList, 
+    NavigationMenuTrigger, 
+    navigationMenuTriggerStyle 
 } from "@/components/ui/navigation-menu";
 import { useEffect, useState } from "react";
-// Importaciones de iconos (Lucide)
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
+// Iconos (Lucide)
+import { ShoppingCart, Heart, User, LogOut, Package } from "lucide-react";
+import { useAuth } from "@/components/hooks/useAuth";
 
 interface NavigationMenuDemoProps {
     className?: string;
-    // Nueva prop: indica si el color por defecto (sin scroll) debe ser blanco
     defaultWhite?: boolean; 
 }
 
-
-export function NavigationMenuDemo({ className, defaultWhite = false }: NavigationMenuDemoProps) {
-
-    const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const offset = window.scrollY;
-            setScrolled(offset > 50); // Cambia a partir de 50px de scroll
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const isProductPage = location.pathname.startsWith("/sneakers/")
-
-    // 💡 LÓGICA DE COLOR MODIFICADA 💡
-    let isBlackText: boolean;
-
-    if (defaultWhite) {
-        // Caso: Estamos en la página principal donde HeaderFuturista está visible
-        // Será negro si: hay scroll
-        isBlackText = scrolled || isProductPage;
-    } else {
-        // Caso: Estamos en cualquier otra página (por defecto es negro)
-        isBlackText = true;
-    }
-    
-    // Si quieres que las product pages SIEMPRE sean negras, 
-    // puedes simplificar a:
-    // isBlackText = isProductPage || (defaultWhite ? scrolled : true);
-
-    const textColorClass = isBlackText ? "text-black" : "text-white";
-
-    return (
-
-            <NavigationMenu
-                        viewport={false}
-                        className={cn(
-                            "mx-auto max-w-7xl pt-5 transition-colors duration-300",
-                            "bg-transparent", // Fondo transparente
-                            textColorClass, // Aplica el color del texto
-                            className
-                        )}
-                    >
-            
-            <NavigationMenuList className="bg-transparent">
-                {/* Home Link */}
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                        <Link
-                            to="/"
-                            className={cn(
-                                navigationMenuTriggerStyle(),
-                                "bg-transparent hover:bg-black/10 transition-colors",
-                                isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
-                                textColorClass
-                            )}
-                        >
-                            Home
-                        </Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Shop Link (AJUSTADO PARA SCROLL) */}
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger className={cn(
-                        navigationMenuTriggerStyle(),
-                        "bg-transparent hover:bg-black/10 transition-colors",
-                        isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
-                        textColorClass
-                    )}
-                    >Shop</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-popover text-popover-foreground">
-                            <li className="row-span-3">
-                                <NavigationMenuLink asChild>
-                                    {/* Enlace: All Sneakers' */}
-                                    <Link
-                                        to="/all-products"
-                                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                                    >
-                                        <div className="mb-2 mt-4 text-lg font-medium">All Sneakers</div>
-                                        <p className="text-sm leading-tight text-muted-foreground">
-                                            Esplora l'intera collezione di sneaker
-                                        </p>
-                                    </Link>
-                                </NavigationMenuLink>
-                            </li>
-                            
-                            {/* Enlace: Trend -> Scroll a 'trending' */}
-                            <ListItem to="/" search={{ scrollTo: 'trending' }} title="Trend"> 
-                                Scopri le sneakers alla moda.
-                            </ListItem>
-                            
-                            {/* Enlace: Categories -> Scroll a 'categories' */}
-                            <ListItem to="/" search={{ scrollTo: 'categories' }} title="Categories">
-                                Cerca sport, stile e altro ancora.
-                            </ListItem>
-                            
-                            {/* Enlace: On Sale (Asumimos que va a una página separada, si no, usaría 'cards' o 'jordan') */}
-                            {/* <ListItem to="/shop/sale" title="On Sale">
-                                Approfitta delle nostre offerte.
-                            </ListItem> */}
-                            
-                            {/* Podrías añadir Jordan de esta manera: */}
-                            <ListItem to="/" search={{ scrollTo: 'jordan' }} title="Jordan Specials">
-                                L'esclusiva collezione Jordan.
-                            </ListItem>
-
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                {/* About Link (sin cambios) */}
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                        <Link to="/about" className={cn(
-                            navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
-                            textColorClass
-                        )}
-                        >
-                            About Us
-                        </Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Contact Link (sin cambios) */}
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                        <Link to="/contact" className={cn(
-                            navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
-                            textColorClass
-                        )}
-                        >
-                            Contact
-                        </Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                        <Link to="/auth" search={{ mode: 'signin' }} className={cn(
-                            navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
-                            textColorClass
-                        )}
-                        >
-                        Sign In</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                {/* Sign Up Link (sin cambios) */}
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                        <Link to="/auth" search={{ mode: 'signup' }} className={cn(
-                            navigationMenuTriggerStyle(),
-                            "bg-transparent hover:bg-black/10 transition-colors",
-                            isProductPage || scrolled ? "bg-transparent text-black" : "bg-transparent text-white",
-                            textColorClass
-                        )}
-                        >Sign Up</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-
-            </NavigationMenuList>
-        </NavigationMenu>
-    );
-}
-
-// --- Componente ListItem Corregido ---
-// Se ha añadido la propiedad 'search' al tipo y se ha desestructurado para pasarla al Link
 const ListItem = React.forwardRef<
     React.ElementRef<typeof Link>,
-    React.ComponentPropsWithoutRef<typeof Link> & { title: string, search?: object } // <-- AÑADIDO: 'search?: object'
->(({ className, title, children, to, search, ...props }, ref) => { // <-- AÑADIDO: 'search'
+    React.ComponentPropsWithoutRef<typeof Link> & { title: string, search?: object } 
+>(({ className, title, children, to, search, ...props }, ref) => { 
     return (
         <li>
             <NavigationMenuLink asChild>
@@ -214,7 +35,7 @@ const ListItem = React.forwardRef<
                         className
                     )}
                     to={to}
-                    search={search} // <-- PASAMOS el objeto 'search' a TanStack Router
+                    search={search}
                     {...props}
                 >
                     <div className="text-sm font-medium leading-none">{title}</div>
@@ -227,3 +48,179 @@ const ListItem = React.forwardRef<
     );
 });
 ListItem.displayName = "ListItem";
+
+export function NavigationMenuDemo({ className, defaultWhite = false }: NavigationMenuDemoProps) {
+    const [scrolled, setScrolled] = useState(false);
+    const { isLoggedIn, logout, user } = useAuth(); // Ahora tenemos user del hook
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const offset = window.scrollY;
+            setScrolled(offset > 50);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const isProductPage = location.pathname.startsWith("/sneakers/");
+    const isBlackText = isProductPage || (defaultWhite ? scrolled : true);
+    const textColorClass = isBlackText ? "text-black" : "text-white";
+    const hoverBgClass = isBlackText ? "hover:bg-black/10" : "hover:bg-white/10";
+
+    return (
+        <NavigationMenu
+  viewport={false}
+  className={cn(
+    "mx-auto max-w-7xl pt-5 transition-colors duration-300",
+    "bg-transparent",
+    textColorClass,
+    className
+  )}
+>
+  <NavigationMenuList className="w-full grid grid-cols-3 items-center px-4">
+    
+    {/* LEFT: Empty (optional logo or placeholder) */}
+    <div className="flex justify-start items-center" />
+
+    {/* CENTER: Navigation + Auth */}
+    <div className="flex justify-center items-center space-x-4">
+      {/* Home */}
+      <NavigationMenuItem>
+        <NavigationMenuLink asChild>
+          <Link
+            to="/"
+            className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors", hoverBgClass, textColorClass)}
+          >
+            Home
+          </Link>
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+      {/* Shop */}
+      <NavigationMenuItem>
+        <NavigationMenuTrigger
+          className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors", hoverBgClass, textColorClass)}
+        >
+          Shop
+        </NavigationMenuTrigger>
+        <NavigationMenuContent>
+          <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-popover text-popover-foreground">
+            <li className="row-span-3">
+              <NavigationMenuLink asChild>
+                <Link
+                  to="/all-products"
+                  className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                >
+                  <div className="mb-2 mt-4 text-lg font-medium">All Sneakers</div>
+                  <p className="text-sm leading-tight text-muted-foreground">
+                    Explore the full sneaker collection
+                  </p>
+                </Link>
+              </NavigationMenuLink>
+            </li>
+            <ListItem to="/" search={{ scrollTo: 'trending' }} title="Trending">
+              Discover the most popular sneakers.
+            </ListItem>
+            <ListItem to="/" search={{ scrollTo: 'categories' }} title="Categories">
+              Browse by sport, style, and more.
+            </ListItem>
+            <ListItem to="/" search={{ scrollTo: 'jordan' }} title="Jordan Specials">
+              The exclusive Jordan collection.
+            </ListItem>
+          </ul>
+        </NavigationMenuContent>
+      </NavigationMenuItem>
+
+      {/* Auth */}
+      {isLoggedIn ? (
+        <NavigationMenuItem>
+          <NavigationMenuTrigger
+            className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors", hoverBgClass, textColorClass)}
+          >
+            <User className="h-4 w-4 mr-2" />
+            {user?.name || user?.email}
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="w-[200px] p-2 bg-popover text-popover-foreground">
+              <li>
+                <NavigationMenuLink asChild>
+                  <Link
+                    to="/my-orders"
+                    className="flex items-center p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    <Package className="h-4 w-4 mr-2" />
+                    My Orders
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              <li className="border-t mt-2 pt-2">
+                <NavigationMenuLink asChild>
+                  <button
+                    onClick={logout}
+                    className="flex items-center w-full p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-left cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </button>
+                </NavigationMenuLink>
+              </li>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      ) : (
+        <>
+          <NavigationMenuItem>
+            <NavigationMenuLink asChild>
+              <Link
+                to="/auth"
+                search={{ mode: 'signin' }}
+                className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors flex items-center", hoverBgClass, textColorClass)}
+              >
+                <User className="h-5 w-5 mr-1" />
+                <span className="hidden sm:inline">Sign In</span>
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem className="hidden lg:block">
+            <NavigationMenuLink asChild>
+              <Link
+                to="/auth"
+                search={{ mode: 'signup' }}
+                className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors", hoverBgClass, textColorClass)}
+              >
+                Sign Up
+              </Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        </>
+      )}
+    </div>
+
+    {/* RIGHT: Cart & Favorites */}
+    <div className="flex justify-end items-center space-x-3">
+      <NavigationMenuItem>
+        <NavigationMenuLink asChild>
+          <Link
+            to="/favorites"
+            className={cn(navigationMenuTriggerStyle(), "bg-transparent p-2", hoverBgClass, textColorClass)}
+          >
+            <Heart className="h-5 w-5" />
+          </Link>
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+      <NavigationMenuItem>
+        <NavigationMenuLink asChild>
+          <Link
+            to="/cart"
+            className={cn(navigationMenuTriggerStyle(), "bg-transparent p-2", hoverBgClass, textColorClass)}
+          >
+            <ShoppingCart className="h-5 w-5" />
+          </Link>
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+    </div>
+  </NavigationMenuList>
+</NavigationMenu>
+)};
