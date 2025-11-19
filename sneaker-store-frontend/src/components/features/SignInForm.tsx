@@ -1,50 +1,47 @@
 // components/featured/SignInForm.tsx
 import React, { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router'; 
+import { useNavigate } from '@tanstack/react-router';
+import { useAuth } from '@/components/hooks/useAuth';
 
-// Define dónde almacenarás el token. Una mejor práctica sería usar un Context/Redux o cookies.
-const storeToken = (token: string) => {
-  localStorage.setItem('authToken', token);
-};
 
 const BASE_URL = 'http://127.0.0.1:8000';
 
 const SignInForm: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
-    if (!email || !password) {
-      setError("El email y la contraseña son obligatorios.");
-      setIsLoading(false);
-      return;
-    }
+    if (!email || !password) {
+      setError("El email y la contraseña son obligatorios.");
+      setIsLoading(false);
+      return;
+    }
 
-    try {
-    const response = await fetch(`${BASE_URL}/api/auth/login`, { // 🔑 CORREGIDO
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch(`${BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-    // 🔑 MEJORA DE MANEJO DE ERRORES: Intenta leer el JSON de error
     let errorData;
     try {
         errorData = await response.json();
     } catch (e) {
-        // Si no es JSON (ej. si el body está vacío), usa el texto plano
         errorData = { detail: response.statusText || 'Error desconocido' };
     }
     
@@ -53,7 +50,7 @@ const SignInForm: React.FC = () => {
 }
 
       // 1. Almacenar el token JWT
-      storeToken(data.token);
+      login(data.token, data.user);
       
       // 2. Redirigir al usuario (ej. a la raíz o a un dashboard)
       navigate({ to: '/' }); 

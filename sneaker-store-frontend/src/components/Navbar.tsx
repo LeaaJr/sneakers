@@ -134,40 +134,56 @@ export function NavigationMenuDemo({ className, defaultWhite = false }: Navigati
 
       {/* Auth */}
       {isLoggedIn ? (
-        <NavigationMenuItem>
-          <NavigationMenuTrigger
-            className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors", hoverBgClass, textColorClass)}
-          >
-            <User className="h-4 w-4 mr-2" />
-            {user?.name || user?.email}
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="w-[200px] p-2 bg-popover text-popover-foreground">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to="/my-orders"
-                    className="flex items-center p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-                  >
-                    <Package className="h-4 w-4 mr-2" />
-                    My Orders
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-              <li className="border-t mt-2 pt-2">
-                <NavigationMenuLink asChild>
-                  <button
-                    onClick={logout}
-                    className="flex items-center w-full p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-left cursor-pointer"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </button>
-                </NavigationMenuLink>
-              </li>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger
+                                className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors", hoverBgClass, textColorClass)}
+                            >
+                                <User className="h-4 w-4 mr-2" />
+                                {user?.name || user?.email}
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="w-[200px] p-2 bg-popover text-popover-foreground">
+                                    {/* 1. Mis Pedidos/Compras (AÑADIDO) */}
+                                    <li>
+                                        <NavigationMenuLink asChild>
+                                            <Link
+                                                to="/my-orders" 
+                                                className="flex items-center p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            >
+                                                <Package className="h-4 w-4 mr-2" />
+                                                My Orders
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </li>
+                                    
+                                    {/* 2. Configuración de Usuario (AÑADIDO) */}
+                                    <li>
+                                        <NavigationMenuLink asChild>
+                                            <Link
+                                                to="/user-config" // Nueva ruta para la configuración
+                                                className="flex items-center p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                                            >
+                                                <User className="h-4 w-4 mr-2" />
+                                                Configure User
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </li>
+
+                                    {/* 3. Cerrar Sesión */}
+                                    <li className="border-t mt-2 pt-2">
+                                        <NavigationMenuLink asChild>
+                                            <button
+                                                onClick={logout}
+                                                className="flex items-center w-full p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-left cursor-pointer"
+                                            >
+                                                <LogOut className="h-4 w-4 mr-2" />
+                                                Sign Out
+                                            </button>
+                                        </NavigationMenuLink>
+                                    </li>
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
       ) : (
         <>
           <NavigationMenuItem>
