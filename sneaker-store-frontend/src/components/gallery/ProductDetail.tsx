@@ -1,61 +1,86 @@
 // src/components/gallery/ProductDetail.tsx
-import React, { useState } from 'react';
-import { ProductGallery } from './ProductGallery'; // ¡Este import es clave y es lo único que debe quedar!
+import React, { useState, useCallback } from 'react';
+import { ProductGallery } from './ProductGallery';
 import { SizeSelector } from './SizeSelector';
 import { Button } from '../ui/button';
 import { StarIcon, HeartIcon, RulerIcon } from 'lucide-react';
-import { type Sneaker, type Size } from '@/services/sneakerService';
+import { type Sneaker } from '@/services/sneakerService';
+import { useCart } from '@/context/CartContext';
+import { useToast } from "@/components/ui/use-toast";
+
 
 interface ProductDetailProps {
-  sneaker: Sneaker; // Recibe el objeto Sneaker completo
+  sneaker: Sneaker;
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ sneaker }) => {
-  // Estos console.log estaban aquí por tu propia cuenta, déjalos si quieres
-  console.log('ProductGallery: mainImageUrl recibida:', sneaker.main_image_url);
-  console.log('ProductGallery: images (array de objetos) recibidas:', sneaker.images);
+  const { addToCart } = useCart(); // Usa el hook del carrito
+  const { toast } = useToast(); // Hook para notificaciones
 
-  // ESTA PARTE DE `allImageUrls` ES REDUNDANTE AQUÍ.
-  // Ya la estás calculando DENTRO de ProductGallery.tsx.
-  // **Puedes ELIMINAR las siguientes 4 líneas también para limpiar:**
   const allImageUrls = [
     sneaker.main_image_url,
     ...sneaker.images.sort((a, b) => (a.order || 0) - (b.order || 0)).map((img) => img.image_url),
   ];
-  console.log('ProductGallery: allImageUrls (array final de URLs) para renderizar:', allImageUrls);
-  // **FIN DE LA SECCIÓN REDUNDANTE A ELIMINAR**
 
-
-  // Encontrar la primera talla disponible o null si no hay
   const initialSelectedSizeId = sneaker.sizes.length > 0 ? sneaker.sizes[0].id : null;
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(initialSelectedSizeId);
 
-  // Puedes calcular el rating en base a tus datos, o mantener un placeholder
-  const displayRating = "Valutazione alta"; // Placeholder por ahora
-
-  // Prepara las URLs de las imágenes para la galería
-  // Asegúrate de que sneaker.images y sneaker.main_image_url sean válidos
-  const galleryImages = sneaker.images; // Pasamos el array de objetos directamente a ProductGallery
+  const displayRating = "Valutazione alta";
+  
+  const galleryImages = sneaker.images;
   const mainImageForGallery = sneaker.main_image_url;
 
-  // Busca la talla seleccionada para mostrar su info si es necesario (ej. US, UK)
   const selectedSize = sneaker.sizes.find(s => s.id === selectedSizeId);
   const displaySelectedSize = selectedSize ? `EU ${selectedSize.eu_size}` : 'Seleziona una taglia';
+
+  // NUEVA FUNCIÓN: Manejar la adición al carrito
+  const handleAddToCart = useCallback(() => {
+    if (!selectedSizeId || !selectedSize) {
+      toast({
+        title: "Selezione mancante",
+        description: "Per favore, seleziona una taglia prima di aggiungere al carrello.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Prepara el objeto producto para el carrito
+    const itemToAdd = {
+      id: sneaker.id,
+      name: sneaker.title,
+      price: sneaker.price,
+      quantity: 1, 
+      size: selectedSize.eu_size.toString(), 
+      imageSrc: sneaker.main_image_url,
+      imageAlt: sneaker.title,
+    };
+
+    console.log("🛒 Producto enviado a addToCart:", itemToAdd);
+    
+    addToCart(itemToAdd);
+
+    toast({
+        title: "Aggiunto al carrello!",
+        description: `${itemToAdd.name} (Taglia ${itemToAdd.size}) è stato aggiunto al carrello.`,
+    });
+
+  }, [sneaker, selectedSizeId, selectedSize, addToCart, toast]);
 
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left side - Product Gallery */}
+        {/* Left side - Product Gallery (No cambia) */}
         <div>
           <ProductGallery
             images={galleryImages}
             mainImageUrl={mainImageForGallery}
           />
         </div>
+        
         {/* Right side - Product Info */}
         <div className="space-y-6">
-          {/* Product Title and Rating */}
+          {/* Product Title and Rating (No cambia) */}
           <div>
             <h1 className="text-3xl font-bold">{sneaker.title}</h1>
             <p className="text-gray-600 mt-1">{sneaker.description}</p>
@@ -64,11 +89,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ sneaker }) => {
               <span className="text-sm">{displayRating}</span>
             </div>
           </div>
-          {/* Price */}
+          
+          {/* Price (No cambia) */}
           <div>
             <span className="text-2xl font-bold">${sneaker.price.toFixed(2)}</span>
           </div>
-          {/* Size Selection */}
+          
+          {/* Size Selection (No cambia) */}
           <div>
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-medium">
@@ -94,16 +121,20 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ sneaker }) => {
               onSelectSize={setSelectedSizeId}
             />
           </div>
+          
           {/* Add to Cart and Wishlist */}
           <div className="space-y-3 pt-4">
-            <Button className="w-full bg-black hover:bg-gray-800 text-white py-6"
+            <Button 
+              className="w-full bg-black hover:bg-gray-800 text-white py-6"
               disabled={!selectedSizeId || (selectedSize && selectedSize.quantity === 0)}
+              onClick={handleAddToCart} // ¡AQUÍ ESTÁ EL CAMBIO CLAVE!
             >
               Aggiungi al carrello
             </Button>
             <Button
               variant="outline"
               className="w-full py-6 flex items-center justify-center"
+              // Aquí implementarías la lógica de addToFavorites
             >
               Aggiungi ai preferiti <HeartIcon className="ml-2 h-5 w-5" />
             </Button>
