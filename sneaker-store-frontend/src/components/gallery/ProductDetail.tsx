@@ -7,6 +7,7 @@ import { StarIcon, HeartIcon, RulerIcon } from 'lucide-react';
 import { type Sneaker } from '@/services/sneakerService';
 import { useCart } from '@/context/CartContext';
 import { useToast } from "@/components/ui/use-toast";
+import { useFavorites } from '@/context/FavoritesContext';
 
 
 interface ProductDetailProps {
@@ -14,8 +15,10 @@ interface ProductDetailProps {
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({ sneaker }) => {
-  const { addToCart } = useCart(); // Usa el hook del carrito
-  const { toast } = useToast(); // Hook para notificaciones
+  const { addToCart } = useCart();
+  const { toast } = useToast(); 
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const isCurrentlyFavorite = isFavorite(sneaker.id);
 
   const allImageUrls = [
     sneaker.main_image_url,
@@ -65,6 +68,15 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ sneaker }) => {
     });
 
   }, [sneaker, selectedSizeId, selectedSize, addToCart, toast]);
+
+const handleToggleFavorite = useCallback(() => {
+toggleFavorite(sneaker); 
+const action = isCurrentlyFavorite ? 'Rimosso' : 'Aggiunto'; 
+toast({
+  title: `${action} dai Preferiti!`,
+   description: `${sneaker.title} è stato ${action.toLowerCase()} alla tua lista.`,
+});
+}, [sneaker, toggleFavorite, toast]);
 
 
   return (
@@ -132,12 +144,15 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({ sneaker }) => {
               Aggiungi al carrello
             </Button>
             <Button
-              variant="outline"
-              className="w-full py-6 flex items-center justify-center"
-              // Aquí implementarías la lógica de addToFavorites
-            >
-              Aggiungi ai preferiti <HeartIcon className="ml-2 h-5 w-5" />
-            </Button>
+              onClick={handleToggleFavorite} 
+              variant="outline"
+              className="w-full py-6 flex items-center justify-center"
+            >
+              Aggiungi ai preferiti 
+              <HeartIcon 
+                  className={`ml-2 h-5 w-5 transition-colors ${isCurrentlyFavorite ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
+              />
+            </Button>
           </div>
         </div>
       </div>

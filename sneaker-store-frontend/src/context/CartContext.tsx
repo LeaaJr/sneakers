@@ -1,3 +1,4 @@
+// src/context/CartContext
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 // Define el tipo de un ítem en el carrito

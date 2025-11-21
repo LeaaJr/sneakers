@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SneakersRouteImport } from './routes/sneakers'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AllProductsRouteImport } from './routes/all-products'
 import { Route as IndexRouteImport } from './routes/index'
@@ -21,6 +22,11 @@ import { Route as AuthSigninRouteImport } from './routes/auth.signin'
 const SneakersRoute = SneakersRouteImport.update({
   id: '/sneakers',
   path: '/sneakers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/all-products': typeof AllProductsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/all-products': typeof AllProductsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/all-products': typeof AllProductsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/all-products'
     | '/auth'
+    | '/favorites'
     | '/sneakers'
     | '/auth/signin'
     | '/auth/signup'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/all-products'
     | '/auth'
+    | '/favorites'
     | '/sneakers'
     | '/auth/signin'
     | '/auth/signup'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/all-products'
     | '/auth'
+    | '/favorites'
     | '/sneakers'
     | '/auth/signin'
     | '/auth/signup'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AllProductsRoute: typeof AllProductsRoute
   AuthRoute: typeof AuthRouteWithChildren
+  FavoritesRoute: typeof FavoritesRoute
   SneakersRoute: typeof SneakersRouteWithChildren
   CategorySportRoute: typeof CategorySportRoute
 }
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       path: '/sneakers'
       fullPath: '/sneakers'
       preLoaderRoute: typeof SneakersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AllProductsRoute: AllProductsRoute,
   AuthRoute: AuthRouteWithChildren,
+  FavoritesRoute: FavoritesRoute,
   SneakersRoute: SneakersRouteWithChildren,
   CategorySportRoute: CategorySportRoute,
 }
