@@ -206,3 +206,43 @@ export const fetchTrendingProducts = async (): Promise<TrendingProduct[]> => {
         return []; 
     }
 };
+
+
+/**
+ * Obtiene productos relacionados basándose en el 'categorySlug' y excluyendo el producto actual.
+ * @param categorySlug El SLUG de la categoría (ej: 'air-max') del producto actual.
+ * @param currentSneakerId El ID del producto que se está viendo (para excluirlo).
+ * @param limit Máximo de zapatillas a devolver.
+ * @returns Una promesa que resuelve con un array de zapatillas.
+ */
+export const getRelatedProducts = async (
+  categorySlug: string, // <-- CAMBIO DE brandId A categorySlug
+  currentSneakerId: string, 
+  limit: number = 6
+): Promise<Sneaker[]> => {
+  try {
+
+    const response = await apiClient.get<Sneaker[]>(`/categories/slug/${categorySlug}/sneakers`, {
+      params: {
+        limit: limit + 1, // Pedimos un poco más por si el backend no excluye bien
+        exclude_id: currentSneakerId,
+      },
+    });
+
+    const filteredProducts = response.data
+      .filter(sneaker => sneaker.id !== currentSneakerId)
+      .slice(0, limit); 
+
+    return filteredProducts;
+
+  } catch (error) {
+    // Si la llamada falla (ej. 404, 500)
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return []; // Devolvemos array vacío en 404
+    }
+
+    console.error(`Error fetching related products for slug ${categorySlug}:`, error);
+    // Si no es 404, lanzamos el error
+    throw new Error('Error al obtener productos relacionados.');
+  }
+};

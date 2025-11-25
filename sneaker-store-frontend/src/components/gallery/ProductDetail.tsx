@@ -8,6 +8,8 @@ import { type Sneaker } from '@/services/sneakerService';
 import { useCart } from '@/context/CartContext';
 import { useToast } from "@/components/ui/use-toast";
 import { useFavorites } from '@/context/FavoritesContext';
+import { RelatedProducts } from './RelatedProducts';
+
 
 
 interface ProductDetailProps {
@@ -156,6 +158,14 @@ toast({
           </div>
         </div>
       </div>
+              {/* 👟 SECCIÓN DE PRODUCTOS RELACIONADOS AÑADIDA AQUÍ */}
+    <div className="mt-16 border-t border-gray-200 pt-10">
+      <RelatedProducts
+        categorySlug={sneaker.sport || ''}
+        currentProductId={sneaker.id}
+        limit={6}
+      />
+    </div>
     </div>
   );
 };
