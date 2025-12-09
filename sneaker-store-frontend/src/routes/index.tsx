@@ -232,7 +232,7 @@ function HomePageContent() {
                 <div className="container mx-auto py-8">
                     {isLoading ? (
                         <div className="text-center text-lg text-gray-600">
-                            Cargando zapatillas...
+                            Caricamento delle sneakers...
                         </div>
                     ) : error ? (
                         <div className="text-center text-lg text-red-600">

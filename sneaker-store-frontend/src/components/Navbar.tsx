@@ -116,15 +116,16 @@ export function NavigationMenuDemo({ className, defaultWhite = false }: Navigati
               <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr] bg-popover text-popover-foreground">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
-                    <Link
-                      to="/all-products"
-                      className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                    >
-                      <div className="mb-2 mt-4 text-lg font-medium">All Sneakers</div>
-                      <p className="text-sm leading-tight text-muted-foreground">
-                        Explore the full sneaker collection
-                      </p>
-                    </Link>
+                    <Link
+                    to="/all-products"
+                    style={{ backgroundImage: "url('https://blancfestival.com/wp-content/uploads/2022/05/Nike_1985_cuadrado_rojo.png')" }}
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-cover bg-center bg-no-repeat from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    >
+                    {/* <div className="mb-2 mt-4 text-lg font-medium">All Sneakers</div> */}
+                    <p className="text-m leading-tight text-white text-center">
+                        All Sneakers
+                    </p>
+                    </Link>
                   </NavigationMenuLink>
                 </li>
                 <ListItem to="/" search={{ scrollTo: 'trending' }} title="Trending">

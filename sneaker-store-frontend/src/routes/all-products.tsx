@@ -21,7 +21,7 @@ const AllProductsPageComponent: React.FC = () => {
     });
 
     if (isLoading) {
-        return <div className="text-center py-20 text-xl">Cargando todas las sneakers...</div>;
+        return <div className="text-center py-20 text-xl">Caricamento di tutte le Sneakers.</div>;
     }
 
     if (error) {
@@ -35,7 +35,7 @@ const AllProductsPageComponent: React.FC = () => {
     // 2. Renderizar la cuadrícula de zapatillas
     return (
         <div className="container mx-auto px-4 py-10">
-            <h1 className="text-4xl font-extrabold mb-12 text-center text-gray-800">👟 Colección Completa de Sneakers 👟</h1>
+            <h1 className="text-4xl font-extrabold mb-12 text-center text-gray-800">All Sneakers</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 {sneakers.map((sneaker) => (
                     // 2. 🚀 Usamos el componente Card e inyectamos el objeto sneaker

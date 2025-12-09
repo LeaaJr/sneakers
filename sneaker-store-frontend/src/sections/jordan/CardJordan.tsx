@@ -7,11 +7,11 @@ interface jordanProps {
   title: string;
   description: string;
   image: string;
-  featureId?: string; // Añade esto para el key único
+  featureId?: string;
 }
 
 const jordan: React.FC<jordanProps> = ({ 
-  sneakerId, // Usar sneakerId en lugar de id
+  sneakerId,
   title, 
   description, 
   image 

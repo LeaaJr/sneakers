@@ -1,3 +1,4 @@
+// src/routes/category.$sport.tsx
 import { createFileRoute, useLoaderData, notFound } from '@tanstack/react-router';
 import { fetchSneakersBySport } from '../services/sneakerService';
 import { SneakersGrid } from '../components/SneakersGrid';
@@ -37,7 +38,7 @@ function SneakersPage() {
   return (
     <div className="container mx-auto py-16">
       <h1 className="text-4xl font-bold mb-8 text-center capitalize">
-        Zapatillas de {sport}
+        Sneakers {sport}
       </h1>
       <SneakersGrid sneakers={sneakers} />
     </div>
