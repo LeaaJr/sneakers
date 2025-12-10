@@ -8,7 +8,7 @@ export function FavoritesComponent() {
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 min-h-[calc(100vh-10rem)]">
-      <h1 className="text-4xl font-extrabold tracking-tight mb-8">
+      <h1 className="text-2xl font-m tracking-tight mb-8">
         Prodotti Preferiti
       </h1>
       

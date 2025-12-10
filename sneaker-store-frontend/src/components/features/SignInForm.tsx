@@ -74,7 +74,7 @@ const { login } = useAuth();
       <input type="password" placeholder="Password" className="bg-gray-200 p-3 my-2 w-full" 
              value={password} onChange={(e) => setPassword(e.target.value)} required />
       
-      <a href="#" className="text-sm my-2 text-gray-600">Forgot your password?</a>
+      <a href="#" className="text-sm my-2 text-gray-600">Hai dimenticato la password?</a>
       
       {/* Mensaje de error */}
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

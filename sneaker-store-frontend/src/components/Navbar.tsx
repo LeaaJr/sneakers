@@ -118,7 +118,7 @@ export function NavigationMenuDemo({ className, defaultWhite = false }: Navigati
                   <NavigationMenuLink asChild>
                     <Link
                     to="/all-products"
-                    style={{ backgroundImage: "url('https://blancfestival.com/wp-content/uploads/2022/05/Nike_1985_cuadrado_rojo.png')" }}
+                    style={{ backgroundImage: "url('https://i.pinimg.com/736x/d2/28/57/d2285773cfa7ee6efc966782fc88a782.jpg')" }}
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-cover bg-center bg-no-repeat from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                     >
                     {/* <div className="mb-2 mt-4 text-lg font-medium">All Sneakers</div> */}

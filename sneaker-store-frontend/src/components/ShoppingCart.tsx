@@ -111,7 +111,7 @@ const ShoppingCart = ({ open, onClose }: ShoppingCartProps) => {
                       Shipping and taxes calculated at checkout.
                     </p>
                     <Link
-                      to="/Checkout"
+                      to="/checkout" // <-- Ya apunta a la ruta correcta
                       className={styles.checkoutButton}
                       onClick={onClose}
                     >

@@ -1,3 +1,4 @@
+//components/sections/AllCategoriesSection
 import React, { useEffect, useState } from 'react';
 import CategoryCard from '../sections/grid/CategoryCard';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -53,7 +54,7 @@ const AllCategoriesSection: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-16">
-      <h2 className="text-4xl font-bold mb-10 text-center text-gray-500">Esplora le categorie</h2>
+      <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 text-center">Esplora le categorie</h2>
 
       <Swiper
         effect={'coverflow'}
