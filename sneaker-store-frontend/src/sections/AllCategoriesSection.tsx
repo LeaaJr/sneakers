@@ -41,7 +41,7 @@ const AllCategoriesSection: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-16">Cargando categorías...</div>;
+    return <div className="text-center py-16">Caricamento categorie......</div>;
   }
 
   if (error) {
@@ -49,7 +49,7 @@ const AllCategoriesSection: React.FC = () => {
   }
 
   if (categories.length === 0) {
-    return <div className="text-center py-16 text-gray-600">No hay categorías disponibles.</div>;
+    return <div className="text-center py-16 text-gray-600">Non ci sono categorie disponibili.</div>;
   }
 
   return (
