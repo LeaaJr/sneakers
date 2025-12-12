@@ -7,6 +7,7 @@ import { AuthProvider } from '@/components/hooks/useAuth';
 import CartProvider from '@/context/CartContext';
 import { ToastProvider } from '@/components/ui/use-toast';
 import { FavoritesProvider } from '@/context/FavoritesContext';
+import OrdersProvider from '@/context/OrdersContext';
 
 export const Route = createRootRoute({
   
@@ -19,6 +20,7 @@ export const Route = createRootRoute({
         <AuthProvider> 
             <ToastProvider> 
                 <CartProvider>
+                    <OrdersProvider>
                     <FavoritesProvider> 
                         <NavigationMenuDemo 
                             className="fixed top-0 left-0 right-0 z-50" 
@@ -29,6 +31,7 @@ export const Route = createRootRoute({
                             <Outlet />
                         </main>
                     </FavoritesProvider>
+                    </OrdersProvider>
                 </CartProvider>
             </ToastProvider>
             <TanStackRouterDevtools initialIsOpen={false} />

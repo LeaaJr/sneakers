@@ -19,14 +19,16 @@ interface CartContextType {
   addToCart: (product: Omit<CartItem, 'quantity' | 'price'> & { quantity?: number; price: number | string; }) => void;
   removeFromCart: (id: string, size?: string | null) => void;
   getTotal: () => number;
+  clearCart: () => void;
 }
 
 // Valor por defecto (idealmente con funciones que lanzan error)
 const defaultContextValue: CartContextType = {
-  cartItems: [],
-  addToCart: () => { throw new Error('addToCart must be used within a CartProvider'); },
-  removeFromCart: () => { throw new Error('removeFromCart must be used within a CartProvider'); },
-  getTotal: () => { throw new Error('getTotal must be used within a CartProvider'); }
+  cartItems: [],
+  addToCart: () => { throw new Error('addToCart must be used within a CartProvider'); },
+  removeFromCart: () => { throw new Error('removeFromCart must be used within a CartProvider'); },
+  getTotal: () => { throw new Error('getTotal must be used within a CartProvider'); },
+  clearCart: () => { throw new Error('clearCart must be used within a CartProvider'); }
 };
 
 // Crear el contexto con el tipo definido
@@ -69,6 +71,7 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
         );
       }
 
+
       // Añade el nuevo ítem al carrito
       const newItem: CartItem = {
         ...product as CartItem,
@@ -101,12 +104,17 @@ const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }, 0);
   }, [cartItems]);
 
+      const clearCart = useCallback(() => {
+            setCartItems([]);
+        }, []);
+
   // Memoizar el valor del contexto para optimización
   const contextValue = useMemo(() => ({
     cartItems,
     addToCart,
     removeFromCart,
-    getTotal
+    getTotal,
+    clearCart
   }), [cartItems, addToCart, removeFromCart, getTotal]);
 
   return (

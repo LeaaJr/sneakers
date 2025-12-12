@@ -3,6 +3,7 @@
 import React from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Lock, HelpCircle } from 'lucide-react';
+import { useOrders } from '@/context/OrdersContext';
 
 interface StripePaymentFormProps {
     subtotal: number;
@@ -32,41 +33,50 @@ const CARD_ELEMENT_OPTIONS = {
 const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ subtotal, formatPrice }) => {
     const stripe = useStripe();
     const elements = useElements();
+    const { placeOrder } = useOrders(); // <--- Usamos el hook
     
-    // Aquí puedes añadir un estado para mensajes de error de Stripe
     const [stripeError, setStripeError] = React.useState<string | null>(null);
+    const [isLoading, setIsLoading] = React.useState(false); // Para deshabilitar el botón
 
-    // Función de manejo de envío de formulario (¡Esto es lo que envía el pago al backend!)
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setStripeError(null);
-
-        if (!stripe || !elements) {
-            // Stripe.js aún no está cargado.
+        
+        if (!stripe || !elements || isLoading) {
             return;
         }
+
+        setIsLoading(true);
 
         const cardElement = elements.getElement(CardElement);
 
         if (cardElement) {
-            // Lógica para crear el PaymentMethod
+            // 1. Crear el PaymentMethod (Simulación de éxito de pago)
             const { error, paymentMethod } = await stripe.createPaymentMethod({
                 type: 'card',
                 card: cardElement,
             });
 
+            setIsLoading(false);
+
             if (error) {
                 console.error('[Stripe Error]', error);
-                setStripeError(error.message || "An unknown error occurred with Stripe.");
+                setStripeError(error.message || "Un error desconocido ocurrió con Stripe.");
             } else {
                 console.log('[PaymentMethod Success]', paymentMethod);
-                // **PASO CRUCIAL:** // Aquí debes enviar `paymentMethod.id` al backend junto con los datos 
-                // de envío que capturaste en el otro formulario.
-                alert(`Pago simulado exitoso. PaymentMethod ID: ${paymentMethod.id}. Ahora contacta tu Backend.`);
+                
+                // **2. GUARDAR LA ORDEN Y LIMPIAR CARRITO**
+                // En un proyecto real, el BE usa paymentMethod.id para hacer el cobro.
+                // Aquí, simulamos el éxito del cobro:
+                
+                const newOrderId = placeOrder(subtotal); // <--- ¡Llamada a tu lógica de contexto!
+                
+                // 3. Redirigir o mostrar éxito
+                alert(`¡Pago exitoso! Orden ID: ${newOrderId}. Tu carrito ha sido vaciado.`);
+                // router.navigate({ to: '/my-orders' }); // Aquí iría la redirección
             }
         }
     };
-
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {/* --- Campo de Tarjeta de Crédito (Gestionado por Stripe) --- */}
@@ -77,7 +87,7 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ subtotal, formatP
                     <CardElement options={CARD_ELEMENT_OPTIONS} />
                 </div>
                 {/* Indicador CVC/Fecha (solo visual, Stripe lo maneja internamente) */}
-                 <div className="cvc mt-4">
+                 {/* <div className="cvc mt-4">
                     <label className="text-sm text-gray-700 block mb-1 relative">
                         CVC Hint 
                         <HelpCircle className="inline-block w-4 h-4 text-blue-500 ml-2 cursor-pointer" />
@@ -86,7 +96,7 @@ const StripePaymentForm: React.FC<StripePaymentFormProps> = ({ subtotal, formatP
                         <Lock className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input type="text" placeholder="123" disabled className="w-20 text-center text-base py-1 pl-8 border-b-2 border-gray-400 bg-transparent" />
                     </div>
-                </div>
+                </div> */}
             </div>
             
             {/* Mensaje de Error de Stripe */}
