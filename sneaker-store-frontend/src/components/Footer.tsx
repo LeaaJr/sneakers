@@ -6,7 +6,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ }) => {
   return (
-    <footer className="bg-secondary text-black py-16 px-8 w-full">
+    <footer className="bg-white text-black py-16 px-8 w-full">
       <div className="max-w-screen-xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <div>
@@ -15,20 +15,6 @@ export const Footer: React.FC<FooterProps> = ({ }) => {
             <p>957 Hill Hills Suite 491, United States</p>
             <p>Office: +1 (646) 36 2982 743</p>
             <p>Support: Lmcompany@Outlook.com</p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">ROME</h3>
-            <p>Piazza di Spagna,</p>
-            <p>00187 Roma RM, Italy</p>
-            <p>Office: +39(3) 266 294 701</p>
-            <p>Support: Lmcompany@Outlook.it</p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">LONDON</h3>
-            <p>Fulham Rd,</p>
-            <p>London SW6 1HS, United Kingdom</p>
-            <p>Office: +44(20) 742 390 74</p>
-            <p>Support: Lmcompany@Outlook.com.uk</p>
           </div>
         </div>
         

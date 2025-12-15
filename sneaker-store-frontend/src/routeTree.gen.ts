@@ -8,8 +8,11 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SneakersRouteImport } from './routes/sneakers'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AllProductsRouteImport } from './routes/all-products'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,9 +21,27 @@ import { Route as CategorySportRouteImport } from './routes/category.$sport'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthSigninRouteImport } from './routes/auth.signin'
 
+const MyOrdersLazyRouteImport = createFileRoute('/my-orders')()
+const CheckoutLazyRouteImport = createFileRoute('/checkout')()
+
+const MyOrdersLazyRoute = MyOrdersLazyRouteImport.update({
+  id: '/my-orders',
+  path: '/my-orders',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/my-orders.lazy').then((d) => d.Route))
+const CheckoutLazyRoute = CheckoutLazyRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/checkout.lazy').then((d) => d.Route))
 const SneakersRoute = SneakersRouteImport.update({
   id: '/sneakers',
   path: '/sneakers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -63,7 +84,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/all-products': typeof AllProductsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/checkout': typeof CheckoutLazyRoute
+  '/my-orders': typeof MyOrdersLazyRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/category/$sport': typeof CategorySportRoute
@@ -73,7 +97,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/all-products': typeof AllProductsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/checkout': typeof CheckoutLazyRoute
+  '/my-orders': typeof MyOrdersLazyRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/category/$sport': typeof CategorySportRoute
@@ -84,7 +111,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/all-products': typeof AllProductsRoute
   '/auth': typeof AuthRouteWithChildren
+  '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/checkout': typeof CheckoutLazyRoute
+  '/my-orders': typeof MyOrdersLazyRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/category/$sport': typeof CategorySportRoute
@@ -96,7 +126,10 @@ export interface FileRouteTypes {
     | '/'
     | '/all-products'
     | '/auth'
+    | '/favorites'
     | '/sneakers'
+    | '/checkout'
+    | '/my-orders'
     | '/auth/signin'
     | '/auth/signup'
     | '/category/$sport'
@@ -106,7 +139,10 @@ export interface FileRouteTypes {
     | '/'
     | '/all-products'
     | '/auth'
+    | '/favorites'
     | '/sneakers'
+    | '/checkout'
+    | '/my-orders'
     | '/auth/signin'
     | '/auth/signup'
     | '/category/$sport'
@@ -116,7 +152,10 @@ export interface FileRouteTypes {
     | '/'
     | '/all-products'
     | '/auth'
+    | '/favorites'
     | '/sneakers'
+    | '/checkout'
+    | '/my-orders'
     | '/auth/signin'
     | '/auth/signup'
     | '/category/$sport'
@@ -127,17 +166,41 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AllProductsRoute: typeof AllProductsRoute
   AuthRoute: typeof AuthRouteWithChildren
+  FavoritesRoute: typeof FavoritesRoute
   SneakersRoute: typeof SneakersRouteWithChildren
+  CheckoutLazyRoute: typeof CheckoutLazyRoute
+  MyOrdersLazyRoute: typeof MyOrdersLazyRoute
   CategorySportRoute: typeof CategorySportRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/my-orders': {
+      id: '/my-orders'
+      path: '/my-orders'
+      fullPath: '/my-orders'
+      preLoaderRoute: typeof MyOrdersLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sneakers': {
       id: '/sneakers'
       path: '/sneakers'
       fullPath: '/sneakers'
       preLoaderRoute: typeof SneakersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -220,7 +283,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AllProductsRoute: AllProductsRoute,
   AuthRoute: AuthRouteWithChildren,
+  FavoritesRoute: FavoritesRoute,
   SneakersRoute: SneakersRouteWithChildren,
+  CheckoutLazyRoute: CheckoutLazyRoute,
+  MyOrdersLazyRoute: MyOrdersLazyRoute,
   CategorySportRoute: CategorySportRoute,
 }
 export const routeTree = rootRouteImport

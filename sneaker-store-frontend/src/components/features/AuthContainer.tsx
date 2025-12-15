@@ -63,23 +63,23 @@ const switchToSignUp = () => {
         >
           {/* Overlay Left */}
           <div className="w-1/2 flex flex-col items-center justify-center text-center px-10">
-            <h1 className="text-2xl font-bold">Welcome Back!</h1>
+            <h1 className="text-2xl font-bold">Bentornati!</h1>
             <p className="text-sm my-4">
-              To keep connected with us please login with your personal info
+              Per rimanere in contatto, è necessario registrarsi. Puoi farlo cliccando qui
             </p>
             <button onClick={switchToSignUp} >
-              Sign In
+              Sign Up
             </button>
           </div>
 
           {/* Overlay Right */}
           <div className="w-1/2 flex flex-col items-center justify-center text-center px-10">
-            <h1 className="text-2xl font-bold">Hello, Friend!</h1>
+            <h1 className="text-2xl font-bold">Bentornati!</h1>
             <p className="text-sm my-4">
-              Enter your personal details and start your journey with us
+              Se hai un account, puoi effettuare l'accesso cliccando qui
             </p>
             <button onClick={switchToSignIn}>
-            Sign Up
+            Sign In
           </button>
           </div>
         </div>

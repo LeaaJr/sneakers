@@ -65,12 +65,12 @@ const SignUpForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white flex flex-col items-center justify-center px-12 h-full text-center">
-      <h1 className="font-bold text-2xl mb-2">Create Account</h1>
+      <h1 className="font-bold text-2xl mb-2">Creare un account</h1>
       {/* ... Íconos de redes sociales ... */}
-      <span className="text-xs">or use your email for registration</span>
+      <span className="text-xs">oppure usa il tuo indirizzo email per registrarti</span>
       
       {/* Inputs controlados */}
-      <input type="text" placeholder="Name" className="bg-gray-200 p-3 my-2 w-full" 
+      <input type="text" placeholder="Nome" className="bg-gray-200 p-3 my-2 w-full" 
              value={name} onChange={(e) => setName(e.target.value)} required />
       <input type="email" placeholder="Email" className="bg-gray-200 p-3 my-2 w-full" 
              value={email} onChange={(e) => setEmail(e.target.value)} required />

@@ -5,6 +5,7 @@ import { ArrowRightIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchHighlightedSneakers, } from '@/services/sneakerService'; 
 import type { RunningSectionDetail } from '@/services/sneakerService';
+import { Link } from '@tanstack/react-router';
 
 const RunningSection: React.FC = () => {
   // El tipo de los datos ahora es una lista de los detalles, no una lista de zapatillas
@@ -34,10 +35,12 @@ const RunningSection: React.FC = () => {
           {mainTitle} 
         </h2>
         {/* Este enlace ya no tiene a dónde ir sin un ID de zapatilla */}
+        <Link to="/category/jordan" >                      
         <span className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
           Vedere più prodotti
           <ArrowRightIcon className="ml-2 h-4 w-4" />
         </span>
+        </Link>
       </div>
       
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-4">

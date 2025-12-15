@@ -1,3 +1,4 @@
+//components/sections/AllCategoriesSection
 import React, { useEffect, useState } from 'react';
 import CategoryCard from '../sections/grid/CategoryCard';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -40,7 +41,7 @@ const AllCategoriesSection: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-16">Cargando categorías...</div>;
+    return <div className="text-center py-16">Caricamento categorie......</div>;
   }
 
   if (error) {
@@ -48,12 +49,12 @@ const AllCategoriesSection: React.FC = () => {
   }
 
   if (categories.length === 0) {
-    return <div className="text-center py-16 text-gray-600">No hay categorías disponibles.</div>;
+    return <div className="text-center py-16 text-gray-600">Non ci sono categorie disponibili.</div>;
   }
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-16">
-      <h2 className="text-4xl font-bold mb-10 text-center text-gray-500">Esplora le categorie</h2>
+      <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 text-center">Esplora le categorie</h2>
 
       <Swiper
         effect={'coverflow'}
