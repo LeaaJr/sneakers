@@ -151,6 +151,14 @@ export interface TrendingProduct {
     subtitle: string;
 }
 
+export interface UserProfile {
+  id: string;
+  full_name: string;
+  email: string;
+  avatar_url?: string;
+  role: string;
+}
+
 // ----------------------------------------------------------------------
 // 💡 FUNCIONES AGREGADAS PARA EL FORMULARIO (REALES)
 // ----------------------------------------------------------------------
@@ -384,6 +392,20 @@ export const updateSneaker = async (id: string, data: SneakerFormData): Promise<
         return response.data;
     } catch (error) {
         console.error(`Error updating sneaker with ID ${id}:`, error);
+        throw error;
+    }
+};
+
+
+/**
+ * Obtiene el perfil del usuario actual (basado en el token de la sesión)
+ */
+export const fetchCurrentUser = async (): Promise<UserProfile> => {
+    try {
+        const response = await apiClient.get('/users/me'); // Ajusta el endpoint según tu API
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
         throw error;
     }
 };

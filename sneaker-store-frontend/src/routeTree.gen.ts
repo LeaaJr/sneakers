@@ -11,6 +11,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UserConfigRouteImport } from './routes/user-config'
 import { Route as SneakersRouteImport } from './routes/sneakers'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -62,6 +63,11 @@ const AdminLazyRoute = AdminLazyRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/admin.lazy').then((d) => d.Route))
+const UserConfigRoute = UserConfigRouteImport.update({
+  id: '/user-config',
+  path: '/user-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SneakersRoute = SneakersRouteImport.update({
   id: '/sneakers',
   path: '/sneakers',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/user-config': typeof UserConfigRoute
   '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/user-config': typeof UserConfigRoute
   '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/user-config': typeof UserConfigRoute
   '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/favorites'
     | '/sneakers'
+    | '/user-config'
     | '/admin'
     | '/checkout'
     | '/my-orders'
@@ -277,6 +287,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/favorites'
     | '/sneakers'
+    | '/user-config'
     | '/admin'
     | '/checkout'
     | '/my-orders'
@@ -300,6 +311,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/favorites'
     | '/sneakers'
+    | '/user-config'
     | '/admin'
     | '/checkout'
     | '/my-orders'
@@ -324,6 +336,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   FavoritesRoute: typeof FavoritesRoute
   SneakersRoute: typeof SneakersRouteWithChildren
+  UserConfigRoute: typeof UserConfigRoute
   AdminLazyRoute: typeof AdminLazyRouteWithChildren
   CheckoutLazyRoute: typeof CheckoutLazyRoute
   MyOrdersLazyRoute: typeof MyOrdersLazyRoute
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user-config': {
+      id: '/user-config'
+      path: '/user-config'
+      fullPath: '/user-config'
+      preLoaderRoute: typeof UserConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sneakers': {
@@ -541,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   FavoritesRoute: FavoritesRoute,
   SneakersRoute: SneakersRouteWithChildren,
+  UserConfigRoute: UserConfigRoute,
   AdminLazyRoute: AdminLazyRouteWithChildren,
   CheckoutLazyRoute: CheckoutLazyRoute,
   MyOrdersLazyRoute: MyOrdersLazyRoute,
