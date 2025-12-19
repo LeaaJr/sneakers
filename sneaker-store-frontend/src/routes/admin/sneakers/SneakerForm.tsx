@@ -42,7 +42,7 @@ export function SneakerForm({ initialData, isEdit, brandOptions, categoryOptions
     const { toast } = useToast();
     
     const initialValues: SneakerFormData = isEdit && initialData 
-        ? {
+    ? {
             ...initialData,
             release_date: initialData.release_date?.split('T')[0] ?? new Date().toISOString().split('T')[0],
             sizes: initialData.sizes?.map(s => ({ ...s })) ?? [defaultSize],
@@ -194,9 +194,19 @@ export function SneakerForm({ initialData, isEdit, brandOptions, categoryOptions
                         <Input id="release_date" type="date" {...register("release_date")} />
                     </div>
                     <div className="flex items-center space-x-2 pt-6">
-                        <Checkbox id="is_new" {...register("is_new")} />
-                        <Label htmlFor="is_new">Is New Release?</Label>
-                    </div>
+                    <Controller
+                        name="is_new"
+                        control={control}
+                        render={({ field }) => (
+                            <Checkbox 
+                                id="is_new" 
+                                checked={field.value} // Sincroniza el estado del form con el UI
+                                onCheckedChange={field.onChange} // Informa al form del cambio
+                            />
+                        )}
+                    />
+                    <Label htmlFor="is_new">Is New Release?</Label>
+                </div>
                 </div>
 
                 {/* --- SECCIÓN 3: IMÁGENES --- */}

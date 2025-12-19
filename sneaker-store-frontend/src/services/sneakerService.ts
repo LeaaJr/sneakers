@@ -409,3 +409,56 @@ export const fetchCurrentUser = async (): Promise<UserProfile> => {
         throw error;
     }
 };
+
+//Dashboard Categories
+
+/**
+ * Obtiene una categoría por su ID (REAL).
+ */
+export const fetchCategoryById = async (id: string): Promise<Category> => {
+    try {
+        const response = await apiClient.get(`/categories/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching category ${id}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * Crea una nueva categoría (POST).
+ */
+export const createCategory = async (data: Partial<Category>): Promise<Category> => {
+    try {
+        const response = await apiClient.post('/categories/', data);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating category:', error);
+        throw error;
+    }
+};
+
+/**
+ * Actualiza una categoría existente (PUT).
+ */
+export const updateCategory = async (id: string, data: Partial<Category>): Promise<Category> => {
+    try {
+        const response = await apiClient.put(`/categories/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error(`Error updating category ${id}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * Elimina una categoría por ID.
+ */
+export const deleteCategory = async (id: string): Promise<void> => {
+    try {
+        await apiClient.delete(`/categories/${id}`);
+    } catch (error) {
+        console.error(`Error deleting category ${id}:`, error);
+        throw error;
+    }
+};

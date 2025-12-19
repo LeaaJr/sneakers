@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { createCategory, updateCategory } from '@/services/sneakerService';
+import { useRouter } from '@tanstack/react-router';
 
 // Tipado del Formulario (basado en CategoryCreate y CategoryUpdate)
 interface CategoryFormInput {
@@ -25,38 +27,26 @@ interface CategoryFormProps {
 
 const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, isEdit, categoryId }) => {
     const navigate = useNavigate();
-    const { 
-        register, 
-        handleSubmit, 
-        formState: { errors, isSubmitting } 
-    } = useForm<CategoryFormInput>({ defaultValues: initialData });
+    const router = useRouter(); // <--- IMPORTANTE para invalidar caché
+    
+    const { register, handleSubmit, formState: { errors, isSubmitting } } 
+        = useForm<CategoryFormInput>({ defaultValues: initialData });
 
-    const onSubmit: SubmitHandler<CategoryFormInput> = async (data) => {
-    // ⚠️ Opcional: Si el slug está vacío, generar uno a partir del nombre
-    const cleanedSlug = data.slug || data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-
-    const payload = {
-        name: data.name,
-        slug: cleanedSlug,
-        cover_image: data.cover_image || null,
-        description: data.description || null,
-    };
-
-    try {
-        if (isEdit) {
-            // ⚠️ TODO: Llamada PUT/PATCH con el payload
-            console.log("UPDATE payload:", payload);
-            alert(`Updating category ${categoryId} (simulated)...`);
-        } else {
-            // ⚠️ TODO: Llamada POST con el payload
-            console.log("CREATE payload:", payload);
-            alert('Creating new category (simulated)...');
+const onSubmit: SubmitHandler<CategoryFormInput> = async (data) => {
+        try {
+            if (isEdit && categoryId) {
+                await updateCategory(categoryId, data);
+            } else {
+                await createCategory(data);
+            }
+            
+            // Refresca las rutas para que la lista de categorías se actualice
+            await router.invalidate(); 
+            navigate({ to: '/admin/categories' });
+        } catch (error) {
+            alert("Error al guardar la categoría");
         }
-        navigate({ to: '/admin/categories' });
-    } catch (error) {
-        console.error("API Error:", error);
     }
-};
 
     return (
         <div className="max-w-xl mx-auto">

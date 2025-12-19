@@ -1,3 +1,5 @@
+// src/routes/admin/categories/create.lazy.tsx
+
 import { createLazyFileRoute } from '@tanstack/react-router';
 import CategoryForm from './CategoryForm';
 

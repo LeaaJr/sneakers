@@ -2,44 +2,33 @@ import React from 'react';
 import { createLazyFileRoute, Link, redirect } from '@tanstack/react-router';
 import { Plus, Pencil, Trash2, Tag, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-// ⚠️ Importar la función real y los tipos del servicio
 import { fetchSneakers, type Sneaker, deleteSneaker } from '@/services/sneakerService';
-// Asume que también necesitas importar axios si vas a hacer mutaciones DELETE aquí
+import { useRouter } from '@tanstack/react-router';
 import axios from 'axios';
 
 // Define la ruta en /admin/sneakers
 export const Route = createLazyFileRoute('/admin/sneakers/')({
-    // 1. 🎯 Usar el loader para cargar los datos con tu función del Service.
-    // Esto llamará a GET /api/v1/sneakers/
     loader: () => {
-        // TanStack Router maneja automáticamente la promesa y el estado de carga
         return fetchSneakers();
     },
     component: SneakerListPage,
-    // Opcional: Manejo de errores de carga.
     errorComponent: () => <div className="text-red-500 p-8">Error loading sneaker list. Check API connection.</div>,
 });
 
-// Nota: El tipo Sneaker se importa directamente de '@/services/sneakerService'
-
 function SneakerListPage() {
-    const sneakers: Sneaker[] = Route.useLoaderData();
+    const sneakers = Route.useLoaderData();
+    const router = useRouter(); // Inicializa el router
 
     // Función para manejar la eliminación
     const handleDelete = async (id: string, title: string) => {
-        if (confirm(`Are you sure you want to delete the sneaker: "${title}"? This action cannot be undone.`)) {
+        if (confirm(`Delete ${title}?`)) {
             try {
-                // 🎯 USAR LA FUNCIÓN DEL SERVICIO
-                await deleteSneaker(id); 
-                
-                alert(`Sneaker ${title} deleted successfully!`);
-                
-                // Opción simple: Recargar la página para ver la lista actualizada
-                window.location.reload(); 
-                
+                await deleteSneaker(id);
+                // 🔥 EN LUGAR DE RELOAD:
+                await router.invalidate(); 
+                alert("Deleted!");
             } catch (error) {
-                console.error("Deletion failed:", error);
-                alert("Error deleting sneaker. Check API connection or server logs.");
+                alert("Error deleting");
             }
         }
     };
