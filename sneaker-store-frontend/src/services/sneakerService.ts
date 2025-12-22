@@ -37,6 +37,8 @@ apiClient.interceptors.response.use(
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
+console.log('🔧 API Base URL:', API_BASE_URL);
+
 // ----------------------------------------------------------------------
 // 💡 INTERFACES EXISTENTES Y AGREGADAS PARA EL FORMULARIO
 // ----------------------------------------------------------------------
@@ -198,15 +200,23 @@ export const fetchAllCategories = async (): Promise<Category[]> => {
 // ----------------------------------------------------------------------
 
 /**
- *
- * @returns
+ * Obtiene las sneakers, opcionalmente filtradas.
+ * @param filters Objeto con filtros (brand, minPrice, maxPrice, etc.)
+ * @returns Promesa con el array de Sneakers
  */
-export const fetchSneakers = async (): Promise<Sneaker[]> => {
+export const fetchSneakers = async (filters?: Record<string, any>): Promise<Sneaker[]> => {
     try {
-        const response = await apiClient.get('/sneakers/');
+        console.log('🔍 Fetching sneakers with filters:', filters);
+        console.log('📡 URL:', '/sneakers/', 'Params:', filters);
+        
+        const response = await apiClient.get('/sneakers/', { 
+            params: filters 
+        });
+        
+        console.log('✅ Response data:', response.data);
         return response.data;
     } catch (error) {
-        console.error('Error fetching sneakers:', error);
+        console.error('❌ Error fetching sneakers:', error);
         throw new Error('No se pudo conectar con el servidor. Verifica tu conexión.');
     }
 };
@@ -462,3 +472,4 @@ export const deleteCategory = async (id: string): Promise<void> => {
         throw error;
     }
 };
+
