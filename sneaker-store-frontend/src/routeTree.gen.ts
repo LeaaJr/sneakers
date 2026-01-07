@@ -39,6 +39,9 @@ const AdminCategoriesCreateLazyRouteImport = createFileRoute(
 const AdminBrandsCreateLazyRouteImport = createFileRoute(
   '/admin/brands/create',
 )()
+const AdminBrandsBrandIdIndexLazyRouteImport = createFileRoute(
+  '/admin/brands/$brandId/',
+)()
 const AdminBrandsBrandIdEditLazyRouteImport = createFileRoute(
   '/admin/brands/$brandId/edit',
 )()
@@ -149,6 +152,14 @@ const AdminBrandsCreateLazyRoute = AdminBrandsCreateLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/admin/brands/create.lazy').then((d) => d.Route),
 )
+const AdminBrandsBrandIdIndexLazyRoute =
+  AdminBrandsBrandIdIndexLazyRouteImport.update({
+    id: '/brands/$brandId/',
+    path: '/brands/$brandId/',
+    getParentRoute: () => AdminLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/brands/$brandId/index.lazy').then((d) => d.Route),
+  )
 const AdminBrandsBrandIdEditLazyRoute =
   AdminBrandsBrandIdEditLazyRouteImport.update({
     id: '/brands/$brandId/edit',
@@ -199,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
   '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
   '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
+  '/admin/brands/$brandId': typeof AdminBrandsBrandIdIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -223,6 +235,7 @@ export interface FileRoutesByTo {
   '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
   '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
   '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
+  '/admin/brands/$brandId': typeof AdminBrandsBrandIdIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -248,6 +261,7 @@ export interface FileRoutesById {
   '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
   '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
   '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
+  '/admin/brands/$brandId/': typeof AdminBrandsBrandIdIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -274,6 +288,7 @@ export interface FileRouteTypes {
     | '/admin/categories/$categoryId/edit'
     | '/admin/sneakers/$sneakerId/edit'
     | '/admin/brands/$brandId/edit'
+    | '/admin/brands/$brandId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -298,6 +313,7 @@ export interface FileRouteTypes {
     | '/admin/categories/$categoryId/edit'
     | '/admin/sneakers/$sneakerId/edit'
     | '/admin/brands/$brandId/edit'
+    | '/admin/brands/$brandId'
   id:
     | '__root__'
     | '/'
@@ -322,6 +338,7 @@ export interface FileRouteTypes {
     | '/admin/categories/$categoryId/edit'
     | '/admin/sneakers/$sneakerId/edit'
     | '/admin/brands/$brandId/edit'
+    | '/admin/brands/$brandId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -472,6 +489,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBrandsCreateLazyRouteImport
       parentRoute: typeof AdminLazyRoute
     }
+    '/admin/brands/$brandId/': {
+      id: '/admin/brands/$brandId/'
+      path: '/brands/$brandId'
+      fullPath: '/admin/brands/$brandId'
+      preLoaderRoute: typeof AdminBrandsBrandIdIndexLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
     '/admin/brands/$brandId/edit': {
       id: '/admin/brands/$brandId/edit'
       path: '/brands/$brandId/edit'
@@ -530,6 +554,7 @@ interface AdminLazyRouteChildren {
   AdminCategoriesCategoryIdEditRoute: typeof AdminCategoriesCategoryIdEditRoute
   AdminSneakersSneakerIdEditRoute: typeof AdminSneakersSneakerIdEditRoute
   AdminBrandsBrandIdEditLazyRoute: typeof AdminBrandsBrandIdEditLazyRoute
+  AdminBrandsBrandIdIndexLazyRoute: typeof AdminBrandsBrandIdIndexLazyRoute
 }
 
 const AdminLazyRouteChildren: AdminLazyRouteChildren = {
@@ -542,6 +567,7 @@ const AdminLazyRouteChildren: AdminLazyRouteChildren = {
   AdminCategoriesCategoryIdEditRoute: AdminCategoriesCategoryIdEditRoute,
   AdminSneakersSneakerIdEditRoute: AdminSneakersSneakerIdEditRoute,
   AdminBrandsBrandIdEditLazyRoute: AdminBrandsBrandIdEditLazyRoute,
+  AdminBrandsBrandIdIndexLazyRoute: AdminBrandsBrandIdIndexLazyRoute,
 }
 
 const AdminLazyRouteWithChildren = AdminLazyRoute._addFileChildren(

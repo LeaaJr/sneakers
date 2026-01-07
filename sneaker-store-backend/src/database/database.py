@@ -13,8 +13,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# SQLAlchemy Database URL
-# For PostgreSQL, it looks like: "postgresql://user:password@host:port/database"
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
 # --- ADDED FOR DEBUGGING ---

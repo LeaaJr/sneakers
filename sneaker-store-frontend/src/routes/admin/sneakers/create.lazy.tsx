@@ -113,8 +113,6 @@ function SneakerFormPage() {
             const response = await createSneaker(payload);
             console.log("Sneaker creado exitosamente:", response);
             alert("Sneaker created successfully! ID: " + response.id);
-            // Opcional: Redirigir al usuario
-            // router.navigate({ to: '/admin/sneakers' }); 
         } catch (error) {
             console.error("API Error:", error);
             alert("Error al crear sneaker. Revisa la consola para detalles.");

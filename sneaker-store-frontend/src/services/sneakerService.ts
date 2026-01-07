@@ -20,9 +20,9 @@ apiClient.interceptors.response.use(
         const originalRequest = error.config;
         
         
-        if (error.code === 'ECONNABORTED' && originalRequest.retryCount < MAX_RETRIES) {
-            originalRequest.retryCount = originalRequest.retryCount || 0;
-            originalRequest.retryCount += 1;
+        const currentRetry = originalRequest.retryCount || 0;
+        if (error.code === 'ECONNABORTED' && currentRetry < MAX_RETRIES) {
+            originalRequest.retryCount = currentRetry + 1;
             
             console.warn(`Timeout: reintentando solicitud (intento ${originalRequest.retryCount})`);
             
@@ -473,3 +473,26 @@ export const deleteCategory = async (id: string): Promise<void> => {
     }
 };
 
+/**
+ * Obtiene una marca por su ID.
+ */
+export const fetchBrandById = async (id: string): Promise<Brand> => {
+    const response = await apiClient.get(`/brands/${id}`);
+    return response.data;
+};
+
+/**
+ * Crea una nueva marca (POST).
+ */
+export const createBrand = async (data: { name: string; logo_url: string }): Promise<Brand> => {
+    const response = await apiClient.post('/brands/', data);
+    return response.data;
+};
+
+/**
+ * Actualiza una marca existente (PUT).
+ */
+export const updateBrand = async (id: string, data: { name: string; logo_url: string }): Promise<Brand> => {
+    const response = await apiClient.put(`/brands/${id}`, data);
+    return response.data;
+};
