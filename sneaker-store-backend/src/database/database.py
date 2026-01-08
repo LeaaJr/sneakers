@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # Define settings using pydantic-settings to load from .env
 class Settings(BaseSettings):
 
-    DATABASE_URL: str = "postgresql://db_store_sneaker_user:UaY5RON8db44b3NMiEqHEP2P6Pg79WPV@dpg-d4risgali9vc73a3be0g-a.oregon-postgres.render.com/db_store_sneaker"
+    DATABASE_URL: str = "postgresql://db_4_sneakeres_user:I19QFxNZilFfkXj5gT2D45fxcgAxYhyh@dpg-d5fvn5k9c44c738tq14g-a.oregon-postgres.render.com/db_4_sneakeres"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
