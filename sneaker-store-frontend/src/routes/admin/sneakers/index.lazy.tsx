@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { createLazyFileRoute, Link, redirect } from '@tanstack/react-router';
 import { Plus, Pencil, Trash2, Tag, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';

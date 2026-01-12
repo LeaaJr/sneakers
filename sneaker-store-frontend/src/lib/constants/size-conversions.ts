@@ -1,0 +1,20 @@
+// src/lib/size-conversions.ts
+export const SIZE_CONVERSION_CHART: Record<number, { eu: number; uk: number }> = {
+    4.0: { eu: 36, uk: 3 },
+    4.5: { eu: 36.5, uk: 3.5 },
+    5.0: { eu: 37, uk: 4 },
+    5.5: { eu: 38, uk: 4.5 },
+    6.0: { eu: 39, uk: 5 },
+    6.5: { eu: 39.5, uk: 5.5 },
+    7.0: { eu: 40, uk: 6 },
+    7.5: { eu: 40.5, uk: 6.5 },
+    8.0: { eu: 41, uk: 7 },
+    8.5: { eu: 42, uk: 7.5 },
+    9.0: { eu: 42.5, uk: 8 },
+    9.5: { eu: 43, uk: 8.5 },
+    10.0: { eu: 44, uk: 9 },
+    10.5: { eu: 44.5, uk: 9.5 },
+    11.0: { eu: 45, uk: 10 },
+    11.5: { eu: 45.5, uk: 10.5 },
+    12.0: { eu: 46, uk: 11 },
+};

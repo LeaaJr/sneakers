@@ -1,3 +1,4 @@
+// src/routes/admin/sneakers/$sneakerId/edit.tsx
 import { createFileRoute } from '@tanstack/react-router'
 import { fetchSneakerById, fetchAllBrands, fetchAllCategories } from '@/services/sneakerService'
 
