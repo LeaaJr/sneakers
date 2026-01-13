@@ -1,6 +1,5 @@
 // src/routes/admin/categories/CategoryForm.tsx
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from '@tanstack/react-router';
@@ -11,7 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { createCategory, updateCategory } from '@/services/sneakerService';
 import { useRouter } from '@tanstack/react-router';
 
-// Tipado del Formulario (basado en CategoryCreate y CategoryUpdate)
 interface CategoryFormInput {
     name: string;
     slug: string;
@@ -20,27 +18,48 @@ interface CategoryFormInput {
 }
 
 interface CategoryFormProps {
-    initialData?: CategoryFormInput; // Datos para la edición
+    initialData?: CategoryFormInput;
     isEdit: boolean;
     categoryId?: string;
 }
 
 const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, isEdit, categoryId }) => {
     const navigate = useNavigate();
-    const router = useRouter(); // <--- IMPORTANTE para invalidar caché
+    const router = useRouter();
     
-    const { register, handleSubmit, formState: { errors, isSubmitting } } 
-        = useForm<CategoryFormInput>({ defaultValues: initialData });
+    const { 
+        register, 
+        handleSubmit, 
+        setValue, 
+        watch, 
+        formState: { errors, isSubmitting } 
+    } = useForm<CategoryFormInput>({ defaultValues: initialData });
 
-const onSubmit: SubmitHandler<CategoryFormInput> = async (data) => {
+    // --- LÓGICA DE AUTO-SLUG ---
+    const nameValue = watch("name");
+
+    useEffect(() => {
+        // Solo generamos el slug automáticamente si NO estamos editando 
+        // o si el campo slug está vacío (para no romper SEO en categorías existentes)
+        if (!isEdit && nameValue) {
+            const generatedSlug = nameValue
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            
+            setValue("slug", generatedSlug, { shouldValidate: true });
+        }
+    }, [nameValue, setValue, isEdit]);
+
+    const onSubmit: SubmitHandler<CategoryFormInput> = async (data) => {
         try {
             if (isEdit && categoryId) {
                 await updateCategory(categoryId, data);
             } else {
                 await createCategory(data);
             }
-            
-            // Refresca las rutas para que la lista de categorías se actualice
             await router.invalidate(); 
             navigate({ to: '/admin/categories' });
         } catch (error) {
@@ -61,14 +80,21 @@ const onSubmit: SubmitHandler<CategoryFormInput> = async (data) => {
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-xl shadow-lg space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="name">Name*</Label>
-                    <Input id="name" {...register("name", { required: "Name is required" })} />
+                    <Input 
+                        id="name" 
+                        placeholder="e.g. Running"
+                        {...register("name", { required: "Name is required" })} 
+                    />
                     {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="slug">Slug* (e.g., running-shoes)</Label>
+                    <Label htmlFor="slug" className="flex justify-between">
+                        Slug* <span className="text-[10px] text-slate-400 uppercase font-bold">Automatic Sync On</span>
+                    </Label>
                     <Input 
                         id="slug" 
+                        className="bg-slate-50 font-mono text-sm" // Estilo ligeramente diferente para indicar que es "especial"
                         {...register("slug", { 
                             required: "Slug is required",
                             pattern: {
@@ -90,7 +116,7 @@ const onSubmit: SubmitHandler<CategoryFormInput> = async (data) => {
                     <Textarea id="description" rows={3} {...register("description")} />
                 </div>
 
-                <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-500 hover:bg-amber-600 text-white py-3 text-lg">
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-500 hover:bg-amber-600 text-white py-3 text-lg font-bold">
                     {isSubmitting ? 'Saving...' : (isEdit ? 'Update Category' : 'Create Category')}
                 </Button>
             </form>

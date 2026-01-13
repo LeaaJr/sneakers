@@ -14,6 +14,7 @@ import { SizeGridPicker } from './SizeGridPicker';
 import { SIZE_CONVERSION_CHART } from '@/lib/constants/size-conversions';
 import { defaultSize } from './create'; 
 import { useCallback } from 'react';
+import { useEffect } from 'react';
 
 export const Route = createLazyFileRoute('/admin/sneakers/create')({
   component: SneakerFormPage,
@@ -54,6 +55,20 @@ function SneakerFormPage() {
     const { fields: sizeFields, append: appendSize, remove: removeSize } = useFieldArray({ control, name: "sizes" });
     const { fields: imageFields, append: appendImage, remove: removeImage } = useFieldArray({ control, name: "images" });
     const { fields: detailFields, append: appendDetail, remove: removeDetail } = useFieldArray({ control, name: "featured_details" });
+
+    const selectedCategoryId = watch("category_id");
+
+
+useEffect(() => {
+    if (selectedCategoryId && categoryOptions) {
+        // Buscamos la categoría en la lista que viene del loader
+        const category = categoryOptions.find((c: any) => c.id === selectedCategoryId);
+        if (category && category.slug) {
+            // Seteamos el slug en el campo sport automáticamente
+            setValue("sport", category.slug);
+        }
+    }
+}, [selectedCategoryId, categoryOptions, setValue]);
 
 
 // Lógica para el SizeGridPicker (Añadir/Quitar tallas rápidamente)
@@ -141,7 +156,10 @@ function SneakerFormPage() {
 
                     <div className="space-y-2">
                         <Label>Category</Label>
-                        <Select onValueChange={(value) => setValue("category_id", value)}>
+                        <Select 
+                            value={watch("category_id")} // Añadimos esto para que el select sea "controlado"
+                            onValueChange={(value) => setValue("category_id", value)}
+                        >
                             <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
                             <SelectContent>
                                 {categoryOptions.map(c => (
@@ -166,9 +184,20 @@ function SneakerFormPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="sport">Sport</Label>
-                        <Input id="sport" {...register("sport")} />
-                    </div>
+                        <Label htmlFor="sport" className="flex items-center gap-2">
+                            Sport / Slug
+                            <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase">
+                                Auto-Sync
+                            </span>
+                        </Label>
+                        <Input 
+                            id="sport" 
+                            {...register("sport")} 
+                            readOnly 
+                            placeholder="Generated from category..."
+                            className="bg-gray-50 border-dashed font-mono text-sm"
+                        />
+                        </div>
                     <div className="space-y-2">
                         <Label htmlFor="release_date">Release Date</Label>
                         <Input id="release_date" type="date" {...register("release_date")} />
