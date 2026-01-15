@@ -60,10 +60,10 @@ function CategoryListPage() {
                                         <img 
                                             src={category.cover_image} 
                                             alt={category.name} 
-                                            className="w-12 h-12 object-cover rounded-md border border-gray-200" 
+                                            className="w-18 h-18 object-cover rounded-md border border-gray-200" 
                                         />
                                     ) : (
-                                        <div className="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-md text-gray-400">
+                                        <div className="w-18 h-18 flex items-center justify-center bg-gray-100 rounded-md text-gray-400">
                                             <Image className="w-6 h-6" />
                                         </div>
                                     )}

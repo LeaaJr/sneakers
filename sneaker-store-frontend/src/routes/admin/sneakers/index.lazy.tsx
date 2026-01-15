@@ -77,9 +77,9 @@ function SneakerListPage() {
                                 {/* Columna Producto (Imagen y Título) */}
                                 <td className="px-4 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
-                                        <div className="flex-shrink-0 h-10 w-10">
+                                        <div className="flex-shrink-0 h-20 w-20">
                                             <img 
-                                                className="h-10 w-10 rounded-full object-cover" 
+                                                className="h-20 w-20 rounded-full object-cover" 
                                                 src={sneaker.main_image_url || 'https://via.placeholder.com/60'} 
                                                 alt={sneaker.title} 
                                             />

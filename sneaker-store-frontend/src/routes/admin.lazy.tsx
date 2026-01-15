@@ -1,37 +1,61 @@
-// src/routes/admin.lazy.tsx
-
 import React from 'react';
-import { createLazyFileRoute, Outlet, Link } from '@tanstack/react-router';
-import { LayoutDashboard, ShoppingBag, Box, Tag, Users, Package } from 'lucide-react';
-// Asegúrate de tener un hook de autenticación/autorización
-// import { useAuth } from '@/components/hooks/useAuth'; 
+import { createLazyFileRoute, Outlet, Link, useLocation } from '@tanstack/react-router';
+import { LayoutDashboard, ShoppingBag, Box, Tag, Package, TrendingUp } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchTrendingProducts } from '@/services/sneakerService'; // Ajusta la ruta según tu proyecto
 
-// Componente Sidebar para la navegación dentro del admin
+// --- COMPONENTE DE TENDENCIAS ---
+const TrendingGrid = () => {
+    const { data: trending, isLoading, isError } = useQuery({
+        queryKey: ['trendingProducts'], 
+        queryFn: fetchTrendingProducts,
+    });
+
+    if (isLoading) return <div className="p-4 text-gray-500 animate-pulse">Cargando tendencias...</div>;
+    if (isError) return <div className="p-4 text-red-500">Error al cargar tendencias.</div>;
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {trending?.map((item) => (
+                <div key={item.id} className="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                    <img src={item.image} alt={item.title} className="w-full h-32 object-cover" />
+                    <div className="p-3">
+                        <span className="text-[10px] font-bold uppercase text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                            {item.label}
+                        </span>
+                        <h4 className="font-semibold text-gray-800 mt-2 truncate">{item.title}</h4>
+                        <p className="text-xs text-gray-500 truncate">{item.subtitle}</p>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+// --- SIDEBAR ---
 const AdminSidebar: React.FC = () => {
     const adminLinks = [
-        { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
+        { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
         { to: "/admin/sneakers", label: "Sneakers", icon: ShoppingBag },
         { to: "/admin/categories", label: "Categories", icon: Box },
         { to: "/admin/brands", label: "Brands", icon: Tag },
         { to: "/admin/orders", label: "Orders", icon: Package },
-        // { to: "/admin/users", label: "Users", icon: Users }, // Si manejas usuarios
     ];
 
     return (
-        <nav className="w-64 bg-gray-900 h-full text-white fixed top-0 left-0 pt-16">
+        <nav className="w-64 bg-gray-900 h-full text-white fixed top-0 left-0 pt-16 z-10">
             <div className="p-4 space-y-2">
-                <h3 className="text-sm font-semibold uppercase text-gray-400 mb-4">Management</h3>
+                <h3 className="text-sm font-semibold uppercase text-gray-400 mb-4 px-3">Management</h3>
                 {adminLinks.map((link) => (
                     <Link
                         key={link.to}
                         to={link.to}
-                        // 'end: true' asegura que solo se active en la ruta exacta /admin
                         {...(link.end && { activeOptions: { exact: true } })} 
-                        className="flex items-center p-3 rounded-lg transition-colors 
-                                   hover:bg-amber-600 hover:text-white
+                        className="flex items-center p-3 rounded-lg transition-all 
+                                   hover:bg-gray-800 hover:text-amber-400
                                    data-[status=active]:bg-amber-500 data-[status=active]:text-white"
                     >
-                        <link.icon className="h-4 w-4 mr-3" />
+                        <link.icon className="h-5 w-4 mr-3" />
                         {link.label}
                     </Link>
                 ))}
@@ -40,22 +64,37 @@ const AdminSidebar: React.FC = () => {
     );
 };
 
-// Componente principal del Layout
+// --- LAYOUT PRINCIPAL ---
 const AdminLayout: React.FC = () => {
-    // const { user } = useAuth();
-
-    // if (!user || !user.is_admin) {
-    //     // Redirigir o mostrar un mensaje de acceso denegado
-    //     return <p className="p-20 text-center text-red-500">Access Denied.</p>;
-    // }
+    const location = useLocation();
+    
+    // Verificamos si estamos exactamente en "/admin" para mostrar el resumen
+    const isDashboardHome = location.pathname === '/admin';
 
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex min-h-screen bg-gray-50">
             <AdminSidebar />
             
-            {/* Contenido principal: El padding izquierdo coincide con el ancho del sidebar */}
-            <main className="flex-1 ml-64 p-8 pt-20 overflow-y-auto">
-                <Outlet /> {/* Aquí se renderizarán las rutas hijas (/admin/sneakers, etc.) */}
+            <main className="flex-1 ml-64 p-8 pt-20">
+                {isDashboardHome && (
+                    <>
+                        <header className="mb-8">
+                            <h1 className="text-2xl font-bold text-gray-900">Bienvenido al Panel de Control</h1>
+                            <p className="text-gray-500">Aquí tienes un resumen de lo que está pasando en tu tienda.</p>
+                        </header>
+                        
+                        <div className="flex items-center gap-2 mb-4">
+                            <TrendingUp className="h-5 w-5 text-amber-500" />
+                            <h2 className="text-lg font-semibold text-gray-800">Tendencias Actuales</h2>
+                        </div>
+                        
+                        <TrendingGrid />
+
+                        <hr className="my-8 border-gray-200" />
+                    </>
+                )}
+
+                <Outlet /> 
             </main>
         </div>
     );

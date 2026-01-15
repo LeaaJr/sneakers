@@ -496,3 +496,16 @@ export const updateBrand = async (id: string, data: { name: string; logo_url: st
     const response = await apiClient.put(`/brands/${id}`, data);
     return response.data;
 };
+
+/**
+ * Crea una nueva card de tendencia (POST).
+ */
+export const createTrendingProduct = async (data: Omit<TrendingProduct, 'id'> & { sneaker_id: string }): Promise<TrendingProduct> => {
+    try {
+        const response = await apiClient.post('/trending/products/', data);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating trending product:', error);
+        throw error;
+    }
+};
