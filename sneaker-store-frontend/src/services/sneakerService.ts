@@ -497,6 +497,8 @@ export const updateBrand = async (id: string, data: { name: string; logo_url: st
     return response.data;
 };
 
+//Estas ineas de codigo son para el manejo de las cards de tendencias dentro del admin (trending/dashboard)
+
 /**
  * Crea una nueva card de tendencia (POST).
  */
@@ -508,4 +510,15 @@ export const createTrendingProduct = async (data: Omit<TrendingProduct, 'id'> & 
         console.error('Error creating trending product:', error);
         throw error;
     }
+};
+
+/** Elimina una card de tendencia */
+export const deleteTrendingProduct = async (id: number): Promise<void> => {
+    await apiClient.delete(`/trending/products/${id}/`);
+};
+
+/** Actualiza una card existente (PUT/PATCH) */
+export const updateTrendingProduct = async (id: number, data: Partial<TrendingProduct>): Promise<TrendingProduct> => {
+    const response = await apiClient.put(`/trending/products/${id}/`, data);
+    return response.data;
 };
