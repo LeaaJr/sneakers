@@ -1,3 +1,5 @@
+// src/routes/admin/dashboard/create.lazy.tsx
+
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { Save, ArrowLeft, Image as ImageIcon, Link as LinkIcon, Type } from 'lucide-react';

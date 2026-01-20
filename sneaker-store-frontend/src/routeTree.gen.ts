@@ -29,6 +29,7 @@ import { Route as AdminSneakersSneakerIdEditRouteImport } from './routes/admin/s
 import { Route as AdminCategoriesCategoryIdEditRouteImport } from './routes/admin/categories/$categoryId/edit'
 
 const MyOrdersLazyRouteImport = createFileRoute('/my-orders')()
+const ForgotPasswordLazyRouteImport = createFileRoute('/forgot-password')()
 const CheckoutLazyRouteImport = createFileRoute('/checkout')()
 const AdminLazyRouteImport = createFileRoute('/admin')()
 const AdminSneakersIndexLazyRouteImport = createFileRoute('/admin/sneakers/')()
@@ -56,6 +57,13 @@ const MyOrdersLazyRoute = MyOrdersLazyRouteImport.update({
   path: '/my-orders',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/my-orders.lazy').then((d) => d.Route))
+const ForgotPasswordLazyRoute = ForgotPasswordLazyRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/forgot-password.lazy').then((d) => d.Route),
+)
 const CheckoutLazyRoute = CheckoutLazyRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -222,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/user-config': typeof UserConfigRoute
   '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
@@ -250,6 +259,7 @@ export interface FileRoutesByTo {
   '/user-config': typeof UserConfigRoute
   '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
@@ -278,6 +288,7 @@ export interface FileRoutesById {
   '/user-config': typeof UserConfigRoute
   '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/user-config'
     | '/admin'
     | '/checkout'
+    | '/forgot-password'
     | '/my-orders'
     | '/admin/dashboard'
     | '/auth/signin'
@@ -336,6 +348,7 @@ export interface FileRouteTypes {
     | '/user-config'
     | '/admin'
     | '/checkout'
+    | '/forgot-password'
     | '/my-orders'
     | '/auth/signin'
     | '/auth/signup'
@@ -363,6 +376,7 @@ export interface FileRouteTypes {
     | '/user-config'
     | '/admin'
     | '/checkout'
+    | '/forgot-password'
     | '/my-orders'
     | '/admin/dashboard'
     | '/auth/signin'
@@ -392,6 +406,7 @@ export interface RootRouteChildren {
   UserConfigRoute: typeof UserConfigRoute
   AdminLazyRoute: typeof AdminLazyRouteWithChildren
   CheckoutLazyRoute: typeof CheckoutLazyRoute
+  ForgotPasswordLazyRoute: typeof ForgotPasswordLazyRoute
   MyOrdersLazyRoute: typeof MyOrdersLazyRoute
   CategorySportRoute: typeof CategorySportRoute
 }
@@ -403,6 +418,13 @@ declare module '@tanstack/react-router' {
       path: '/my-orders'
       fullPath: '/my-orders'
       preLoaderRoute: typeof MyOrdersLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -662,6 +684,7 @@ const rootRouteChildren: RootRouteChildren = {
   UserConfigRoute: UserConfigRoute,
   AdminLazyRoute: AdminLazyRouteWithChildren,
   CheckoutLazyRoute: CheckoutLazyRoute,
+  ForgotPasswordLazyRoute: ForgotPasswordLazyRoute,
   MyOrdersLazyRoute: MyOrdersLazyRoute,
   CategorySportRoute: CategorySportRoute,
 }

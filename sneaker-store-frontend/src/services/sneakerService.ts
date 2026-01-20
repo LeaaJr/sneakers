@@ -522,3 +522,19 @@ export const updateTrendingProduct = async (id: number, data: Partial<TrendingPr
     const response = await apiClient.put(`/trending/products/${id}/`, data);
     return response.data;
 };
+
+/**
+ * Envía una solicitud para recuperar la contraseña.
+ * @param email El correo del usuario.
+ */
+export const requestPasswordReset = async (email: string): Promise<{ message: string }> => {
+    try {
+        // Usamos el apiClient que ya tiene el baseURL y los interceptores
+        const response = await apiClient.post('/auth/forgot-password', { email });
+        return response.data;
+    } catch (error) {
+        // El interceptor ya loguea el error, aquí solo personalizamos el mensaje para la UI
+        console.error('Error en requestPasswordReset:', error);
+        throw new Error('No se pudo enviar el correo de recuperación. Inténtalo más tarde.');
+    }
+};

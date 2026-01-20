@@ -55,7 +55,7 @@ const AdminSidebar: React.FC = () => {
                                    hover:bg-gray-800 hover:text-amber-400
                                    data-[status=active]:bg-amber-500 data-[status=active]:text-white"
                     >
-                        <link.icon className="h-5 w-4 mr-3" />
+                        <link.icon className="h-4 w-4 mr-3" />
                         {link.label}
                     </Link>
                 ))}
