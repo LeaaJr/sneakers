@@ -11,6 +11,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UserConfigRouteImport } from './routes/user-config'
 import { Route as SneakersRouteImport } from './routes/sneakers'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -20,20 +21,64 @@ import { Route as SneakersSneakerIdRouteImport } from './routes/sneakers.$sneake
 import { Route as CategorySportRouteImport } from './routes/category.$sport'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthSigninRouteImport } from './routes/auth.signin'
+import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
+import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
+import { Route as AdminSneakersCreateRouteImport } from './routes/admin/sneakers/create'
+import { Route as AdminSneakersSneakerIdEditRouteImport } from './routes/admin/sneakers/$sneakerId/edit'
+import { Route as AdminCategoriesCategoryIdEditRouteImport } from './routes/admin/categories/$categoryId/edit'
 
 const MyOrdersLazyRouteImport = createFileRoute('/my-orders')()
+const ForgotPasswordLazyRouteImport = createFileRoute('/forgot-password')()
 const CheckoutLazyRouteImport = createFileRoute('/checkout')()
+const AdminLazyRouteImport = createFileRoute('/admin')()
+const AdminSneakersIndexLazyRouteImport = createFileRoute('/admin/sneakers/')()
+const AdminDashboardCreateLazyRouteImport = createFileRoute(
+  '/admin/dashboard/create',
+)()
+const AdminCategoriesCreateLazyRouteImport = createFileRoute(
+  '/admin/categories/create',
+)()
+const AdminBrandsCreateLazyRouteImport = createFileRoute(
+  '/admin/brands/create',
+)()
+const AdminBrandsBrandIdIndexLazyRouteImport = createFileRoute(
+  '/admin/brands/$brandId/',
+)()
+const AdminDashboardEditIdLazyRouteImport = createFileRoute(
+  '/admin/dashboard/edit/$id',
+)()
+const AdminBrandsBrandIdEditLazyRouteImport = createFileRoute(
+  '/admin/brands/$brandId/edit',
+)()
 
 const MyOrdersLazyRoute = MyOrdersLazyRouteImport.update({
   id: '/my-orders',
   path: '/my-orders',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/my-orders.lazy').then((d) => d.Route))
+const ForgotPasswordLazyRoute = ForgotPasswordLazyRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/forgot-password.lazy').then((d) => d.Route),
+)
 const CheckoutLazyRoute = CheckoutLazyRouteImport.update({
   id: '/checkout',
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/checkout.lazy').then((d) => d.Route))
+const AdminLazyRoute = AdminLazyRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/admin.lazy').then((d) => d.Route))
+const UserConfigRoute = UserConfigRouteImport.update({
+  id: '/user-config',
+  path: '/user-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SneakersRoute = SneakersRouteImport.update({
   id: '/sneakers',
   path: '/sneakers',
@@ -79,6 +124,102 @@ const AuthSigninRoute = AuthSigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => AuthRoute,
 } as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminLazyRoute,
+} as any)
+const AdminSneakersIndexLazyRoute = AdminSneakersIndexLazyRouteImport.update({
+  id: '/sneakers/',
+  path: '/sneakers/',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/sneakers/index.lazy').then((d) => d.Route),
+)
+const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
+const AdminCategoriesIndexRoute = AdminCategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/categories/index.lazy').then((d) => d.Route),
+)
+const AdminDashboardCreateLazyRoute =
+  AdminDashboardCreateLazyRouteImport.update({
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => AdminDashboardRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/dashboard/create.lazy').then((d) => d.Route),
+  )
+const AdminCategoriesCreateLazyRoute =
+  AdminCategoriesCreateLazyRouteImport.update({
+    id: '/categories/create',
+    path: '/categories/create',
+    getParentRoute: () => AdminLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/categories/create.lazy').then((d) => d.Route),
+  )
+const AdminBrandsCreateLazyRoute = AdminBrandsCreateLazyRouteImport.update({
+  id: '/brands/create',
+  path: '/brands/create',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/brands/create.lazy').then((d) => d.Route),
+)
+const AdminSneakersCreateRoute = AdminSneakersCreateRouteImport.update({
+  id: '/sneakers/create',
+  path: '/sneakers/create',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/sneakers/create.lazy').then((d) => d.Route),
+)
+const AdminBrandsBrandIdIndexLazyRoute =
+  AdminBrandsBrandIdIndexLazyRouteImport.update({
+    id: '/brands/$brandId/',
+    path: '/brands/$brandId/',
+    getParentRoute: () => AdminLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/brands/$brandId/index.lazy').then((d) => d.Route),
+  )
+const AdminDashboardEditIdLazyRoute =
+  AdminDashboardEditIdLazyRouteImport.update({
+    id: '/edit/$id',
+    path: '/edit/$id',
+    getParentRoute: () => AdminDashboardRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/dashboard/edit.$id.lazy').then((d) => d.Route),
+  )
+const AdminBrandsBrandIdEditLazyRoute =
+  AdminBrandsBrandIdEditLazyRouteImport.update({
+    id: '/brands/$brandId/edit',
+    path: '/brands/$brandId/edit',
+    getParentRoute: () => AdminLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/brands/$brandId/edit.lazy').then((d) => d.Route),
+  )
+const AdminSneakersSneakerIdEditRoute =
+  AdminSneakersSneakerIdEditRouteImport.update({
+    id: '/sneakers/$sneakerId/edit',
+    path: '/sneakers/$sneakerId/edit',
+    getParentRoute: () => AdminLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/sneakers/$sneakerId/edit.lazy').then((d) => d.Route),
+  )
+const AdminCategoriesCategoryIdEditRoute =
+  AdminCategoriesCategoryIdEditRouteImport.update({
+    id: '/categories/$categoryId/edit',
+    path: '/categories/$categoryId/edit',
+    getParentRoute: () => AdminLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/categories/$categoryId/edit.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -86,12 +227,28 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/user-config': typeof UserConfigRoute
+  '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
+  '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/category/$sport': typeof CategorySportRoute
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
+  '/admin/sneakers/create': typeof AdminSneakersCreateRoute
+  '/admin/brands/create': typeof AdminBrandsCreateLazyRoute
+  '/admin/categories/create': typeof AdminCategoriesCreateLazyRoute
+  '/admin/dashboard/create': typeof AdminDashboardCreateLazyRoute
+  '/admin/categories': typeof AdminCategoriesIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/sneakers': typeof AdminSneakersIndexLazyRoute
+  '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
+  '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
+  '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
+  '/admin/dashboard/edit/$id': typeof AdminDashboardEditIdLazyRoute
+  '/admin/brands/$brandId': typeof AdminBrandsBrandIdIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,12 +256,27 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/user-config': typeof UserConfigRoute
+  '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/category/$sport': typeof CategorySportRoute
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
+  '/admin/sneakers/create': typeof AdminSneakersCreateRoute
+  '/admin/brands/create': typeof AdminBrandsCreateLazyRoute
+  '/admin/categories/create': typeof AdminCategoriesCreateLazyRoute
+  '/admin/dashboard/create': typeof AdminDashboardCreateLazyRoute
+  '/admin/categories': typeof AdminCategoriesIndexRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/admin/sneakers': typeof AdminSneakersIndexLazyRoute
+  '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
+  '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
+  '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
+  '/admin/dashboard/edit/$id': typeof AdminDashboardEditIdLazyRoute
+  '/admin/brands/$brandId': typeof AdminBrandsBrandIdIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,12 +285,28 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/sneakers': typeof SneakersRouteWithChildren
+  '/user-config': typeof UserConfigRoute
+  '/admin': typeof AdminLazyRouteWithChildren
   '/checkout': typeof CheckoutLazyRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/my-orders': typeof MyOrdersLazyRoute
+  '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/category/$sport': typeof CategorySportRoute
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
+  '/admin/sneakers/create': typeof AdminSneakersCreateRoute
+  '/admin/brands/create': typeof AdminBrandsCreateLazyRoute
+  '/admin/categories/create': typeof AdminCategoriesCreateLazyRoute
+  '/admin/dashboard/create': typeof AdminDashboardCreateLazyRoute
+  '/admin/categories/': typeof AdminCategoriesIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/sneakers/': typeof AdminSneakersIndexLazyRoute
+  '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
+  '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
+  '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
+  '/admin/dashboard/edit/$id': typeof AdminDashboardEditIdLazyRoute
+  '/admin/brands/$brandId/': typeof AdminBrandsBrandIdIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -128,12 +316,28 @@ export interface FileRouteTypes {
     | '/auth'
     | '/favorites'
     | '/sneakers'
+    | '/user-config'
+    | '/admin'
     | '/checkout'
+    | '/forgot-password'
     | '/my-orders'
+    | '/admin/dashboard'
     | '/auth/signin'
     | '/auth/signup'
     | '/category/$sport'
     | '/sneakers/$sneakerId'
+    | '/admin/sneakers/create'
+    | '/admin/brands/create'
+    | '/admin/categories/create'
+    | '/admin/dashboard/create'
+    | '/admin/categories'
+    | '/admin/dashboard/'
+    | '/admin/sneakers'
+    | '/admin/categories/$categoryId/edit'
+    | '/admin/sneakers/$sneakerId/edit'
+    | '/admin/brands/$brandId/edit'
+    | '/admin/dashboard/edit/$id'
+    | '/admin/brands/$brandId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -141,12 +345,27 @@ export interface FileRouteTypes {
     | '/auth'
     | '/favorites'
     | '/sneakers'
+    | '/user-config'
+    | '/admin'
     | '/checkout'
+    | '/forgot-password'
     | '/my-orders'
     | '/auth/signin'
     | '/auth/signup'
     | '/category/$sport'
     | '/sneakers/$sneakerId'
+    | '/admin/sneakers/create'
+    | '/admin/brands/create'
+    | '/admin/categories/create'
+    | '/admin/dashboard/create'
+    | '/admin/categories'
+    | '/admin/dashboard'
+    | '/admin/sneakers'
+    | '/admin/categories/$categoryId/edit'
+    | '/admin/sneakers/$sneakerId/edit'
+    | '/admin/brands/$brandId/edit'
+    | '/admin/dashboard/edit/$id'
+    | '/admin/brands/$brandId'
   id:
     | '__root__'
     | '/'
@@ -154,12 +373,28 @@ export interface FileRouteTypes {
     | '/auth'
     | '/favorites'
     | '/sneakers'
+    | '/user-config'
+    | '/admin'
     | '/checkout'
+    | '/forgot-password'
     | '/my-orders'
+    | '/admin/dashboard'
     | '/auth/signin'
     | '/auth/signup'
     | '/category/$sport'
     | '/sneakers/$sneakerId'
+    | '/admin/sneakers/create'
+    | '/admin/brands/create'
+    | '/admin/categories/create'
+    | '/admin/dashboard/create'
+    | '/admin/categories/'
+    | '/admin/dashboard/'
+    | '/admin/sneakers/'
+    | '/admin/categories/$categoryId/edit'
+    | '/admin/sneakers/$sneakerId/edit'
+    | '/admin/brands/$brandId/edit'
+    | '/admin/dashboard/edit/$id'
+    | '/admin/brands/$brandId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -168,7 +403,10 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   FavoritesRoute: typeof FavoritesRoute
   SneakersRoute: typeof SneakersRouteWithChildren
+  UserConfigRoute: typeof UserConfigRoute
+  AdminLazyRoute: typeof AdminLazyRouteWithChildren
   CheckoutLazyRoute: typeof CheckoutLazyRoute
+  ForgotPasswordLazyRoute: typeof ForgotPasswordLazyRoute
   MyOrdersLazyRoute: typeof MyOrdersLazyRoute
   CategorySportRoute: typeof CategorySportRoute
 }
@@ -182,11 +420,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyOrdersLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/user-config': {
+      id: '/user-config'
+      path: '/user-config'
+      fullPath: '/user-config'
+      preLoaderRoute: typeof UserConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sneakers': {
@@ -252,6 +511,97 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSigninRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/sneakers/': {
+      id: '/admin/sneakers/'
+      path: '/sneakers'
+      fullPath: '/admin/sneakers'
+      preLoaderRoute: typeof AdminSneakersIndexLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/dashboard/': {
+      id: '/admin/dashboard/'
+      path: '/'
+      fullPath: '/admin/dashboard/'
+      preLoaderRoute: typeof AdminDashboardIndexRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin/categories/': {
+      id: '/admin/categories/'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesIndexRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/dashboard/create': {
+      id: '/admin/dashboard/create'
+      path: '/create'
+      fullPath: '/admin/dashboard/create'
+      preLoaderRoute: typeof AdminDashboardCreateLazyRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin/categories/create': {
+      id: '/admin/categories/create'
+      path: '/categories/create'
+      fullPath: '/admin/categories/create'
+      preLoaderRoute: typeof AdminCategoriesCreateLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/brands/create': {
+      id: '/admin/brands/create'
+      path: '/brands/create'
+      fullPath: '/admin/brands/create'
+      preLoaderRoute: typeof AdminBrandsCreateLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/sneakers/create': {
+      id: '/admin/sneakers/create'
+      path: '/sneakers/create'
+      fullPath: '/admin/sneakers/create'
+      preLoaderRoute: typeof AdminSneakersCreateRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/brands/$brandId/': {
+      id: '/admin/brands/$brandId/'
+      path: '/brands/$brandId'
+      fullPath: '/admin/brands/$brandId'
+      preLoaderRoute: typeof AdminBrandsBrandIdIndexLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/dashboard/edit/$id': {
+      id: '/admin/dashboard/edit/$id'
+      path: '/edit/$id'
+      fullPath: '/admin/dashboard/edit/$id'
+      preLoaderRoute: typeof AdminDashboardEditIdLazyRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin/brands/$brandId/edit': {
+      id: '/admin/brands/$brandId/edit'
+      path: '/brands/$brandId/edit'
+      fullPath: '/admin/brands/$brandId/edit'
+      preLoaderRoute: typeof AdminBrandsBrandIdEditLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/sneakers/$sneakerId/edit': {
+      id: '/admin/sneakers/$sneakerId/edit'
+      path: '/sneakers/$sneakerId/edit'
+      fullPath: '/admin/sneakers/$sneakerId/edit'
+      preLoaderRoute: typeof AdminSneakersSneakerIdEditRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/categories/$categoryId/edit': {
+      id: '/admin/categories/$categoryId/edit'
+      path: '/categories/$categoryId/edit'
+      fullPath: '/admin/categories/$categoryId/edit'
+      preLoaderRoute: typeof AdminCategoriesCategoryIdEditRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
   }
 }
 
@@ -279,13 +629,62 @@ const SneakersRouteWithChildren = SneakersRoute._addFileChildren(
   SneakersRouteChildren,
 )
 
+interface AdminDashboardRouteChildren {
+  AdminDashboardCreateLazyRoute: typeof AdminDashboardCreateLazyRoute
+  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  AdminDashboardEditIdLazyRoute: typeof AdminDashboardEditIdLazyRoute
+}
+
+const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
+  AdminDashboardCreateLazyRoute: AdminDashboardCreateLazyRoute,
+  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  AdminDashboardEditIdLazyRoute: AdminDashboardEditIdLazyRoute,
+}
+
+const AdminDashboardRouteWithChildren = AdminDashboardRoute._addFileChildren(
+  AdminDashboardRouteChildren,
+)
+
+interface AdminLazyRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
+  AdminSneakersCreateRoute: typeof AdminSneakersCreateRoute
+  AdminBrandsCreateLazyRoute: typeof AdminBrandsCreateLazyRoute
+  AdminCategoriesCreateLazyRoute: typeof AdminCategoriesCreateLazyRoute
+  AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
+  AdminSneakersIndexLazyRoute: typeof AdminSneakersIndexLazyRoute
+  AdminCategoriesCategoryIdEditRoute: typeof AdminCategoriesCategoryIdEditRoute
+  AdminSneakersSneakerIdEditRoute: typeof AdminSneakersSneakerIdEditRoute
+  AdminBrandsBrandIdEditLazyRoute: typeof AdminBrandsBrandIdEditLazyRoute
+  AdminBrandsBrandIdIndexLazyRoute: typeof AdminBrandsBrandIdIndexLazyRoute
+}
+
+const AdminLazyRouteChildren: AdminLazyRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRouteWithChildren,
+  AdminSneakersCreateRoute: AdminSneakersCreateRoute,
+  AdminBrandsCreateLazyRoute: AdminBrandsCreateLazyRoute,
+  AdminCategoriesCreateLazyRoute: AdminCategoriesCreateLazyRoute,
+  AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
+  AdminSneakersIndexLazyRoute: AdminSneakersIndexLazyRoute,
+  AdminCategoriesCategoryIdEditRoute: AdminCategoriesCategoryIdEditRoute,
+  AdminSneakersSneakerIdEditRoute: AdminSneakersSneakerIdEditRoute,
+  AdminBrandsBrandIdEditLazyRoute: AdminBrandsBrandIdEditLazyRoute,
+  AdminBrandsBrandIdIndexLazyRoute: AdminBrandsBrandIdIndexLazyRoute,
+}
+
+const AdminLazyRouteWithChildren = AdminLazyRoute._addFileChildren(
+  AdminLazyRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AllProductsRoute: AllProductsRoute,
   AuthRoute: AuthRouteWithChildren,
   FavoritesRoute: FavoritesRoute,
   SneakersRoute: SneakersRouteWithChildren,
+  UserConfigRoute: UserConfigRoute,
+  AdminLazyRoute: AdminLazyRouteWithChildren,
   CheckoutLazyRoute: CheckoutLazyRoute,
+  ForgotPasswordLazyRoute: ForgotPasswordLazyRoute,
   MyOrdersLazyRoute: MyOrdersLazyRoute,
   CategorySportRoute: CategorySportRoute,
 }

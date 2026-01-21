@@ -1,7 +1,9 @@
 // components/featured/SignInForm.tsx
+
 import React, { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, Link } from '@tanstack/react-router';
 import { useAuth } from '@/components/hooks/useAuth';
+
 
 
 const BASE_URL = 'http://127.0.0.1:8000';
@@ -74,7 +76,12 @@ const { login } = useAuth();
       <input type="password" placeholder="Password" className="bg-gray-200 p-3 my-2 w-full" 
              value={password} onChange={(e) => setPassword(e.target.value)} required />
       
-      <a href="#" className="text-sm my-2 text-gray-600">Hai dimenticato la password?</a>
+            <Link 
+        to="/forgot-password" 
+        className="text-sm my-2 text-gray-600 hover:text-[#8b95b6]"
+      >
+        Hai dimenticato la password?
+          </Link>
       
       {/* Mensaje de error */}
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

@@ -16,7 +16,7 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
-# --- Esquemas de Entrada (Request) ---
+# --- Esquemas de Entrada (Request) --- 
 class UserCreate(UserBase):
     password: str
 
