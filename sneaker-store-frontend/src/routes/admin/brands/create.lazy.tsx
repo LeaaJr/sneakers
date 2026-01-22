@@ -1,9 +1,14 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
+import BrandForm from './BrandForm'
 
 export const Route = createLazyFileRoute('/admin/brands/create')({
-  component: RouteComponent,
+  component: CreateBrandPage,
 })
 
-function RouteComponent() {
-  return <div>Hello "/admin/brands/create"!</div>
+function CreateBrandPage() {
+  return (
+    <BrandForm 
+      isEdit={false} 
+    />
+  )
 }
