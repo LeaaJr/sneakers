@@ -161,6 +161,15 @@ export interface UserProfile {
   role: string;
 }
 
+/**
+ * Payload para crear o editar una marca.
+ * Separamos esto de la interfaz Brand por si el ID no es necesario al crear.
+ */
+export interface BrandFormData {
+    name: string;
+    logo_url: string;
+}
+
 // ----------------------------------------------------------------------
 // 💡 FUNCIONES AGREGADAS PARA EL FORMULARIO (REALES)
 // ----------------------------------------------------------------------
@@ -473,29 +482,7 @@ export const deleteCategory = async (id: string): Promise<void> => {
     }
 };
 
-/**
- * Obtiene una marca por su ID.
- */
-export const fetchBrandById = async (id: string): Promise<Brand> => {
-    const response = await apiClient.get(`/brands/${id}`);
-    return response.data;
-};
-
-/**
- * Crea una nueva marca (POST).
- */
-export const createBrand = async (data: { name: string; logo_url: string }): Promise<Brand> => {
-    const response = await apiClient.post('/brands/', data);
-    return response.data;
-};
-
-/**
- * Actualiza una marca existente (PUT).
- */
-export const updateBrand = async (id: string, data: { name: string; logo_url: string }): Promise<Brand> => {
-    const response = await apiClient.put(`/brands/${id}`, data);
-    return response.data;
-};
+// ----------------------------------------------------------------------
 
 //Estas ineas de codigo son para el manejo de las cards de tendencias dentro del admin (trending/dashboard)
 
@@ -536,5 +523,58 @@ export const requestPasswordReset = async (email: string): Promise<{ message: st
         // El interceptor ya loguea el error, aquí solo personalizamos el mensaje para la UI
         console.error('Error en requestPasswordReset:', error);
         throw new Error('No se pudo enviar el correo de recuperación. Inténtalo más tarde.');
+    }
+};
+
+
+// ----------------------------------------------------------------------
+// 💡 FUNCIONES PARA MARCAS (BRANDS)
+// ----------------------------------------------------------------------
+
+/**
+ * Obtiene una marca por su ID.
+ */
+export const fetchBrandById = async (id: string): Promise<Brand> => {
+    const response = await apiClient.get(`/brands/${id}`);
+    return response.data;
+};
+
+
+
+/**
+ * Crea una nueva marca (POST).
+ */
+export const createBrand = async (data: BrandFormData): Promise<Brand> => {
+    try {
+        const response = await apiClient.post('/brands/', data);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating brand:', error);
+        throw error;
+    }
+};
+
+/**
+ * Actualiza una marca existente (PUT).
+ */
+export const updateBrand = async (id: string, data: BrandFormData): Promise<Brand> => {
+    try {
+        const response = await apiClient.put(`/brands/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error(`Error updating brand ${id}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * Elimina una marca por ID.
+ */
+export const deleteBrand = async (id: string): Promise<void> => {
+    try {
+        await apiClient.delete(`/brands/${id}`);
+    } catch (error) {
+        console.error(`Error deleting brand ${id}:`, error);
+        throw error;
     }
 };
