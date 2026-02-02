@@ -10,16 +10,16 @@ export const Footer: React.FC<FooterProps> = ({ }) => {
       <div className="max-w-screen-xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <div>
-            <h3 className="font-semibold mb-4">NEW YORK</h3>
-            <p>Huntersville,</p>
-            <p>957 Hill Hills Suite 491, United States</p>
-            <p>Office: +1 (646) 36 2982 743</p>
-            <p>Support: Lmcompany@Outlook.com</p>
+            <h3 className="font-semibold mb-4">ITALY</h3>
+            <p> Roma,</p>
+            <p> 123 Via Panisperna, Lazio</p>
+            <p>Office:  (+39) 3629827430</p>
+            <p>Support: RmvvCompany@Outlook.com</p>
           </div>
         </div>
         
         <div className="text-center mb-12">
-          <p>Sign up to our newsletter</p>
+          <p>Iscriviti alla nostra newsletter</p>
           <div className="flex justify-center max-w-lg mx-auto gap-2 mt-4">
             <input
               type="email"
@@ -27,7 +27,7 @@ export const Footer: React.FC<FooterProps> = ({ }) => {
               className="flex-1 p-3 border border-gray-300 rounded-md"
             />
             <button className="bg-gray-800 text-white p-3 rounded-md hover:bg-gray-700">
-              Subscribe
+              Iscriviti
             </button>
           </div>
         </div>
@@ -37,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ }) => {
             <img src={""} alt="Logo" className="max-w-full h-auto max-h-12" />
           </div>
           <div className="text-gray-600">© 2021-2025 LM™. All Rights Reserved.</div>
-          <div className="text-gray-600">🇺🇸 English (US)</div>
+          <div className="text-gray-600">�🇹 Italiano (IT)</div>
         </div>
       </div>
     </footer>

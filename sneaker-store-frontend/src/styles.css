@@ -140,3 +140,9 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+.go1767807125,
+.go2902208695,
+.go2279492678 {
+  display: none !important;
+}

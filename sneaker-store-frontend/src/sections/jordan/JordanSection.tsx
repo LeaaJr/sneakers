@@ -36,7 +36,7 @@ const RunningSection: React.FC = () => {
         </h2>
         {/* Este enlace ya no tiene a dónde ir sin un ID de zapatilla */}
         <Link to="/category/jordan" >                      
-        <span className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
+        <span className="inline-flex items-center text-[#8b95b6] hover:text-blue-800 font-medium cursor-pointer">
           Vedere più prodotti
           <ArrowRightIcon className="ml-2 h-4 w-4" />
         </span>

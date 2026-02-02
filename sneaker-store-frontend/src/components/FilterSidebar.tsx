@@ -212,16 +212,16 @@ export const FilterSidebar = ({ availableCategories, availableBrands }: FilterSi
           </section>
 
           {/* Botón Reset */}
-          <button
-            onClick={resetFilters}
-            disabled={activeFiltersCount === 0}
-            className={`w-full py-3 rounded-xl text-sm font-bold border transition-colors uppercase tracking-widest mt-10
-              ${activeFiltersCount === 0 
-                ? 'bg-gray-400/20 text-black/50 border-black/10 cursor-not-allowed' 
-                : 'bg-black/20 hover:bg-black/40 text-black border-black/10'}`}
-          >
-            Clean filters
-          </button>
+              <button
+                onClick={resetFilters}
+                disabled={activeFiltersCount === 0}
+                className={`bg-red-700 w-full py-3 rounded-xl text-sm font-bold border transition-colors duration-300 ease-in-out uppercase tracking-widest mt-10
+                  ${activeFiltersCount === 0 
+                    ? 'bg-gray-400/20 text-black/50 border-black/10 cursor-not-allowed' 
+                    : 'bg-red-500 hover:bg-red-600 text-white border-red-600'}`}
+              >
+                Clean filters
+              </button>
 
           {/* Indicador de filtros activos */}
           {activeFiltersCount > 0 && (
