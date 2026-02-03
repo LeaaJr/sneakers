@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # sneakers
 E-commerce page made with React Vite + Tailwind CSS + Shadcn UI.
 =======
@@ -51,4 +50,6 @@ This project uses [TanStack Router](https://tanstack.com/router). The initial se
 
 
 ## DB
-``` uvicorn src.api.main:app --reload ```
+```bash
+uvicorn src.api.main:app --reload 
+```
