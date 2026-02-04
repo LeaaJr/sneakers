@@ -111,7 +111,7 @@ export const FilterSidebar = ({ availableCategories, availableBrands }: FilterSi
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen w-[300px] bg-[#d3d7e3] z-[1000] transition-transform duration-300 ease-in-out transform shadow-2xl overflow-y-auto
+        className={`fixed top-0 left-0 h-screen w-[280px] sm:w-[300px] bg-[#d3d7e3] z-[1000] transition-transform duration-300 ease-in-out transform shadow-2xl overflow-y-auto
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Header del Sidebar */}
