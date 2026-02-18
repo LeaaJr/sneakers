@@ -140,3 +140,14 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+.go1767807125,
+.go2902208695,
+.go2279492678 {
+  display: none !important;
+}
+
+.smooth-scroll {
+  scroll-behavior: smooth;
+  transition: scroll-left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
