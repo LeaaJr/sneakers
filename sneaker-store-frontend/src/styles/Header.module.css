@@ -29,19 +29,6 @@
   text-align: center;
 }
 
-/* .futuristicTitle h1 {
-  font-size: 5rem;
-  font-weight: 900;
-  color: transparent;
-  background: linear-gradient(90deg, #968686, #020f18);
-  -webkit-background-clip: text;
-  background-clip: text;
-  text-shadow: 0 0 10px rgb(108, 77, 124);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin: 0;
-  animation: titleGlow 3s ease-in-out infinite alternate;
-} */
 
 .titleGlow {
   position: absolute;

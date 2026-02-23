@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, Tag, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { fetchSneakers, type Sneaker, deleteSneaker } from '@/services/sneakerService';
 import { useRouter } from '@tanstack/react-router';
+import { useState } from 'react';
 import axios from 'axios';
 
 // Define la ruta en /admin/sneakers
@@ -25,7 +26,7 @@ function SneakerListPage() {
             try {
                 await deleteSneaker(id);
                 // 🔥 EN LUGAR DE RELOAD:
-                await router.invalidate(); 
+                await router.invalidate();
                 alert("Deleted!");
             } catch (error) {
                 alert("Error deleting");
@@ -43,6 +44,21 @@ function SneakerListPage() {
         );
     }
 
+    const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    const handleCopyId = async (id: string) => {
+        try {
+            await navigator.clipboard.writeText(id);
+            setCopiedId(id);
+
+            setTimeout(() => {
+                setCopiedId(null);
+            }, 1500);
+
+        } catch (err) {
+            alert("Failed to copy ID");
+        }
+    };
 
     return (
         <>
@@ -73,22 +89,39 @@ function SneakerListPage() {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {sneakers.map((sneaker) => (
                             <tr key={sneaker.id}>
-                                
+
                                 {/* Columna Producto (Imagen y Título) */}
                                 <td className="px-4 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-20 w-20">
-                                            <img 
-                                                className="h-20 w-20 rounded-full object-cover" 
-                                                src={sneaker.main_image_url || 'https://via.placeholder.com/60'} 
-                                                alt={sneaker.title} 
+                                            <img
+                                                className="h-20 w-20 rounded-full object-cover"
+                                                src={sneaker.main_image_url || 'https://via.placeholder.com/60'}
+                                                alt={sneaker.title}
                                             />
                                         </div>
                                         <div className="ml-4">
                                             <div className="text-sm font-medium text-gray-900 line-clamp-1">
                                                 {sneaker.title}
                                             </div>
-                                            <div className="text-xs text-gray-500">ID: {sneaker.id.substring(0, 8)}...</div>
+                                            <div className="text-xs text-gray-500 flex items-center gap-2">
+                                                ID: {sneaker.id.substring(0, 8)}...
+
+                                                <button
+                                                    type="button"
+                                                    title="Show full ID"
+                                                    onClick={() => handleCopyId(sneaker.id)}
+                                                    className="text-amber-600 hover:text-amber-800 font-bold transition-colors"
+                                                >
+                                                    +
+                                                </button>
+
+                                                {copiedId === sneaker.id && (
+                                                    <span className="text-green-600 text-xs font-medium animate-pulse">
+                                                        Copied!
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -102,7 +135,7 @@ function SneakerListPage() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <div className="flex flex-col">
                                         {/* Usamos sneaker.brand.name que está disponible en tu interfaz Sneaker */}
-                                        <span className="text-gray-900 flex items-center"><Tag className="w-3 h-3 mr-1"/> {sneaker.brand?.name || 'N/A'}</span>
+                                        <span className="text-gray-900 flex items-center"><Tag className="w-3 h-3 mr-1" /> {sneaker.brand?.name || 'N/A'}</span>
                                         {/* La interfaz Sneaker no incluye category_name, pero asumimos que sí incluye category_id para fines prácticos. 
                                             Si tu API no devuelve el objeto Category, esto es un placeholder: */}
                                         <span className="text-xs text-gray-500 ml-4">Category: {sneaker.category_id.substring(0, 8)}...</span>
@@ -113,7 +146,7 @@ function SneakerListPage() {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     {sneaker.is_new ? (
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <Zap className="w-3 h-3 mr-1"/> New
+                                            <Zap className="w-3 h-3 mr-1" /> New
                                         </span>
                                     ) : (
                                         <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -121,21 +154,21 @@ function SneakerListPage() {
                                         </span>
                                     )}
                                 </td>
-                                
+
                                 {/* Columna Acciones */}
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                    <Link 
-                                        to="/admin/sneakers/$sneakerId/edit" 
+                                    <Link
+                                        to="/admin/sneakers/$sneakerId/edit"
                                         params={{ sneakerId: sneaker.id }}
                                         className="inline-flex items-center text-amber-600 hover:text-amber-900 p-1"
                                     >
                                         <Pencil className="w-4 h-4" />
                                     </Link>
-                                    
-                                    <Button 
+
+                                    <Button
                                         type="button"
-                                        variant="ghost" 
-                                        size="icon" 
+                                        variant="ghost"
+                                        size="icon"
                                         onClick={() => handleDelete(sneaker.id, sneaker.title)}
                                         className="text-red-600 hover:text-red-900"
                                     >
