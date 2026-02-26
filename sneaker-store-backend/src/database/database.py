@@ -1,58 +1,50 @@
-#/src/database/database.py
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Define settings using pydantic-settings to load from .env
 class Settings(BaseSettings):
+    DATABASE_URL: str 
+    model_config = SettingsConfigDict(
+        env_file=".env", 
+        env_file_encoding='utf-8',
+        extra="ignore"
+    )
 
-    DATABASE_URL: str = "postgresql://db_4_sneakeres_user:I19QFxNZilFfkXj5gT2D45fxcgAxYhyh@dpg-d5fvn5k9c44c738tq14g-a.oregon-postgres.render.com/db_4_sneakeres"
+try:
+    settings = Settings()
+    # Aseguramos que la URL sea compatible con SQLAlchemy 2.0+ 
+    # (Cambia postgres:// por postgresql:// si Render te da la vieja)
+    db_url = settings.DATABASE_URL
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URL = db_url
+except Exception as e:
+    print(f"Error cargando la configuración: {e}")
+    raise
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-
-settings = Settings()
-
-SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
-
-# --- ADDED FOR DEBUGGING ---
-print(f"Attempting to connect to DATABASE_URL: {SQLALCHEMY_DATABASE_URL}")
-# --- END DEBUGGING ---
-
-# Create the SQLAlchemy engine
-# 'pool_pre_ping=True' helps with connection stability, especially in cloud environments
+# OPTIMIZACIÓN DEL MOTOR (ENGINE)
+# Estos parámetros evitan que la conexión se cierre y deba renegociar con Oregon
 engine = create_engine(
- SQLALCHEMY_DATABASE_URL, pool_pre_ping=True
+    SQLALCHEMY_DATABASE_URL, 
+    pool_pre_ping=True,   # Verifica si la conexión sigue viva antes de usarla
+    pool_size=10,         # Mantiene 10 conexiones abiertas permanentemente
+    max_overflow=20,      # Permite hasta 20 conexiones extra si hay mucho tráfico
+    pool_recycle=300,     # Refresca las conexiones cada 5 minutos
+    pool_timeout=30       # Espera máximo 30 segundos para obtener una conexión del pool
 )
 
-# Create a SessionLocal class to get a database session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base class for SQLAlchemy models
 Base = declarative_base()
 
-# ----------------------------------------------------------------------
-# FUNCIÓN CRÍTICA: Creación de tablas (FIX)
-# ----------------------------------------------------------------------
 def create_db_tables():
-    """
-    Crea las tablas de la base de datos si no existen. 
-    Es seguro llamarla varias veces.
-    """
-    # Base.metadata contiene las definiciones de TODAS las clases de modelos
-    # que heredan de Base (p. ej., Sneaker, TrendingProduct, etc.)
+    from . import models 
     Base.metadata.create_all(bind=engine)
 
 def get_db():
-    """
-    Dependency to get a database session.
-    Yields a session and ensures it's closed after the request.
-    """
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
-# Import models here to ensure they are registered with Base before creating tables
-from . import models

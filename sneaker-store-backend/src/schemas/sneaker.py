@@ -175,4 +175,14 @@ class TrendingProductUpdate(BaseModel):
         from_attributes = True
  
 
-
+class SneakerMinimal(BaseModel):
+    """Esquema optimizado para listados y catálogos rápidos."""
+    id: UUID
+    title: str
+    price: float
+    main_image_url: HttpUrl
+    brand: Brand  # Cargamos la marca para mostrar el nombre/logo
+    is_new: bool
+    
+    class Config:
+        from_attributes = True
