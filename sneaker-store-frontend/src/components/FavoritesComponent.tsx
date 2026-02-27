@@ -1,5 +1,4 @@
 // src/components/FavoritesComponent.tsx
-import React from 'react';
 import { useFavorites } from '@/context/FavoritesContext';
 import { Card } from '@/components/Cards';
 

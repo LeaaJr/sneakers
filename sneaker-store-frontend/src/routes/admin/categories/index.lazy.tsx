@@ -1,5 +1,5 @@
 // src/routes/admin/categories/index.lazy.tsx
-import React from 'react';
+
 import { createLazyFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { Plus, Pencil, Trash2, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
