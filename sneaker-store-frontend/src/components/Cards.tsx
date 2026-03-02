@@ -1,5 +1,4 @@
 // src/components/Cards.tsx
-import React from 'react';
 import { Card as ShadcnCard, CardContent, CardFooter, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import type { Sneaker } from '@/services/sneakerService';

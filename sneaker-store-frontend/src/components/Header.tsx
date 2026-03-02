@@ -1,5 +1,4 @@
 // src/components/HeaderFuturista.tsx
-import React from 'react';
 import styles from '../styles/Header.module.css';
 import AnimatedGlowText from '@/components/AnimatedGlowText';
 

@@ -193,7 +193,7 @@ function HomePageContent() {
     React.useEffect(() => {
         if (!scrollTo) return; // No hacer nada si no hay parámetro de scroll
 
-        let targetRef: React.RefObject<HTMLDivElement> | null = null;
+        let targetRef: React.RefObject<HTMLDivElement | null> | null = null;
 
         switch (scrollTo) {
             case 'cards':
@@ -268,7 +268,7 @@ function HomePageContent() {
                         <AllCategoriesSection />
                     </div>
 
-                    <Footer />
+                    <Footer id="main-footer" />
                 </>
             )}
         </>

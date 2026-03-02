@@ -1,4 +1,4 @@
-import React from 'react';
+// src/routes/my-orders.lazy.tsx
 import { createLazyFileRoute } from '@tanstack/react-router';
 import OrdersPage from '@/components/OrdersPage';
 

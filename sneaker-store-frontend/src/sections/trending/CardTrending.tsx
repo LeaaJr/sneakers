@@ -1,5 +1,4 @@
 //src/sections/trending/CardTrending.tsx
-import React from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { Route as SneakerDetailRoute } from '@/routes/sneakers.$sneakerId';
 

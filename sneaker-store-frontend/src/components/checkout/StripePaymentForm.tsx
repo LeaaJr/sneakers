@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { Lock, HelpCircle } from 'lucide-react';
 import { useOrders } from '@/context/OrdersContext';
 
 interface StripePaymentFormProps {
