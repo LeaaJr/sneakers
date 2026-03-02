@@ -1,19 +1,24 @@
+// src/routes/admin/brands/$brandId/edit.lazy.tsx
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import BrandForm from './BrandForm' // Verifica esta ruta de importación
+import BrandForm from '../BrandForm'
 import { fetchBrandById } from '@/services/sneakerService'
 
-export const Route = createLazyFileRoute('/admin/brands/edit')({
+export const Route = createLazyFileRoute('/admin/brands/$brandId/edit')({
   component: EditRouteComponent,
 })
 
 function EditRouteComponent() {
-  // Obtenemos el ID desde la URL
-  const { brandId } = Route.useParams()
+  const { brandId } = Route.useParams() 
 
   const { data: brand, isLoading, error } = useQuery({
     queryKey: ['brand', brandId],
-    queryFn: () => fetchBrandById(brandId),
+    queryFn: () => {
+        if (!brandId) throw new Error("ID no proporcionado");
+        return fetchBrandById(brandId);
+    },
+    // Esto evita que intente pedir datos si el ID es nulo
+    enabled: !!brandId, 
   })
 
   if (isLoading) return <div className="p-10 text-center text-amber-600">Obteniendo información de la marca...</div>

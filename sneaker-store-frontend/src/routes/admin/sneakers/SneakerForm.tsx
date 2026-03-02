@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import React, { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { SIZE_CONVERSION_CHART } from '@/lib/constants/size-conversions';
 import { 
     type SneakerFormData, 
@@ -19,7 +19,7 @@ import {
     createSneaker, 
     updateSneaker 
 } from '@/services/sneakerService';
-import { SizeGridPicker } from './SizeGridPicker'; // Asegúrate de que esta ruta sea correcta
+import { SizeGridPicker } from './SizeGridPicker';
 
 interface SneakerFormProps {
     initialData?: Sneaker | null;
@@ -38,7 +38,7 @@ const emptyValues: SneakerFormData = {
     main_image_url: "",
     brand_id: "",
     category_id: "",
-    sport: null,
+    sport: "", // Cambiado de null a "" para evitar errores de input
     gender: 'unisex',
     release_date: new Date().toISOString().split('T')[0],
     is_new: true,
@@ -47,7 +47,6 @@ const emptyValues: SneakerFormData = {
     featured_details: [],
 };
 
-// Componente memoizado para evitar re-renders innecesarios en el Select de marcas
 const BrandSelect = memo(({ control, options }: { control: any, options: { id: string, name: string }[] }) => (
     <div className="space-y-2">
         <Label>Brand</Label>
@@ -76,7 +75,6 @@ export function SneakerForm({ isEdit, initialData, brandOptions, categoryOptions
     const router = useRouter();
     const navigate = useNavigate();
 
-    // Normalizar los valores iniciales (especialmente las fechas para el input type="date")
     const initialValues = useMemo(() => {
         if (isEdit && initialData) {
             return {
@@ -85,7 +83,9 @@ export function SneakerForm({ isEdit, initialData, brandOptions, categoryOptions
                 sizes: initialData.sizes?.length ? initialData.sizes.map(s => ({ ...s })) : [defaultSize],
                 images: initialData.images?.length ? initialData.images.map(i => ({ ...i })) : [defaultImage],
                 featured_details: initialData.featured_details || [],
-            };
+                sport: initialData.sport || "",
+                gender: (initialData.gender as any) || 'unisex'
+            } as SneakerFormData;
         }
         return emptyValues;
     }, [isEdit, initialData]);
@@ -108,37 +108,32 @@ export function SneakerForm({ isEdit, initialData, brandOptions, categoryOptions
 
     const watchSizes = watch("sizes");
 
-    // --- LÓGICA DE TALLAS ---
-const handleAddQuickSize = useCallback((size: number) => {
-    const alreadyExists = watchSizes.some(s => s.us_size === size);
-    
-    if (!alreadyExists) {
-        // Buscamos la conversión ANTES de añadir
-        const conversion = SIZE_CONVERSION_CHART[size];
-        
-        appendSize({ 
-            us_size: size, 
-            // Si existe en la tabla lo pone, si no, null
-            eu_size: conversion ? conversion.eu : null, 
-            uk_size: conversion ? conversion.uk : null, 
-            quantity: 10 
-        });
-    }
-}, [appendSize, watchSizes]);
+    const handleAddQuickSize = useCallback((size: number) => {
+        const alreadyExists = watchSizes.some(s => s.us_size === size);
+        if (!alreadyExists) {
+            const conversion = SIZE_CONVERSION_CHART[size];
+            appendSize({ 
+                us_size: size, 
+                eu_size: conversion ? conversion.eu : null, 
+                uk_size: conversion ? conversion.uk : null, 
+                quantity: 10 
+            });
+        }
+    }, [appendSize, watchSizes]);
 
     const handleRemoveQuickSize = useCallback((size: number) => {
         const index = watchSizes.findIndex(s => s.us_size === size);
         if (index !== -1) removeSize(index);
     }, [watchSizes, removeSize]);
 
-    // --- ENVÍO DEL FORMULARIO ---
     const onSubmit: SubmitHandler<SneakerFormData> = async (data) => {
+        // Limpieza de datos antes de enviar
         const payload = {
             ...data,
-            price: parseFloat(data.price.toString()),
-            release_date: data.release_date ? new Date(data.release_date).toISOString() : null,
-            images: data.images.filter(img => img.image_url),
-            featured_details: data.featured_details.filter(d => d && d.trim().length > 0),
+            price: Number(data.price),
+            release_date: data.release_date ? new Date(data.release_date).toISOString() : new Date().toISOString(),
+            images: data.images.filter(img => img.image_url !== ""),
+            featured_details: data.featured_details.filter(d => typeof d === 'string' && d.trim().length > 0),
         };
 
         try {
@@ -152,7 +147,7 @@ const handleAddQuickSize = useCallback((size: number) => {
                 await navigate({ 
                     to: '/admin/sneakers/$sneakerId/edit', 
                     params: { sneakerId: newSneaker.id } 
-                });
+                } as any);
             }
         } catch (error) {
             console.error("API Error:", error);
@@ -177,7 +172,6 @@ const handleAddQuickSize = useCallback((size: number) => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-xl shadow-lg space-y-8">
                 
-                {/* --- SECCIÓN 1: DETALLES BÁSICOS --- */}
                 <h2 className="text-2xl font-semibold border-b pb-2">Basic Details</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -196,7 +190,6 @@ const handleAddQuickSize = useCallback((size: number) => {
                     <Textarea id="description" rows={4} {...register("description")} />
                 </div>
 
-                {/* --- SECCIÓN 2: METADATA --- */}
                 <h2 className="text-2xl font-semibold border-b pb-2 pt-4">Metadata</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <BrandSelect control={control} options={brandOptions} />
@@ -225,7 +218,7 @@ const handleAddQuickSize = useCallback((size: number) => {
                             name="gender"
                             control={control}
                             render={({ field }) => (
-                                <Select onValueChange={field.onChange} value={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value || 'unisex'}>
                                     <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="men">Men</SelectItem>
@@ -263,7 +256,6 @@ const handleAddQuickSize = useCallback((size: number) => {
                     </div>
                 </div>
 
-                {/* --- SECCIÓN 3: IMÁGENES --- */}
                 <h2 className="text-2xl font-semibold border-b pb-2 pt-4">Images</h2>
                 <div className="space-y-4">
                     <div className="space-y-2">
@@ -292,87 +284,79 @@ const handleAddQuickSize = useCallback((size: number) => {
                     </div>
                 </div>
 
-                    {/* --- SECCIÓN 4: TALLAS --- */}
-                    <h2 className="text-2xl font-semibold border-b pb-2 pt-4">Sizes & Inventory</h2>
-                    <div className="space-y-6">
-                        <SizeGridPicker
-                            currentSizes={watchSizes}
-                            onAdd={handleAddQuickSize}
-                            onRemove={handleRemoveQuickSize}
-                        />
+                <h2 className="text-2xl font-semibold border-b pb-2 pt-4">Sizes & Inventory</h2>
+                <div className="space-y-6">
+                    <SizeGridPicker
+                        currentSizes={watchSizes}
+                        onAdd={handleAddQuickSize}
+                        onRemove={handleRemoveQuickSize}
+                    />
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {sizeFields.map((field, index) => {
-                                // Obtenemos el valor actual de US para mostrar la conversión en tiempo real
-                                const currentUS = watch(`sizes.${index}.us_size`);
-                                const conversion = SIZE_CONVERSION_CHART[currentUS] || { eu: '-', uk: '-' };
-
-                                return (
-                                    <div key={field.id} className="p-4 bg-white border rounded-xl shadow-sm border-slate-200 space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex-1">
-                                                <Label className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">US Size</Label>
-                                                <Input
-                                                    type="number"
-                                                    step="0.5"
-                                                    className="h-9 border-none text-lg font-bold p-0 focus-visible:ring-0 text-amber-600"
-                                                    {...register(`sizes.${index}.us_size`, {
-                                                        valueAsNumber: true,
-                                                        onChange: (e) => {
-                                                            const val = parseFloat(e.target.value);
-                                                            const conv = SIZE_CONVERSION_CHART[val];
-                                                            if (conv) {
-                                                                setValue(`sizes.${index}.eu_size`, conv.eu);
-                                                                setValue(`sizes.${index}.uk_size`, conv.uk);
-                                                            }
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {sizeFields.map((field, index) => {
+                            const currentUS = watch(`sizes.${index}.us_size`);
+                            return (
+                                <div key={field.id} className="p-4 bg-white border rounded-xl shadow-sm border-slate-200 space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex-1">
+                                            <Label className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">US Size</Label>
+                                            <Input
+                                                type="number"
+                                                step="0.5"
+                                                className="h-9 border-none text-lg font-bold p-0 focus-visible:ring-0 text-amber-600"
+                                                {...register(`sizes.${index}.us_size`, {
+                                                    valueAsNumber: true,
+                                                    onChange: (e) => {
+                                                        const val = parseFloat(e.target.value);
+                                                        const conv = SIZE_CONVERSION_CHART[val];
+                                                        if (conv) {
+                                                            setValue(`sizes.${index}.eu_size`, conv.eu);
+                                                            setValue(`sizes.${index}.uk_size`, conv.uk);
                                                         }
-                                                    })}
-                                                />
-                                            </div>
-                                            <Button type="button" variant="ghost" size="icon" onClick={() => removeSize(index)} className="text-slate-300 hover:text-red-500">
-                                                <X className="h-4 w-4" />
-                                            </Button>
+                                                    }
+                                                })}
+                                            />
                                         </div>
+                                        <Button type="button" variant="ghost" size="icon" onClick={() => removeSize(index)} className="text-slate-300 hover:text-red-500">
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
 
-                                        <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                            <div className="text-center">
-                                                <p className="text-[9px] text-slate-400 font-bold uppercase italic">EU Auto</p>
-                                                <p className="font-bold text-slate-700">{watch(`sizes.${index}.eu_size`) || '-'}</p>
-                                                {/* Hidden inputs para asegurar que el valor se envíe en el JSON final */}
-                                                <input type="hidden" {...register(`sizes.${index}.eu_size`)} />
-                                            </div>
-                                            <div className="text-center border-x border-slate-200">
-                                                <p className="text-[9px] text-slate-400 font-bold uppercase italic">UK Auto</p>
-                                                <p className="font-bold text-slate-700">{watch(`sizes.${index}.uk_size`) || '-'}</p>
-                                                <input type="hidden" {...register(`sizes.${index}.uk_size`)} />
-                                            </div>
-                                            <div className="text-center pl-1">
-                                                <p className="text-[9px] text-slate-400 font-bold uppercase italic">Stock</p>
-                                                <Input
-                                                    type="number"
-                                                    className="h-6 border-slate-300 bg-white text-center text-xs font-bold"
-                                                    {...register(`sizes.${index}.quantity` as const, { valueAsNumber: true })}
-                                                />
-                                            </div>
+                                    <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                        <div className="text-center">
+                                            <p className="text-[9px] text-slate-400 font-bold uppercase italic">EU Auto</p>
+                                            <p className="font-bold text-slate-700">{watch(`sizes.${index}.eu_size`) || '-'}</p>
+                                        </div>
+                                        <div className="text-center border-x border-slate-200">
+                                            <p className="text-[9px] text-slate-400 font-bold uppercase italic">UK Auto</p>
+                                            <p className="font-bold text-slate-700">{watch(`sizes.${index}.uk_size`) || '-'}</p>
+                                        </div>
+                                        <div className="text-center pl-1">
+                                            <p className="text-[9px] text-slate-400 font-bold uppercase italic">Stock</p>
+                                            <Input
+                                                type="number"
+                                                className="h-6 border-slate-300 bg-white text-center text-xs font-bold"
+                                                {...register(`sizes.${index}.quantity` as const, { valueAsNumber: true })}
+                                            />
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
+                                </div>
+                            );
+                        })}
                     </div>
+                </div>
 
-                {/* --- SECCIÓN 5: FEATURED DETAILS --- */}
                 <h2 className="text-2xl font-semibold border-b pb-2 pt-4">Featured Details</h2>
                 <div className="p-4 border rounded-lg bg-gray-50 space-y-4">
                     {detailFields.map((field, index) => (
                         <div key={field.id} className="flex space-x-2">
-                            <Input {...register(`featured_details.${index}` as const)} placeholder="e.g. Premium Leather" />
+                            <Input {...register(`featured_details.${index}` as any)} placeholder="e.g. Premium Leather" />
                             <Button type="button" variant="destructive" size="icon" onClick={() => removeDetail(index)}>
                                 <X className="h-4 w-4" />
                             </Button>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" onClick={() => appendDetail("")}>
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendDetail("" as any)}>
                         <Plus className="h-4 w-4 mr-2" /> Add Detail
                     </Button>
                 </div>

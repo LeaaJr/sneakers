@@ -18,20 +18,23 @@ apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         const originalRequest = error.config;
-        
-        
         const currentRetry = originalRequest.retryCount || 0;
+        
+        
         if (error.code === 'ECONNABORTED' && currentRetry < MAX_RETRIES) {
             originalRequest.retryCount = currentRetry + 1;
             
-            console.warn(`Timeout: reintentando solicitud (intento ${originalRequest.retryCount})`);
+            console.error('API Error details:', error.response?.status, error.response?.data);
             
             
             return new Promise(resolve => setTimeout(resolve, RETRY_DELAY)).then(() => apiClient(originalRequest));
         }
 
-        console.error('Error fetching sneakers:', error);
-        return Promise.reject(new Error('No se pudo conectar con el servidor. Verifica tu conexión.'));
+        if (error.response) {
+            return Promise.reject(error); 
+        }
+
+        return Promise.reject(new Error('Error de red: Verifica tu conexión.'));
     }
 );
 
@@ -535,8 +538,23 @@ export const requestPasswordReset = async (email: string): Promise<{ message: st
  * Obtiene una marca por su ID.
  */
 export const fetchBrandById = async (id: string): Promise<Brand> => {
-    const response = await apiClient.get(`/brands/${id}`);
-    return response.data;
+    try {
+        // Generamos la URL manualmente para verla en el log
+        const fullUrl = `${apiClient.defaults.baseURL}/brands/${id}`;
+        console.log("🚀 Intentando GET a:", fullUrl);
+
+        const response = await apiClient.get(`/brands/${id}/`);
+        return response.data;
+    } catch (error: any) {
+        // Si hay respuesta del servidor (como un 404)
+        if (error.response) {
+            console.error("❌ Error del Servidor:", error.response.status);
+            console.error("URL fallida:", error.config.url);
+        } else {
+            console.error("❌ Error de Red/Configuración:", error.message);
+        }
+        throw error;
+    }
 };
 
 
@@ -559,8 +577,8 @@ export const createBrand = async (data: BrandFormData): Promise<Brand> => {
  */
 export const updateBrand = async (id: string, data: BrandFormData): Promise<Brand> => {
     try {
-        const response = await apiClient.put(`/brands/${id}`, data);
-        return response.data;
+        const response = await apiClient.put(`/brands/${id}/`, data); 
+    return response.data;
     } catch (error) {
         console.error(`Error updating brand ${id}:`, error);
         throw error;

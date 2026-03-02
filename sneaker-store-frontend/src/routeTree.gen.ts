@@ -22,6 +22,7 @@ import { Route as CategorySportRouteImport } from './routes/category.$sport'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthSigninRouteImport } from './routes/auth.signin'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminSneakersIndexRouteImport } from './routes/admin/sneakers/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 import { Route as AdminSneakersCreateRouteImport } from './routes/admin/sneakers/create'
@@ -32,7 +33,6 @@ const MyOrdersLazyRouteImport = createFileRoute('/my-orders')()
 const ForgotPasswordLazyRouteImport = createFileRoute('/forgot-password')()
 const CheckoutLazyRouteImport = createFileRoute('/checkout')()
 const AdminLazyRouteImport = createFileRoute('/admin')()
-const AdminSneakersIndexLazyRouteImport = createFileRoute('/admin/sneakers/')()
 const AdminBrandsIndexLazyRouteImport = createFileRoute('/admin/brands/')()
 const AdminDashboardCreateLazyRouteImport = createFileRoute(
   '/admin/dashboard/create',
@@ -40,12 +40,14 @@ const AdminDashboardCreateLazyRouteImport = createFileRoute(
 const AdminCategoriesCreateLazyRouteImport = createFileRoute(
   '/admin/categories/create',
 )()
-const AdminBrandsEditLazyRouteImport = createFileRoute('/admin/brands/edit')()
 const AdminBrandsCreateLazyRouteImport = createFileRoute(
   '/admin/brands/create',
 )()
 const AdminDashboardEditIdLazyRouteImport = createFileRoute(
   '/admin/dashboard/edit/$id',
+)()
+const AdminBrandsBrandIdEditLazyRouteImport = createFileRoute(
+  '/admin/brands/$brandId/edit',
 )()
 
 const MyOrdersLazyRoute = MyOrdersLazyRouteImport.update({
@@ -125,19 +127,19 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminLazyRoute,
 } as any)
-const AdminSneakersIndexLazyRoute = AdminSneakersIndexLazyRouteImport.update({
-  id: '/sneakers/',
-  path: '/sneakers/',
-  getParentRoute: () => AdminLazyRoute,
-} as any).lazy(() =>
-  import('./routes/admin/sneakers/index.lazy').then((d) => d.Route),
-)
 const AdminBrandsIndexLazyRoute = AdminBrandsIndexLazyRouteImport.update({
   id: '/brands/',
   path: '/brands/',
   getParentRoute: () => AdminLazyRoute,
 } as any).lazy(() =>
   import('./routes/admin/brands/index.lazy').then((d) => d.Route),
+)
+const AdminSneakersIndexRoute = AdminSneakersIndexRouteImport.update({
+  id: '/sneakers/',
+  path: '/sneakers/',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/sneakers/index.lazy').then((d) => d.Route),
 )
 const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
   id: '/',
@@ -167,13 +169,6 @@ const AdminCategoriesCreateLazyRoute =
   } as any).lazy(() =>
     import('./routes/admin/categories/create.lazy').then((d) => d.Route),
   )
-const AdminBrandsEditLazyRoute = AdminBrandsEditLazyRouteImport.update({
-  id: '/brands/edit',
-  path: '/brands/edit',
-  getParentRoute: () => AdminLazyRoute,
-} as any).lazy(() =>
-  import('./routes/admin/brands/edit.lazy').then((d) => d.Route),
-)
 const AdminBrandsCreateLazyRoute = AdminBrandsCreateLazyRouteImport.update({
   id: '/brands/create',
   path: '/brands/create',
@@ -195,6 +190,14 @@ const AdminDashboardEditIdLazyRoute =
     getParentRoute: () => AdminDashboardRoute,
   } as any).lazy(() =>
     import('./routes/admin/dashboard/edit.$id.lazy').then((d) => d.Route),
+  )
+const AdminBrandsBrandIdEditLazyRoute =
+  AdminBrandsBrandIdEditLazyRouteImport.update({
+    id: '/brands/$brandId/edit',
+    path: '/brands/$brandId/edit',
+    getParentRoute: () => AdminLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/admin/brands/$brandId/edit.lazy').then((d) => d.Route),
   )
 const AdminSneakersSneakerIdEditRoute =
   AdminSneakersSneakerIdEditRouteImport.update({
@@ -233,15 +236,15 @@ export interface FileRoutesByFullPath {
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
   '/admin/sneakers/create': typeof AdminSneakersCreateRoute
   '/admin/brands/create': typeof AdminBrandsCreateLazyRoute
-  '/admin/brands/edit': typeof AdminBrandsEditLazyRoute
   '/admin/categories/create': typeof AdminCategoriesCreateLazyRoute
   '/admin/dashboard/create': typeof AdminDashboardCreateLazyRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/sneakers': typeof AdminSneakersIndexRoute
   '/admin/brands': typeof AdminBrandsIndexLazyRoute
-  '/admin/sneakers': typeof AdminSneakersIndexLazyRoute
   '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
   '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
+  '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
   '/admin/dashboard/edit/$id': typeof AdminDashboardEditIdLazyRoute
 }
 export interface FileRoutesByTo {
@@ -261,15 +264,15 @@ export interface FileRoutesByTo {
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
   '/admin/sneakers/create': typeof AdminSneakersCreateRoute
   '/admin/brands/create': typeof AdminBrandsCreateLazyRoute
-  '/admin/brands/edit': typeof AdminBrandsEditLazyRoute
   '/admin/categories/create': typeof AdminCategoriesCreateLazyRoute
   '/admin/dashboard/create': typeof AdminDashboardCreateLazyRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/admin/sneakers': typeof AdminSneakersIndexRoute
   '/admin/brands': typeof AdminBrandsIndexLazyRoute
-  '/admin/sneakers': typeof AdminSneakersIndexLazyRoute
   '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
   '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
+  '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
   '/admin/dashboard/edit/$id': typeof AdminDashboardEditIdLazyRoute
 }
 export interface FileRoutesById {
@@ -291,15 +294,15 @@ export interface FileRoutesById {
   '/sneakers/$sneakerId': typeof SneakersSneakerIdRoute
   '/admin/sneakers/create': typeof AdminSneakersCreateRoute
   '/admin/brands/create': typeof AdminBrandsCreateLazyRoute
-  '/admin/brands/edit': typeof AdminBrandsEditLazyRoute
   '/admin/categories/create': typeof AdminCategoriesCreateLazyRoute
   '/admin/dashboard/create': typeof AdminDashboardCreateLazyRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/sneakers/': typeof AdminSneakersIndexRoute
   '/admin/brands/': typeof AdminBrandsIndexLazyRoute
-  '/admin/sneakers/': typeof AdminSneakersIndexLazyRoute
   '/admin/categories/$categoryId/edit': typeof AdminCategoriesCategoryIdEditRoute
   '/admin/sneakers/$sneakerId/edit': typeof AdminSneakersSneakerIdEditRoute
+  '/admin/brands/$brandId/edit': typeof AdminBrandsBrandIdEditLazyRoute
   '/admin/dashboard/edit/$id': typeof AdminDashboardEditIdLazyRoute
 }
 export interface FileRouteTypes {
@@ -322,15 +325,15 @@ export interface FileRouteTypes {
     | '/sneakers/$sneakerId'
     | '/admin/sneakers/create'
     | '/admin/brands/create'
-    | '/admin/brands/edit'
     | '/admin/categories/create'
     | '/admin/dashboard/create'
     | '/admin/categories'
     | '/admin/dashboard/'
-    | '/admin/brands'
     | '/admin/sneakers'
+    | '/admin/brands'
     | '/admin/categories/$categoryId/edit'
     | '/admin/sneakers/$sneakerId/edit'
+    | '/admin/brands/$brandId/edit'
     | '/admin/dashboard/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -350,15 +353,15 @@ export interface FileRouteTypes {
     | '/sneakers/$sneakerId'
     | '/admin/sneakers/create'
     | '/admin/brands/create'
-    | '/admin/brands/edit'
     | '/admin/categories/create'
     | '/admin/dashboard/create'
     | '/admin/categories'
     | '/admin/dashboard'
-    | '/admin/brands'
     | '/admin/sneakers'
+    | '/admin/brands'
     | '/admin/categories/$categoryId/edit'
     | '/admin/sneakers/$sneakerId/edit'
+    | '/admin/brands/$brandId/edit'
     | '/admin/dashboard/edit/$id'
   id:
     | '__root__'
@@ -379,15 +382,15 @@ export interface FileRouteTypes {
     | '/sneakers/$sneakerId'
     | '/admin/sneakers/create'
     | '/admin/brands/create'
-    | '/admin/brands/edit'
     | '/admin/categories/create'
     | '/admin/dashboard/create'
     | '/admin/categories/'
     | '/admin/dashboard/'
-    | '/admin/brands/'
     | '/admin/sneakers/'
+    | '/admin/brands/'
     | '/admin/categories/$categoryId/edit'
     | '/admin/sneakers/$sneakerId/edit'
+    | '/admin/brands/$brandId/edit'
     | '/admin/dashboard/edit/$id'
   fileRoutesById: FileRoutesById
 }
@@ -512,18 +515,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminLazyRoute
     }
-    '/admin/sneakers/': {
-      id: '/admin/sneakers/'
-      path: '/sneakers'
-      fullPath: '/admin/sneakers'
-      preLoaderRoute: typeof AdminSneakersIndexLazyRouteImport
-      parentRoute: typeof AdminLazyRoute
-    }
     '/admin/brands/': {
       id: '/admin/brands/'
       path: '/brands'
       fullPath: '/admin/brands'
       preLoaderRoute: typeof AdminBrandsIndexLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
+    }
+    '/admin/sneakers/': {
+      id: '/admin/sneakers/'
+      path: '/sneakers'
+      fullPath: '/admin/sneakers'
+      preLoaderRoute: typeof AdminSneakersIndexRouteImport
       parentRoute: typeof AdminLazyRoute
     }
     '/admin/dashboard/': {
@@ -554,13 +557,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesCreateLazyRouteImport
       parentRoute: typeof AdminLazyRoute
     }
-    '/admin/brands/edit': {
-      id: '/admin/brands/edit'
-      path: '/brands/edit'
-      fullPath: '/admin/brands/edit'
-      preLoaderRoute: typeof AdminBrandsEditLazyRouteImport
-      parentRoute: typeof AdminLazyRoute
-    }
     '/admin/brands/create': {
       id: '/admin/brands/create'
       path: '/brands/create'
@@ -581,6 +577,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/dashboard/edit/$id'
       preLoaderRoute: typeof AdminDashboardEditIdLazyRouteImport
       parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin/brands/$brandId/edit': {
+      id: '/admin/brands/$brandId/edit'
+      path: '/brands/$brandId/edit'
+      fullPath: '/admin/brands/$brandId/edit'
+      preLoaderRoute: typeof AdminBrandsBrandIdEditLazyRouteImport
+      parentRoute: typeof AdminLazyRoute
     }
     '/admin/sneakers/$sneakerId/edit': {
       id: '/admin/sneakers/$sneakerId/edit'
@@ -643,26 +646,26 @@ interface AdminLazyRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
   AdminSneakersCreateRoute: typeof AdminSneakersCreateRoute
   AdminBrandsCreateLazyRoute: typeof AdminBrandsCreateLazyRoute
-  AdminBrandsEditLazyRoute: typeof AdminBrandsEditLazyRoute
   AdminCategoriesCreateLazyRoute: typeof AdminCategoriesCreateLazyRoute
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
+  AdminSneakersIndexRoute: typeof AdminSneakersIndexRoute
   AdminBrandsIndexLazyRoute: typeof AdminBrandsIndexLazyRoute
-  AdminSneakersIndexLazyRoute: typeof AdminSneakersIndexLazyRoute
   AdminCategoriesCategoryIdEditRoute: typeof AdminCategoriesCategoryIdEditRoute
   AdminSneakersSneakerIdEditRoute: typeof AdminSneakersSneakerIdEditRoute
+  AdminBrandsBrandIdEditLazyRoute: typeof AdminBrandsBrandIdEditLazyRoute
 }
 
 const AdminLazyRouteChildren: AdminLazyRouteChildren = {
   AdminDashboardRoute: AdminDashboardRouteWithChildren,
   AdminSneakersCreateRoute: AdminSneakersCreateRoute,
   AdminBrandsCreateLazyRoute: AdminBrandsCreateLazyRoute,
-  AdminBrandsEditLazyRoute: AdminBrandsEditLazyRoute,
   AdminCategoriesCreateLazyRoute: AdminCategoriesCreateLazyRoute,
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
+  AdminSneakersIndexRoute: AdminSneakersIndexRoute,
   AdminBrandsIndexLazyRoute: AdminBrandsIndexLazyRoute,
-  AdminSneakersIndexLazyRoute: AdminSneakersIndexLazyRoute,
   AdminCategoriesCategoryIdEditRoute: AdminCategoriesCategoryIdEditRoute,
   AdminSneakersSneakerIdEditRoute: AdminSneakersSneakerIdEditRoute,
+  AdminBrandsBrandIdEditLazyRoute: AdminBrandsBrandIdEditLazyRoute,
 }
 
 const AdminLazyRouteWithChildren = AdminLazyRoute._addFileChildren(
