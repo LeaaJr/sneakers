@@ -539,14 +539,12 @@ export const requestPasswordReset = async (email: string): Promise<{ message: st
  */
 export const fetchBrandById = async (id: string): Promise<Brand> => {
     try {
-        // Generamos la URL manualmente para verla en el log
         const fullUrl = `${apiClient.defaults.baseURL}/brands/${id}`;
         console.log("🚀 Intentando GET a:", fullUrl);
 
-        const response = await apiClient.get(`/brands/${id}/`);
+        const response = await apiClient.get(`/brands/${id}`); // ← sin slash final
         return response.data;
     } catch (error: any) {
-        // Si hay respuesta del servidor (como un 404)
         if (error.response) {
             console.error("❌ Error del Servidor:", error.response.status);
             console.error("URL fallida:", error.config.url);
@@ -556,7 +554,6 @@ export const fetchBrandById = async (id: string): Promise<Brand> => {
         throw error;
     }
 };
-
 
 
 /**
@@ -577,8 +574,8 @@ export const createBrand = async (data: BrandFormData): Promise<Brand> => {
  */
 export const updateBrand = async (id: string, data: BrandFormData): Promise<Brand> => {
     try {
-        const response = await apiClient.put(`/brands/${id}/`, data); 
-    return response.data;
+        const response = await apiClient.put(`/brands/${id}`, data); // ← sin slash final
+        return response.data;
     } catch (error) {
         console.error(`Error updating brand ${id}:`, error);
         throw error;
