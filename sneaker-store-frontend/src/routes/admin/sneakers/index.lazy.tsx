@@ -1,31 +1,24 @@
-
-import { createLazyFileRoute, Link, redirect } from '@tanstack/react-router';
+// src/routes/admin/sneakers/index.lazy.tsx
+import { createLazyFileRoute, Link } from '@tanstack/react-router';
 import { Plus, Pencil, Trash2, Tag, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { fetchSneakers, type Sneaker, deleteSneaker } from '@/services/sneakerService';
+import { deleteSneaker } from '@/services/sneakerService';
 import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
-import axios from 'axios';
 
-// Define la ruta en /admin/sneakers
+// Fíjate que aquí usamos createLazyFileRoute y NO hay loader
 export const Route = createLazyFileRoute('/admin/sneakers/')({
-    loader: () => {
-        return fetchSneakers();
-    },
     component: SneakerListPage,
-    errorComponent: () => <div className="text-red-500 p-8">Error loading sneaker list. Check API connection.</div>,
 });
 
 function SneakerListPage() {
-    const sneakers = Route.useLoaderData();
-    const router = useRouter(); // Inicializa el router
+    const sneakers = Route.useLoaderData(); // Ahora sí recibirá los datos del index.tsx
+    const router = useRouter();
 
-    // Función para manejar la eliminación
     const handleDelete = async (id: string, title: string) => {
         if (confirm(`Delete ${title}?`)) {
             try {
                 await deleteSneaker(id);
-                // 🔥 EN LUGAR DE RELOAD:
                 await router.invalidate();
                 alert("Deleted!");
             } catch (error) {
@@ -34,12 +27,17 @@ function SneakerListPage() {
         }
     };
 
-
     if (!sneakers || sneakers.length === 0) {
         return (
-            <div className="text-center p-10 bg-white rounded-xl shadow-lg">
+            <div className="flex flex-col items-center justify-center p-20 bg-white rounded-xl shadow-lg">
                 <h2 className="text-xl font-semibold">No Sneakers Found</h2>
-                <p className="text-gray-500 mt-2">Start by creating a new sneaker using the button above.</p>
+                <p className="text-gray-500 mt-2 mb-6">Start by creating a new sneaker.</p>
+                <Link
+                    to="/admin/sneakers/create"
+                    className="bg-amber-500 text-white px-6 py-2 rounded-lg hover:bg-amber-600 transition-colors"
+                >
+                    Create First Sneaker
+                </Link>
             </div>
         );
     }
@@ -50,11 +48,7 @@ function SneakerListPage() {
         try {
             await navigator.clipboard.writeText(id);
             setCopiedId(id);
-
-            setTimeout(() => {
-                setCopiedId(null);
-            }, 1500);
-
+            setTimeout(() => setCopiedId(null), 1500);
         } catch (err) {
             alert("Failed to copy ID");
         }
@@ -89,89 +83,46 @@ function SneakerListPage() {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {sneakers.map((sneaker) => (
                             <tr key={sneaker.id}>
-
-                                {/* Columna Producto (Imagen y Título) */}
                                 <td className="px-4 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-20 w-20">
                                             <img
-                                                className="h-20 w-20 rounded-full object-cover"
-                                                src={sneaker.main_image_url || 'https://via.placeholder.com/60'}
+                                                className="h-20 w-20 rounded-lg object-cover bg-gray-100"
+                                                src={sneaker.main_image_url || 'https://via.placeholder.com/80'}
                                                 alt={sneaker.title}
                                             />
                                         </div>
                                         <div className="ml-4">
-                                            <div className="text-sm font-medium text-gray-900 line-clamp-1">
-                                                {sneaker.title}
-                                            </div>
+                                            <div className="text-sm font-medium text-gray-900 line-clamp-1">{sneaker.title}</div>
                                             <div className="text-xs text-gray-500 flex items-center gap-2">
-                                                ID: {sneaker.id.substring(0, 8)}...
-
-                                                <button
-                                                    type="button"
-                                                    title="Show full ID"
-                                                    onClick={() => handleCopyId(sneaker.id)}
-                                                    className="text-amber-600 hover:text-amber-800 font-bold transition-colors"
-                                                >
-                                                    +
-                                                </button>
-
-                                                {copiedId === sneaker.id && (
-                                                    <span className="text-green-600 text-xs font-medium animate-pulse">
-                                                        Copied!
-                                                    </span>
-                                                )}
+                                                ID: {sneaker.id?.substring(0, 8) || 'No ID'}...
+                                                <button onClick={() => handleCopyId(sneaker.id)} className="text-amber-600 font-bold">+</button>
+                                                {copiedId === sneaker.id && <span className="text-green-600">Copied!</span>}
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-
-                                {/* Columna Precio */}
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-semibold">
-                                    ${sneaker.price.toFixed(2)}
-                                </td>
-
-                                {/* Columna Marca / Categoría */}
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">${sneaker.price}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <div className="flex flex-col">
-                                        {/* Usamos sneaker.brand.name que está disponible en tu interfaz Sneaker */}
                                         <span className="text-gray-900 flex items-center"><Tag className="w-3 h-3 mr-1" /> {sneaker.brand?.name || 'N/A'}</span>
-                                        {/* La interfaz Sneaker no incluye category_name, pero asumimos que sí incluye category_id para fines prácticos. 
-                                            Si tu API no devuelve el objeto Category, esto es un placeholder: */}
-                                        <span className="text-xs text-gray-500 ml-4">Category: {sneaker.category_id.substring(0, 8)}...</span>
+                                        <span className="text-xs">Cat ID: {sneaker.category_id?.substring(0, 5) || 'N/A'}...</span>
                                     </div>
                                 </td>
-
-                                {/* Columna Estado */}
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     {sneaker.is_new ? (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium flex items-center w-fit">
                                             <Zap className="w-3 h-3 mr-1" /> New
                                         </span>
                                     ) : (
-                                        <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            Standard
-                                        </span>
+                                        <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full text-xs font-medium">Standard</span>
                                     )}
                                 </td>
-
-                                {/* Columna Acciones */}
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                    <Link
-                                        to="/admin/sneakers/$sneakerId/edit"
-                                        params={{ sneakerId: sneaker.id }}
-                                        className="inline-flex items-center text-amber-600 hover:text-amber-900 p-1"
-                                    >
-                                        <Pencil className="w-4 h-4" />
+                                <td className="px-6 py-4 whitespace-nowrap text-right space-x-2">
+                                    <Link to="/admin/sneakers/$sneakerId/edit" params={{ sneakerId: sneaker.id }} className="text-amber-600 hover:text-amber-900">
+                                        <Pencil className="w-4 h-4 inline" />
                                     </Link>
-
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleDelete(sneaker.id, sneaker.title)}
-                                        className="text-red-600 hover:text-red-900"
-                                    >
+                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(sneaker.id, sneaker.title)} className="text-red-600 hover:text-red-900">
                                         <Trash2 className="w-4 h-4" />
                                     </Button>
                                 </td>

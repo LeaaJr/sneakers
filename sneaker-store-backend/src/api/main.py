@@ -163,6 +163,33 @@ def create_brand(brand: schemas.BrandCreate, db: Session = Depends(get_db)):
     db.refresh(db_brand)
     return db_brand
 
+# ✅ NUEVOS ENDPOINTS
+@app.get("/api/brands/{brand_id}", response_model=schemas.Brand)
+def read_brand(brand_id: str, db: Session = Depends(get_db)):
+    db_brand = db.query(models.Brand).filter(models.Brand.id == brand_id).first()
+    if not db_brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    return db_brand
+
+@app.put("/api/brands/{brand_id}", response_model=schemas.Brand)
+def update_brand(brand_id: str, brand: schemas.BrandCreate, db: Session = Depends(get_db)):
+    db_brand = db.query(models.Brand).filter(models.Brand.id == brand_id).first()
+    if not db_brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    for key, value in brand.model_dump().items():
+        setattr(db_brand, key, str(value) if key == "logo_url" and value else value)
+    db.commit()
+    db.refresh(db_brand)
+    return db_brand
+
+@app.delete("/api/brands/{brand_id}", status_code=204)
+def delete_brand(brand_id: str, db: Session = Depends(get_db)):
+    db_brand = db.query(models.Brand).filter(models.Brand.id == brand_id).first()
+    if not db_brand:
+        raise HTTPException(status_code=404, detail="Brand not found")
+    db.delete(db_brand)
+    db.commit()
+
 # --- 8. STATUS Y MANTENIMIENTO ---
 
 @app.get("/status")
