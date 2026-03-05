@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import CategoryCard from '../sections/grid/CategoryCard';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
+import { fetchAllCategories } from '@/services/sneakerService';
+import type { Category } from '@/services/sneakerService';
 import '@/styles/swiper-custom.css';
 
 interface Category {
@@ -20,25 +22,21 @@ const AllCategoriesSection: React.FC = () => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`http://localhost:8000/api/categories/`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const loadCategories = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await fetchAllCategories(); // ✅ Ya usa apiClient
+            setCategories(data);
+        } catch (err) {
+            setError('Failed to fetch categories. Please check your backend API.');
+            console.error('Error fetching categories:', err);
+        } finally {
+            setLoading(false);
         }
-        const data: Category[] = await response.json();
-        setCategories(data);
-      } catch (err) {
-        setError('Failed to fetch categories. Please check your backend API.');
-        console.error('Error fetching categories:', err);
-      } finally {
-        setLoading(false);
-      }
     };
-    fetchCategories();
-  }, []);
+    loadCategories();
+}, []);
 
   if (loading) {
     return <div className="text-center py-16">Caricamento categorie......</div>;
