@@ -85,7 +85,7 @@ const SignUpForm: React.FC = () => {
         className="rounded-full border border-[#d3d7e3] bg-[#8b95b6] text-white text-[10px] md:text-xs font-bold px-8 md:px-10 py-3 uppercase mt-4 disabled:opacity-50 w-full md:w-auto"
         disabled={isLoading}
       >
-        {isLoading ? 'Processing...' : 'Sign Up'}
+        {isLoading ? 'Processing...' : 'Iscrizione'}
       </button>
     </form>
   );

@@ -158,7 +158,7 @@ export function NavigationMenuDemo({ className, defaultWhite = false }: Navigati
                           search={{ mode: 'signin' }}
                           className="pl-4 py-2 hover:bg-accent rounded-md flex items-center transition-colors"
                         >
-                          Sign In
+                          Registrazione
                         </Link>
                         <Link
                           to="/auth"
@@ -220,13 +220,13 @@ export function NavigationMenuDemo({ className, defaultWhite = false }: Navigati
                       </NavigationMenuLink>
                     </li>
                     <ListItem to="/" search={{ scrollTo: 'trending' }} title="Trending" isBlackText={isBlackText}>
-                      Discover the popular sneakers.
+                      Scopri le sneaker più amate
                     </ListItem>
                     <ListItem to="/" search={{ scrollTo: 'categories' }} title="Categories" isBlackText={isBlackText}>
-                      Browse by style.
+                      Sfoglia per stile
                     </ListItem>
                     <ListItem to="/" search={{ scrollTo: 'jordan' }} title="Jordan Specials" isBlackText={isBlackText}>
-                      Exclusive Jordan collection.
+                      Collezione esclusiva Jordan
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -276,7 +276,7 @@ export function NavigationMenuDemo({ className, defaultWhite = false }: Navigati
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link to="/auth" search={{ mode: 'signin' }} className={cn(navigationMenuTriggerStyle(), "bg-transparent transition-colors", hoverBgClass, textColorClass)}>
-                      Sign In
+                      Registrazione
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

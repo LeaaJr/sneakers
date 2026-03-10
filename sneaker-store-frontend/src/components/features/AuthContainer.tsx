@@ -108,7 +108,7 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ initialMode }) => {
               onClick={switchToSignUp}
               className="px-8 py-2 border border-white rounded-full hover:bg-white hover:text-[#8b95b6] transition-colors"
             >
-              Sign Up
+              Iscrizione
             </button>
           </div>
 
@@ -120,7 +120,7 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ initialMode }) => {
               onClick={switchToSignIn}
               className="px-8 py-2 border border-white rounded-full hover:bg-white hover:text-[#8b95b6] transition-colors"
             >
-              Sign In
+              Registrazione
             </button>
           </div>
         </div>
