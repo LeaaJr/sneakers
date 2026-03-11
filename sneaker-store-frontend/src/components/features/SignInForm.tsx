@@ -49,9 +49,9 @@ const SignInForm: React.FC = () => {
   return (
     // CAMBIO: px-6 en móvil, px-12 en desktop para evitar que el form se vea muy angosto
     <form onSubmit={handleSubmit} className="bg-white flex flex-col items-center justify-center px-6 md:px-12 h-full text-center w-full">
-      <h1 className="font-bold text-xl md:text-2xl mb-2">Sign in</h1>
+      <h1 className="font-bold text-xl md:text-2xl mb-2">Registrazione</h1>
       
-      <span className="text-xs mb-2">or use your account</span>
+      <span className="text-xs mb-2">oppure usa il tuo account</span>
       
       <input 
         type="email" 
