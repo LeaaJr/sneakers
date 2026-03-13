@@ -2,7 +2,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { HeaderFuturista } from '@/components/Header';
+import Header from '@/components/Header';
 import { SneakersGrid } from '@/components/SneakersGrid';
 import { fetchSneakers, type Sneaker } from '@/services/sneakerService';
 import JordanSection from '@/sections/jordan/JordanSection';
@@ -224,7 +224,7 @@ function HomePageContent() {
     return (
         <>
             <div ref={headerRef}>
-                <HeaderFuturista />
+                <Header />
             </div>
 
             {/* 1. SECCIÓN DE SNEAKERS GRID (Destino: 'cards') */}

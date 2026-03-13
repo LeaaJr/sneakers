@@ -15,27 +15,28 @@ export const Route = createRootRoute({
     const routerState = useRouterState();
     const isHomePage = routerState.location.pathname === '/'; 
 
-    return (
-       
-        <AuthProvider> 
-            <ToastProvider> 
-                <CartProvider>
-                    <OrdersProvider>
-                    <FavoritesProvider> 
-                        <NavigationMenuDemo 
-                            className="fixed top-0 left-0 right-0 z-50" 
-                            defaultWhite={isHomePage}
-                        />
-                        
-                        <main className="flex-grow pt-16"> 
-                            <Outlet />
-                        </main>
-                    </FavoritesProvider>
-                    </OrdersProvider>
-                </CartProvider>
-            </ToastProvider>
-            <TanStackRouterDevtools initialIsOpen={false} />
-        </AuthProvider>
+   return (
+      <AuthProvider> 
+        <ToastProvider> 
+          <CartProvider>
+            <OrdersProvider>
+              <FavoritesProvider> 
+                {/* Navbar fijo y transparente por defecto */}
+                <NavigationMenuDemo 
+                  className="fixed top-0 left-0 right-0 z-50" 
+                  defaultWhite={isHomePage}
+                />
+                
+                {/* QUITAMOS el pt-16 para que el contenido empiece desde el borde superior */}
+                <main className="flex-grow"> 
+                  <Outlet />
+                </main>
+              </FavoritesProvider>
+            </OrdersProvider>
+          </CartProvider>
+        </ToastProvider>
+        <TanStackRouterDevtools initialIsOpen={false} />
+      </AuthProvider>
     );
   },
 });
