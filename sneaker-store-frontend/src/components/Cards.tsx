@@ -47,7 +47,12 @@ export function Card({ sneaker }: CardProps) {
                 {description}
               </p>
             )}
-            {!description && <div className="h-16"></div>} {/* Manténer el espacio si no hay descripción */}
+            {description && (
+              <p className="text-sm text-muted-foreground line-clamp-3 min-h-[3rem]">
+                {description}
+              </p>
+            )}
+            {!description && <div className="min-h-[3rem]"></div>}
           </div>
           {is_new && (
             <Badge variant="secondary" className="bg-blue-100 text-blue-800 ml-2">
